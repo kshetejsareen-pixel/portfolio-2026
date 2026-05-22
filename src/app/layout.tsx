@@ -1,5 +1,27 @@
 import type { Metadata, Viewport } from 'next'
+import { Bodoni_Moda, JetBrains_Mono, Inter } from 'next/font/google'
 import './globals.css'
+
+const bodoni = Bodoni_Moda({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 export const viewport: Viewport = {
   viewportFit: 'cover',
@@ -8,11 +30,11 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Kshetej Sareen Studios',
-  description: 'Luxury commercial photography studio. Delhi.',
+  title: 'Kshetej Sareen',
+  description: 'Independent photographer. New York · Bombay.',
   openGraph: {
-    title: 'Kshetej Sareen Studios',
-    description: 'Luxury commercial photography studio. Delhi.',
+    title: 'Kshetej Sareen',
+    description: 'Independent photographer. New York · Bombay.',
     type: 'website',
   },
 }
@@ -23,8 +45,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className="min-h-screen bg-brand-black font-sans text-brand-white antialiased">
+    <html lang="en" className={`${bodoni.variable} ${jetbrains.variable} ${inter.variable}`}>
+      <body className="antialiased">
         {children}
       </body>
     </html>

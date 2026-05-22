@@ -1,18 +1,48 @@
 'use client'
 
-import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { categories } from '@/lib/categories'
 
+function pad2(n: number) {
+  return String(n).padStart(2, '0')
+}
+
 export function CategoryLanding() {
-  const [active, setActive] = useState(categories[0].slug)
-  const [hovered, setHovered] = useState<string | null>(null)
+  const [catIdx, setCatIdx] = useState(0)
+  const [frameIdx, setFrameIdx] = useState(0)
   const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const activeCategory = categories.find((c) => c.slug === active)!
+  const cat = categories[catIdx]
+  const frame = cat.frames[frameIdx]
+  const totalFrames = cat.frames.length
 
+  // Reset frame when category changes
+  useEffect(() => { setFrameIdx(0) }, [catIdx])
+
+  // Keyboard navigation — re-registers whenever catIdx changes to keep totalFrames fresh
+  useEffect(() => {
+    const total = categories[catIdx].frames.length
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        setFrameIdx((f) => (f + 1) % total)
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setFrameIdx((f) => ((f - 1) + total) % total)
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setCatIdx((c) => (c + 1) % categories.length)
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [catIdx])
+
+  // Idle cycling — 4s idle then advance category every 5s
   const stopCycle = useCallback(() => {
     if (cycleRef.current) { clearInterval(cycleRef.current); cycleRef.current = null }
     if (idleRef.current) { clearTimeout(idleRef.current); idleRef.current = null }
@@ -22,10 +52,7 @@ export function CategoryLanding() {
     stopCycle()
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
-        setActive((prev) => {
-          const idx = categories.findIndex((c) => c.slug === prev)
-          return categories[(idx + 1) % categories.length].slug
-        })
+        setCatIdx((c) => (c + 1) % categories.length)
       }, 5000)
     }, 4000)
   }, [stopCycle])
@@ -35,141 +62,135 @@ export function CategoryLanding() {
     return stopCycle
   }, [startIdleCountdown, stopCycle])
 
-  const handleEnter = (slug: string) => {
+  const handleCatClick = (i: number) => {
     stopCycle()
-    setHovered(slug)
-    setActive(slug)
-  }
-
-  const handleLeave = () => {
-    setHovered(null)
+    setCatIdx(i)
     startIdleCountdown()
   }
 
   return (
-    <main className="relative flex h-[100dvh] flex-col overflow-hidden bg-black select-none">
+    <div className="ks-stage">
 
-      {/* ── Photo area ─────────────────────────────────────────── */}
-      <div className="relative min-h-0 flex-1 overflow-hidden">
+      {/* Photo layers — one per category × frame, only active is opaque */}
+      <div className="ks-photo-layer">
+        {categories.map((c, ci) =>
+          c.frames.map((f, fi) => {
+            const active = ci === catIdx && fi === frameIdx
+            return (
+              <div
+                key={`${c.id}-${fi}`}
+                className={`ks-frame${active ? ' active' : ''}`}
+                style={{ backgroundColor: c.tint }}
+              >
+                {f.image && (
+                  <img src={f.image} alt={f.subj} className="ks-frame-img" />
+                )}
+              </div>
+            )
+          })
+        )}
+      </div>
 
-        {categories.map((cat) => (
-          <motion.div
-            key={cat.slug}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: cat.image }}
-            animate={{ opacity: active === cat.slug ? 1 : 0 }}
-            transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
-          />
+      {/* Background numeral */}
+      <div className="ks-counter" aria-hidden="true">{pad2(frameIdx + 1)}</div>
+
+      {/* Cinemascope letterbox bars */}
+      <div className="ks-letterbox ks-letterbox--top" />
+      <div className="ks-letterbox ks-letterbox--bottom" />
+
+      {/* Top bar — wordmark left, nav right */}
+      <div className="ks-top-bar">
+        <div className="ks-wordmark">
+          <span className="ks-wordmark-ks">Ks</span>
+          <span className="ks-eyebrow">Photography</span>
+        </div>
+        <nav className="ks-top-nav">
+          <a className="ks-menu-only">Menu +</a>
+          <a>Journal</a>
+          <a>Info</a>
+          <a className="active">Contact</a>
+        </nav>
+      </div>
+
+      {/* Category rail (right on desktop, bottom strip on mobile) */}
+      <div className="ks-cat-rail">
+        {categories.map((c, i) => (
+          <button
+            key={c.id}
+            className={`ks-cat${i === catIdx ? ' active' : ''}`}
+            onClick={() => handleCatClick(i)}
+          >
+            <span className="ks-cat-n">{c.n}</span>
+            <span className="ks-cat-name">{c.label}</span>
+            <span className="ks-cat-tick" />
+          </button>
         ))}
+      </div>
 
-        <motion.div
-          className="absolute inset-0 bg-black"
-          animate={{ opacity: hovered ? 0.28 : 0.50 }}
-          transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1] }}
-        />
+      {/* Step hints — hidden on mobile via CSS */}
+      {totalFrames > 1 && (
+        <>
+          <button
+            className="ks-step-hint ks-step-hint--prev"
+            onClick={() => setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)}
+            aria-label="Previous frame"
+          >
+            ←
+          </button>
+          <button
+            className="ks-step-hint ks-step-hint--next"
+            onClick={() => setFrameIdx((f) => (f + 1) % totalFrames)}
+            aria-label="Next frame"
+          >
+            →
+          </button>
+        </>
+      )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/45 to-transparent" />
-
-        <div className="relative z-10 flex h-full flex-col justify-between px-10 py-10 md:px-16 md:py-12">
-          <div className="flex justify-end">
-            <motion.p
-              className="text-[10px] font-medium tracking-[0.5em] text-white/35 uppercase"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.1, duration: 0.9 }}
-            >
-              Photography
-            </motion.p>
+      {/* Meta block — bottom-left */}
+      <div className="ks-meta">
+        <div className="ks-meta-above">
+          <span className="ks-dot" />
+          <span className="ks-eyebrow">
+            Featured — {cat.label} · {pad2(frameIdx + 1)} / {pad2(totalFrames)}
+          </span>
+        </div>
+        <h1 className="ks-name">
+          Kshetej<br /><span className="ks-name-last">Sareen</span>
+        </h1>
+        <div className="ks-subline">
+          <div className="ks-subline-col">
+            <strong>Independent photographer.</strong><br />New York · Bombay.
           </div>
-
-          <div>
-            <motion.h1
-              className="text-[clamp(3.2rem,12vw,12rem)] font-extralight leading-[0.97] tracking-[-0.03em] text-white"
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-            >
-              Kshetej<br />Sareen
-            </motion.h1>
-
-            <motion.div
-              className="mt-4 overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 0.7 }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={active}
-                  className="text-[10px] font-medium tracking-[0.45em] text-white/45 uppercase"
-                  initial={{ opacity: 0, y: 7 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -7 }}
-                  transition={{ duration: 0.28 }}
-                >
-                  {activeCategory.label}
-                </motion.p>
-              </AnimatePresence>
-            </motion.div>
+          <div className="ks-subline-col">
+            Available for commission and prints.<br />Booking — studio@ksareen.com
           </div>
+        </div>
+        {/* Mobile-only inline slate */}
+        <div className="ks-slate ks-slate--inline">
+          <div className="ks-slate-subj">{frame.subj}</div>
+          <div>{frame.loc} · {frame.year}</div>
         </div>
       </div>
 
-      {/* ── Category bar ───────────────────────────────────────── */}
-      <motion.nav
-        className="relative z-10 flex shrink-0 flex-col border-t border-white/[0.08] bg-black/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.65, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div className="flex h-[88px] w-full">
-        {categories.map((cat, i) => (
-          <Link
-            key={cat.slug}
-            href={`/${cat.slug}`}
-            className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden px-1"
-            onMouseEnter={() => handleEnter(cat.slug)}
-            onMouseLeave={handleLeave}
-          >
-            {/* Active indicator line with glow */}
-            <motion.span
-              className="absolute inset-x-0 top-0 h-[1.5px] origin-left bg-white"
-              animate={{
-                scaleX: active === cat.slug ? 1 : 0,
-                opacity: active === cat.slug ? 1 : 0,
-                boxShadow: active === cat.slug
-                  ? '0 0 8px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,0.25)'
-                  : '0 0 8px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0)',
-              }}
-              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            />
+      {/* Slate — desktop bottom-right (hidden on mobile via CSS) */}
+      <div className="ks-slate ks-slate--desktop">
+        <div className="ks-slate-subj">{frame.subj}</div>
+        <div>{frame.loc} · {frame.year}</div>
+        <div>{frame.gear}</div>
+      </div>
 
-            {i > 0 && (
-              <span className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/[0.06]" />
-            )}
+      {/* Scrubber bar */}
+      <div className="ks-scrubber" aria-hidden="true">
+        <div
+          className="ks-scrubber-fill"
+          style={{ width: `${((frameIdx + 1) / totalFrames) * 100}%` }}
+        />
+      </div>
 
-            {/* Label with glow on active */}
-            <motion.span
-              className="truncate text-[11px] font-medium uppercase tracking-[0.06em] md:text-[14px] md:tracking-[0.1em]"
-              animate={{
-                color: active === cat.slug
-                  ? 'rgba(255,255,255,1)'
-                  : hovered
-                  ? 'rgba(255,255,255,0.3)'
-                  : 'rgba(255,255,255,0.72)',
-                textShadow: active === cat.slug
-                  ? '0 0 16px rgba(255,255,255,0.5), 0 0 32px rgba(255,255,255,0.2)'
-                  : '0 0 16px rgba(255,255,255,0), 0 0 32px rgba(255,255,255,0)',
-              }}
-              transition={{ duration: 0.35 }}
-            >
-              {cat.label}
-            </motion.span>
-          </Link>
-        ))}
-        </div>
-      </motion.nav>
-    </main>
+      {/* Footer corners — desktop only (hidden on mobile via CSS) */}
+      <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
+      <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
+    </div>
   )
 }
