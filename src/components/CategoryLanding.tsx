@@ -123,7 +123,7 @@ export function CategoryLanding() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.65, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="flex h-[72px] w-full">
+        <div className="flex h-[88px] w-full">
         {categories.map((cat, i) => (
           <Link
             key={cat.slug}
@@ -151,7 +151,7 @@ export function CategoryLanding() {
 
             {/* Label with glow on active */}
             <motion.span
-              className="truncate text-[9px] font-medium uppercase tracking-[0.05em] md:text-[13px] md:tracking-[0.08em]"
+              className="truncate text-[11px] font-medium uppercase tracking-[0.06em] md:text-[14px] md:tracking-[0.1em]"
               animate={{
                 color: active === cat.slug
                   ? 'rgba(255,255,255,1)'
