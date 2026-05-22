@@ -173,8 +173,12 @@ button, input, textarea, select { font: inherit; }
 .ks-wordmark-ks {
   font-family: var(--font-serif);
   font-style: normal;
+  font-weight: 400;
   font-size: 28px;
   letter-spacing: -0.02em;
+  text-transform: none;
+  line-height: 1;
+  color: var(--paper);
 }
 
 .ks-top-nav {
@@ -716,7 +720,17 @@ button, input, textarea, select { font: inherit; }
   white-space: nowrap;
 }
 .cat-topbar a:hover { color: var(--paper); }
-.cat-tb-ks { font-family: var(--font-serif) !important; font-style: normal; font-size: 28px !important; letter-spacing: -0.02em !important; color: var(--paper) !important; }
+.cat-tb-ks {
+  font-family: var(--font-serif) !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 28px !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important;
+  line-height: 1 !important;
+  color: var(--paper) !important;
+  white-space: nowrap;
+}
 @media (max-width: 767px) {
   .cat-topbar { padding: max(18px, env(safe-area-inset-top, 0px)) 22px 14px; }
   .cat-tb-ks { font-size: 22px !important; }
