@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { categories } from '@/lib/categories'
 
@@ -9,118 +9,107 @@ export function CategoryLanding() {
   const [hovered, setHovered] = useState<string | null>(null)
 
   return (
-    <main className="relative flex h-screen flex-col overflow-hidden bg-brand-black">
-      {/* Name masthead */}
-      <motion.header
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        className="absolute inset-x-0 top-0 z-20 flex justify-center py-8"
-      >
-        <h1 className="text-[11px] font-medium tracking-[0.4em] text-brand-silver uppercase">
-          Kshetej Sareen
-        </h1>
-      </motion.header>
+    <main className="relative h-screen w-full overflow-hidden bg-black select-none">
 
-      {/* Desktop: horizontal expanding strips */}
-      <div className="hidden h-full md:flex">
-        {categories.map((category, i) => (
-          <motion.div
-            key={category.slug}
-            initial={{ opacity: 0, y: 24 }}
+      {/* Full-bleed images — each crossfades independently */}
+      {categories.map((cat) => (
+        <motion.div
+          key={cat.slug}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: cat.image }}
+          animate={{ opacity: hovered === cat.slug ? 1 : 0 }}
+          transition={{ duration: 1, ease: [0.4, 0, 0.2, 1] }}
+        />
+      ))}
+
+      {/* Dark scrim — lifts when image is active */}
+      <motion.div
+        className="absolute inset-0 bg-black"
+        animate={{ opacity: hovered ? 0.42 : 0.0 }}
+        transition={{ duration: 1, ease: [0.4, 0, 0.2, 1] }}
+      />
+
+      {/* Edge vignette — always present */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]" />
+
+      {/* Bottom gradient for nav legibility */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/80 to-transparent" />
+
+      {/* Content layer */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-between px-8 py-12">
+
+        {/* Top: wordmark */}
+        <motion.p
+          className="text-[11px] font-medium tracking-[0.45em] text-white/40 uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.9 }}
+        >
+          Photography
+        </motion.p>
+
+        {/* Center: name */}
+        <div className="text-center">
+          <motion.h1
+            className="text-[clamp(3.8rem,10vw,9.5rem)] font-extralight leading-none tracking-[-0.02em] text-white"
+            initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: i * 0.1 + 0.3 }}
-            className="relative overflow-hidden"
-            style={{
-              flexBasis: hovered === category.slug ? '38%' : hovered ? '20.67%' : '25%',
-              flexShrink: 0,
-              transition: 'flex-basis 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
-            onHoverStart={() => setHovered(category.slug)}
-            onHoverEnd={() => setHovered(null)}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
           >
-            <Link href={`/${category.slug}`} className="block h-full w-full">
-              {/* Background image */}
-              <motion.div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: category.image }}
-                animate={{ scale: hovered === category.slug ? 1.05 : 1 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              />
-              {/* Gradient overlay */}
-              <motion.div
-                className="absolute inset-0"
-                animate={{
-                  background:
-                    hovered === category.slug
-                      ? 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.1) 55%)'
-                      : 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.65) 100%)',
-                }}
-                transition={{ duration: 0.5 }}
-              />
-              {/* Index number */}
+            Kshetej
+          </motion.h1>
+          <motion.h1
+            className="text-[clamp(3.8rem,10vw,9.5rem)] font-extralight leading-none tracking-[-0.02em] text-white"
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+          >
+            Sareen
+          </motion.h1>
+        </div>
+
+        {/* Bottom: category nav */}
+        <motion.nav
+          className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+        >
+          {categories.map((cat) => (
+            <Link
+              key={cat.slug}
+              href={`/${cat.slug}`}
+              className="group flex flex-col items-center gap-2"
+              onMouseEnter={() => setHovered(cat.slug)}
+              onMouseLeave={() => setHovered(null)}
+            >
               <motion.span
-                className="absolute left-6 top-8 text-[10px] font-medium tracking-[0.3em] text-white"
-                animate={{ opacity: hovered === category.slug ? 0.5 : 0.15 }}
+                className="block text-[10px] font-medium tracking-[0.35em] uppercase"
+                animate={{
+                  color: hovered === cat.slug
+                    ? 'rgba(255,255,255,1)'
+                    : hovered
+                    ? 'rgba(255,255,255,0.2)'
+                    : 'rgba(255,255,255,0.55)',
+                }}
                 transition={{ duration: 0.3 }}
               >
-                0{i + 1}
+                {cat.label}
               </motion.span>
-              {/* Category label */}
-              <div className="absolute inset-x-0 bottom-0 p-8">
-                <motion.p
-                  className="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-medium tracking-[0.25em] text-white uppercase"
-                  animate={{ opacity: hovered === category.slug ? 1 : 0.4 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {category.label}
-                </motion.p>
-                <AnimatePresence>
-                  {hovered === category.slug && (
-                    <motion.span
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.25, delay: 0.05 }}
-                      className="mt-1.5 block text-[9px] tracking-[0.35em] text-white/30 uppercase"
-                    >
-                      View work →
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
 
-      {/* Mobile: stacked horizontal strips */}
-      <div className="flex h-full flex-col md:hidden">
-        {categories.map((category, i) => (
-          <motion.div
-            key={category.slug}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 + 0.3 }}
-            className="relative flex-1 overflow-hidden"
-          >
-            <Link href={`/${category.slug}`} className="block h-full w-full">
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: category.image }}
+              {/* Underline reveal */}
+              <motion.span
+                className="block h-px w-full bg-white"
+                style={{ originX: '0%' }}
+                animate={{
+                  scaleX: hovered === cat.slug ? 1 : 0,
+                  opacity: hovered === cat.slug ? 0.7 : 0,
+                }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-brand-black/85 via-brand-black/40 to-transparent" />
-              <div className="absolute inset-0 flex items-center gap-4 px-7">
-                <span className="text-[9px] font-medium tracking-[0.3em] text-white/25">
-                  0{i + 1}
-                </span>
-                <p className="text-[11px] font-medium tracking-[0.25em] text-white uppercase">
-                  {category.label}
-                </p>
-              </div>
             </Link>
-          </motion.div>
-        ))}
+          ))}
+        </motion.nav>
       </div>
     </main>
   )
