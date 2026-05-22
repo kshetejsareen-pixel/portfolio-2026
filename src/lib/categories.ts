@@ -54,7 +54,7 @@ export const categories: Category[] = [
   {
     id: 'objects',
     n: '04',
-    label: 'Products',
+    label: 'Objects',
     tint: '#24211a',
     frames: [
       { subj: 'Brass kettle, no. 4',   loc: 'Studio', year: '2025', gear: 'Phase One · 120mm macro' },

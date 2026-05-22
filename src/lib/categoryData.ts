@@ -383,7 +383,7 @@ export const spacesData: CategoryData = {
 }
 
 export const objectsData: CategoryData = {
-  cat: { n: '04', name: 'Products' },
+  cat: { n: '04', name: 'Objects' },
   intro: {
     label: 'On the work',
     body: [
