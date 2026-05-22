@@ -1,13 +1,24 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { categories } from '@/lib/categories'
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
 }
 
+// Maps category id → its editorial page route
+const CATEGORY_ROUTES: Record<string, string> = {
+  culinary:  '/culinary',
+  spaces:    '/spaces',
+  portraits: '/portraits',
+  objects:   '/objects',
+  motion:    '/motion',
+}
+
 export function CategoryLanding() {
+  const router = useRouter()
   const [catIdx, setCatIdx] = useState(0)
   const [frameIdx, setFrameIdx] = useState(0)
   const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -64,6 +75,12 @@ export function CategoryLanding() {
   }, [startIdleCountdown, stopCycle])
 
   const handleCatClick = (i: number) => {
+    if (i === catIdx) {
+      // Already active — navigate to the category's editorial page
+      const route = CATEGORY_ROUTES[categories[i].id]
+      if (route) router.push(route)
+      return
+    }
     stopCycle()
     setCatIdx(i)
     startIdleCountdown()

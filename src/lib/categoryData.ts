@@ -41,7 +41,7 @@ export interface CategoryData {
 }
 
 export const portraitsData: CategoryData = {
-  cat: { n: '01', name: 'Portraits' },
+  cat: { n: '03', name: 'Portraits' },
   intro: {
     label: 'On the work',
     body: [
@@ -155,7 +155,7 @@ export const portraitsData: CategoryData = {
 }
 
 export const culinaryData: CategoryData = {
-  cat: { n: '02', name: 'Culinary' },
+  cat: { n: '01', name: 'Culinary' },
   intro: {
     label: 'On the work',
     body: [
@@ -269,7 +269,7 @@ export const culinaryData: CategoryData = {
 }
 
 export const spacesData: CategoryData = {
-  cat: { n: '03', name: 'Spaces' },
+  cat: { n: '02', name: 'Spaces' },
   intro: {
     label: 'On the work',
     body: [
@@ -383,7 +383,7 @@ export const spacesData: CategoryData = {
 }
 
 export const objectsData: CategoryData = {
-  cat: { n: '04', name: 'Objects' },
+  cat: { n: '04', name: 'Products' },
   intro: {
     label: 'On the work',
     body: [

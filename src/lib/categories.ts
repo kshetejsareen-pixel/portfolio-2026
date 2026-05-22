@@ -16,21 +16,8 @@ export interface Category {
 
 export const categories: Category[] = [
   {
-    id: 'portraits',
-    n: '01',
-    label: 'Portraits',
-    tint: '#1d1c1a',
-    frames: [
-      { subj: 'Eli',   loc: 'Brooklyn Studio',  year: '2025', gear: 'Hasselblad 500C/M · 80mm' },
-      { subj: 'Mira',  loc: 'Bombay',           year: '2025', gear: 'Leica M6 · 50mm · Tri-X 400' },
-      { subj: 'Jonas', loc: 'Catskills Porch',  year: '2024', gear: 'Pentax 67 · 105mm' },
-      { subj: 'Sade',  loc: 'Studio · Vol. iv', year: '2024', gear: 'Mamiya RZ67 · 110mm' },
-      { subj: 'Imran', loc: 'Mehrauli',         year: '2023', gear: 'Leica Q2' },
-    ],
-  },
-  {
     id: 'culinary',
-    n: '02',
+    n: '01',
     label: 'Culinary',
     tint: '#2a1f17',
     frames: [
@@ -42,7 +29,7 @@ export const categories: Category[] = [
   },
   {
     id: 'spaces',
-    n: '03',
+    n: '02',
     label: 'Spaces',
     tint: '#1a2226',
     frames: [
@@ -52,14 +39,27 @@ export const categories: Category[] = [
     ],
   },
   {
+    id: 'portraits',
+    n: '03',
+    label: 'Portraits',
+    tint: '#1d1c1a',
+    frames: [
+      { subj: 'Eli',   loc: 'Brooklyn Studio',  year: '2025', gear: 'Hasselblad 500C/M · 80mm' },
+      { subj: 'Mira',  loc: 'Bombay',           year: '2025', gear: 'Leica M6 · 50mm · Tri-X 400' },
+      { subj: 'Jonas', loc: 'Catskills Porch',  year: '2024', gear: 'Pentax 67 · 105mm' },
+      { subj: 'Sade',  loc: 'Studio · Vol. iv', year: '2024', gear: 'Mamiya RZ67 · 110mm' },
+      { subj: 'Imran', loc: 'Mehrauli',         year: '2023', gear: 'Leica Q2' },
+    ],
+  },
+  {
     id: 'objects',
     n: '04',
-    label: 'Objects',
+    label: 'Products',
     tint: '#24211a',
     frames: [
-      { subj: 'Brass kettle, no. 4',  loc: 'Studio', year: '2025', gear: 'Phase One · 120mm macro' },
+      { subj: 'Brass kettle, no. 4',   loc: 'Studio', year: '2025', gear: 'Phase One · 120mm macro' },
       { subj: 'Vessels, set of eight', loc: 'Studio', year: '2024', gear: 'Mamiya RZ67 · 140mm' },
-      { subj: 'Linen, folded',        loc: 'Studio', year: '2024', gear: 'Hasselblad · 80mm' },
+      { subj: 'Linen, folded',         loc: 'Studio', year: '2024', gear: 'Hasselblad · 80mm' },
     ],
   },
   {
@@ -68,8 +68,8 @@ export const categories: Category[] = [
     label: 'Motion',
     tint: '#0f1418',
     frames: [
-      { subj: 'Rain, 24fps',  loc: 'Bombay Monsoon', year: '2024', gear: 'Arri Alexa Mini · 35mm' },
-      { subj: 'Loop · 8mm',  loc: 'Goa',            year: '2023', gear: 'Bolex H8' },
+      { subj: 'Rain, 24fps', loc: 'Bombay Monsoon', year: '2024', gear: 'Arri Alexa Mini · 35mm' },
+      { subj: 'Loop · 8mm', loc: 'Goa',            year: '2023', gear: 'Bolex H8' },
     ],
   },
 ]
