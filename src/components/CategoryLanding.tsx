@@ -2,20 +2,49 @@
 
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { categories } from '@/lib/categories'
 
 export function CategoryLanding() {
   const [active, setActive] = useState(categories[0].slug)
   const [hovered, setHovered] = useState<string | null>(null)
+  const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const activeCategory = categories.find((c) => c.slug === active)!
 
+  const stopCycle = useCallback(() => {
+    if (cycleRef.current) { clearInterval(cycleRef.current); cycleRef.current = null }
+    if (idleRef.current) { clearTimeout(idleRef.current); idleRef.current = null }
+  }, [])
+
+  const startIdleCountdown = useCallback(() => {
+    stopCycle()
+    idleRef.current = setTimeout(() => {
+      cycleRef.current = setInterval(() => {
+        setActive((prev) => {
+          const idx = categories.findIndex((c) => c.slug === prev)
+          return categories[(idx + 1) % categories.length].slug
+        })
+      }, 3000)
+    }, 4000)
+  }, [stopCycle])
+
+  useEffect(() => {
+    startIdleCountdown()
+    return stopCycle
+  }, [startIdleCountdown, stopCycle])
+
   const handleEnter = (slug: string) => {
+    stopCycle()
     setHovered(slug)
     setActive(slug)
   }
-  const handleLeave = () => setHovered(null)
+
+  const handleLeave = () => {
+    setHovered(null)
+    startIdleCountdown()
+  }
 
   return (
     <main className="relative flex h-screen flex-col overflow-hidden bg-black select-none">
@@ -23,7 +52,6 @@ export function CategoryLanding() {
       {/* ── Photo area ─────────────────────────────────────────── */}
       <div className="relative min-h-0 flex-1 overflow-hidden">
 
-        {/* Full-bleed images */}
         {categories.map((cat) => (
           <motion.div
             key={cat.slug}
@@ -34,23 +62,16 @@ export function CategoryLanding() {
           />
         ))}
 
-        {/* Scrim — lifts on hover */}
         <motion.div
           className="absolute inset-0 bg-black"
           animate={{ opacity: hovered ? 0.28 : 0.50 }}
           transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1] }}
         />
 
-        {/* Bottom gradient for name legibility */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-
-        {/* Top gradient */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/45 to-transparent" />
 
-        {/* Photo-area content */}
         <div className="relative z-10 flex h-full flex-col justify-between px-10 py-10 md:px-16 md:py-12">
-
-          {/* Top-right: discipline */}
           <div className="flex justify-end">
             <motion.p
               className="text-[10px] font-medium tracking-[0.5em] text-white/35 uppercase"
@@ -62,7 +83,6 @@ export function CategoryLanding() {
             </motion.p>
           </div>
 
-          {/* Bottom-left: name + active label */}
           <div>
             <motion.h1
               className="text-[clamp(3rem,7vw,6.5rem)] font-light leading-[1.02] tracking-[-0.025em] text-white"
@@ -111,17 +131,19 @@ export function CategoryLanding() {
             onMouseEnter={() => handleEnter(cat.slug)}
             onMouseLeave={handleLeave}
           >
-            {/* Active indicator line — slides in from left */}
+            {/* Active indicator line with glow */}
             <motion.span
               className="absolute inset-x-0 top-0 h-[1.5px] origin-left bg-white"
               animate={{
                 scaleX: active === cat.slug ? 1 : 0,
                 opacity: active === cat.slug ? 1 : 0,
+                boxShadow: active === cat.slug
+                  ? '0 0 8px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,0.25)'
+                  : '0 0 8px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0)',
               }}
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             />
 
-            {/* Vertical divider between columns */}
             {i > 0 && (
               <span className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/[0.06]" />
             )}
@@ -130,25 +152,30 @@ export function CategoryLanding() {
             <motion.span
               className="text-[9px] tabular-nums tracking-[0.28em]"
               animate={{
-                color: active === cat.slug ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.18)',
+                color: active === cat.slug
+                  ? 'rgba(255,255,255,0.55)'
+                  : 'rgba(255,255,255,0.2)',
               }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.3 }}
             >
               0{i + 1}
             </motion.span>
 
-            {/* Label — full on desktop, short on mobile */}
+            {/* Label with glow on active */}
             <motion.span
               animate={{
                 color: active === cat.slug
                   ? 'rgba(255,255,255,1)'
                   : hovered
                   ? 'rgba(255,255,255,0.28)'
-                  : 'rgba(255,255,255,0.55)',
+                  : 'rgba(255,255,255,0.65)',
+                textShadow: active === cat.slug
+                  ? '0 0 16px rgba(255,255,255,0.5), 0 0 32px rgba(255,255,255,0.2)'
+                  : '0 0 16px rgba(255,255,255,0), 0 0 32px rgba(255,255,255,0)',
               }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.35 }}
             >
-              <span className="hidden text-[11px] font-medium tracking-[0.2em] uppercase md:block">
+              <span className="hidden text-[12px] font-medium tracking-[0.2em] uppercase md:block">
                 {cat.label}
               </span>
               <span className="block text-[10px] font-medium tracking-[0.18em] uppercase md:hidden">
