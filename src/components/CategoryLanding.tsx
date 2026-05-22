@@ -47,7 +47,7 @@ export function CategoryLanding() {
   }
 
   return (
-    <main className="relative flex h-screen flex-col overflow-hidden bg-black select-none">
+    <main className="relative flex h-[100dvh] flex-col overflow-hidden bg-black select-none">
 
       {/* ── Photo area ─────────────────────────────────────────── */}
       <div className="relative min-h-0 flex-1 overflow-hidden">
@@ -118,11 +118,12 @@ export function CategoryLanding() {
 
       {/* ── Category bar ───────────────────────────────────────── */}
       <motion.nav
-        className="relative z-10 flex h-[72px] shrink-0 border-t border-white/[0.08] bg-black/90 backdrop-blur-md"
+        className="relative z-10 flex shrink-0 flex-col border-t border-white/[0.08] bg-black/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.65, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
+        <div className="flex h-[72px] w-full">
         {categories.map((cat, i) => (
           <Link
             key={cat.slug}
@@ -184,6 +185,7 @@ export function CategoryLanding() {
             </motion.span>
           </Link>
         ))}
+        </div>
       </motion.nav>
     </main>
   )
