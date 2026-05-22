@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { categories } from '@/lib/categories'
+import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -253,36 +254,8 @@ export function CategoryLanding() {
       <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
       <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
 
-      {/* Full-screen menu overlay — z-index 20, close button lives inside */}
-      <div className={`ks-menu-overlay${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
-        {/* Close button sits at the same visual position as Menu + in the top bar */}
-        <button className="ks-menu-close-btn" onClick={() => setMenuOpen(false)}>
-          Close ×
-        </button>
-        <div className="ks-menu-inner">
-          <div className="ks-menu-eyebrow">Navigation</div>
-          <nav className="ks-menu-cats">
-            {categories.map((c) => (
-              <a
-                key={c.id}
-                href={CATEGORY_ROUTES[c.id]}
-                className="ks-menu-cat-link"
-                onClick={() => setMenuOpen(false)}
-              >
-                <span className="ks-menu-cat-n">{c.n}</span>
-                <span className="ks-menu-cat-name">{c.label}</span>
-              </a>
-            ))}
-          </nav>
-          <div className="ks-menu-divider" />
-          <div className="ks-menu-links">
-            <a className="ks-menu-link" href="mailto:studio@ksareen.com">Contact</a>
-            <a className="ks-menu-link">Info</a>
-            <a className="ks-menu-link">Journal</a>
-          </div>
-          <div className="ks-menu-footer">studio@ksareen.com</div>
-        </div>
-      </div>
+      {/* Full-screen menu overlay */}
+      <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
   )
 }

@@ -552,9 +552,9 @@ button, input, textarea, select { font: inherit; }
    Full-screen menu overlay
    ───────────────────────────────────────────── */
 .ks-menu-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 200;
   background: var(--ink);
   display: flex;
   align-items: center;
@@ -582,7 +582,7 @@ button, input, textarea, select { font: inherit; }
   border: 0;
   cursor: pointer;
   transition: color 200ms ease;
-  z-index: 21;
+  z-index: 201;
 }
 .ks-menu-close-btn:hover { color: var(--paper-dim); }
 

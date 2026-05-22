@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { CategoryData, FlowRow, FlowPhoto, IntroPart } from '@/lib/categoryData'
+import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -180,6 +181,7 @@ function RowPullQuote({ pullQuote }: { pullQuote: { text: string; attr: string }
 
 export function KsCategoryPage({ data }: { data: CategoryData }) {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -210,14 +212,12 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
           </div>
         </div>
         <div className="cat-tb-right">
-          <a>Info</a>
+          <button onClick={() => setMenuOpen(true)}>Menu +</button>
         </div>
       </header>
 
       <section className="cat-hero" style={{ backgroundColor: heroTint }}>
         <div className="cat-hero-bg" />
-        <div className="cat-hero-letter cat-hero-letter--top" />
-        <div className="cat-hero-letter cat-hero-letter--bottom" />
         <div className="cat-hero-meta">
           <div className="cat-hero-eyebrow">
             <span className="ks-dot" />
@@ -317,6 +317,8 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
         <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
         <div className="cat-footer-right">studio@ksareen.com</div>
       </footer>
+
+      <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   )
 }
