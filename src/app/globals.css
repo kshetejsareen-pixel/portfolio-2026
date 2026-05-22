@@ -409,7 +409,7 @@ button, input, textarea, select { font: inherit; }
     grid-template-columns: none;
     gap: 4px;
     min-width: 0;
-    min-height: 52px;
+    min-height: 64px;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -432,16 +432,24 @@ button, input, textarea, select { font: inherit; }
     margin: 4px auto 0;
   }
 
-  /* Scrubber: just above the category strip (52px fixed height + safe area) */
+  /*
+   * Bottom stack (from bottom up):
+   *   0 – 64px   cat strip (min-height 64px)
+   *   64 – 84px  breathing room (20px)
+   *   84px       scrubber line (1px)
+   *   85 – 110px breathing room (25px)
+   *   110px+     meta block
+   * All offset by env(safe-area-inset-bottom) so home indicator / Android nav
+   * never overlaps content.
+   */
   .ks-scrubber {
     left: 22px; right: 22px;
-    bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Meta block: above scrubber — name + eyebrow only, subline hidden */
   .ks-meta {
     left: 22px; right: 22px;
-    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(110px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
   .ks-meta-above { margin-bottom: 10px; }
