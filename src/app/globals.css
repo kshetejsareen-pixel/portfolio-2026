@@ -564,7 +564,7 @@ button, input, textarea, select { font: inherit; }
   align-items: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 360ms ease;
+  transition: opacity 700ms ease;
 }
 .ks-menu-overlay.open {
   opacity: 1;

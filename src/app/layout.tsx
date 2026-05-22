@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Bodoni_Moda, JetBrains_Mono, Inter } from 'next/font/google'
+import { PageTransition } from '@/components/PageTransition'
 import './globals.css'
 
 const bodoni = Bodoni_Moda({
@@ -47,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${bodoni.variable} ${jetbrains.variable} ${inter.variable}`}>
       <body className="antialiased">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
   )

@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { categories } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import { useNavigate } from '@/components/PageTransition'
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -23,7 +23,7 @@ const IDLE_DELAY = 5000
 const CYCLE_INTERVAL = 5000
 
 export function CategoryLanding() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [catIdx, setCatIdx] = useState(0)
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -82,7 +82,7 @@ export function CategoryLanding() {
   const handleCatClick = (i: number) => {
     if (i === catIdx) {
       const route = CATEGORY_ROUTES[categories[i].id]
-      if (route) router.push(route)
+      if (route) navigate(route)
       return
     }
     stopCycle()
