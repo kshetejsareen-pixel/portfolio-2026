@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 
 // Update this to your WhatsApp number (include country code, no + or spaces)
-const WHATSAPP_NUMBER = '11234567890'
+const WHATSAPP_NUMBER = '919999567676'
 
 const PROJECT_TYPES = [
   'Editorial',
@@ -180,10 +180,10 @@ export function ContactPage() {
 
             <a
               className="contact-direct-link"
-              href="mailto:studio@ksareen.com"
+              href="mailto:info@kshetejsareen.com"
             >
               <span className="contact-direct-label">Email</span>
-              <span className="contact-direct-value">studio@ksareen.com</span>
+              <span className="contact-direct-value">info@kshetejsareen.com</span>
               <span className="contact-direct-arrow">↗</span>
             </a>
 
@@ -194,7 +194,7 @@ export function ContactPage() {
               rel="noopener noreferrer"
             >
               <span className="contact-direct-label">WhatsApp</span>
-              <span className="contact-direct-value">+{WHATSAPP_NUMBER.replace(/^1/, '1 ')}</span>
+              <span className="contact-direct-value">+{WHATSAPP_NUMBER}</span>
               <span className="contact-direct-arrow">↗</span>
             </a>
 
@@ -223,7 +223,7 @@ export function ContactPage() {
           <div className="contact-studio-item">
             <div className="contact-studio-label">Press</div>
             <div className="contact-studio-value">
-              <a href="mailto:studio@ksareen.com">studio@ksareen.com</a>
+              <a href="mailto:info@kshetejsareen.com">info@kshetejsareen.com</a>
             </div>
           </div>
         </section>
@@ -236,7 +236,7 @@ export function ContactPage() {
         <div className="cat-footer-center">
           <Link href="/">↑ Back to index</Link>
         </div>
-        <div className="cat-footer-right">studio@ksareen.com</div>
+        <div className="cat-footer-right">info@kshetejsareen.com</div>
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />

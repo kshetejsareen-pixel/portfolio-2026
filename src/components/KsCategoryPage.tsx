@@ -315,7 +315,7 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
       <footer className="cat-footer">
         <div>© Kshetej Sareen · MMXXVI</div>
         <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
-        <div className="cat-footer-right">studio@ksareen.com</div>
+        <div className="cat-footer-right">info@kshetejsareen.com</div>
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />

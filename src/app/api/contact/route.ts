@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
     // TODO: replace with your email provider
     // Example with Resend:
     //   await resend.emails.send({
-    //     from: 'studio@ksareen.com',
-    //     to: 'studio@ksareen.com',
+    //     from: 'info@kshetejsareen.com',
+    //     to: 'info@kshetejsareen.com',
     //     subject: `New enquiry — ${projectType} — ${name}`,
     //     text: `From: ${name} <${email}>\n\n${message}`,
     //   })

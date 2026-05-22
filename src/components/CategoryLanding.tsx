@@ -225,7 +225,7 @@ export function CategoryLanding() {
             <strong>Independent photographer.</strong><br />New York · Bombay.
           </div>
           <div className="ks-subline-col">
-            Available for commission and prints.<br />Booking — studio@ksareen.com
+            Available for commission and prints.<br />Booking — info@kshetejsareen.com
           </div>
         </div>
         {/* Inline slate — mobile only */}
