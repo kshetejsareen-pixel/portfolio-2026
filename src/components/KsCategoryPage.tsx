@@ -202,7 +202,7 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
     <>
       <header className={`cat-topbar${scrolled ? ' scrolled' : ''}`}>
         <div className="cat-tb-left">
-          <Link href="/" className="cat-tb-ks" aria-label="Back to index">Ks</Link>
+          <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
           <div className="cat-tb-crumb">
             <Link href="/">Index</Link>
             <span>/</span>

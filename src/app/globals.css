@@ -716,7 +716,7 @@ button, input, textarea, select { font: inherit; }
   white-space: nowrap;
 }
 .cat-topbar a:hover { color: var(--paper); }
-.cat-tb-ks { font-family: var(--font-serif) !important; font-style: italic; font-size: 22px !important; color: var(--paper) !important; }
+.cat-tb-ks { font-family: var(--font-serif) !important; font-style: normal; font-size: 22px !important; letter-spacing: -0.02em; color: var(--paper) !important; }
 .cat-tb-crumb { display: flex; gap: 10px; align-items: baseline; color: var(--mute); }
 .cat-tb-cur { color: var(--paper); }
 
