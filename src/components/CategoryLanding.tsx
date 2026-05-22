@@ -176,11 +176,8 @@ export function CategoryLanding() {
               }}
               transition={{ duration: 0.35 }}
             >
-              <span className="hidden text-[12px] font-medium tracking-[0.2em] uppercase md:block">
+              <span className="text-[10px] font-medium tracking-[0.2em] uppercase md:text-[12px]">
                 {cat.label}
-              </span>
-              <span className="block text-[10px] font-medium tracking-[0.18em] uppercase md:hidden">
-                {cat.short}
               </span>
             </motion.span>
           </Link>

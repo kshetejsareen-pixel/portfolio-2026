@@ -1,30 +1,32 @@
 export const categories = [
   {
-    slug: 'food',
-    label: 'F&B × Lifestyle',
-    short: 'F&B',
+    slug: 'culinary',
+    label: 'Culinary',
     image:
       'url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80)',
   },
   {
-    slug: 'interiors',
-    label: 'Interiors & Architecture',
-    short: 'Interiors',
+    slug: 'spaces',
+    label: 'Spaces',
     image:
       'url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80)',
   },
   {
     slug: 'portraits',
-    label: 'Founder Portraits',
-    short: 'Portraits',
+    label: 'Portraits',
     image:
       'url(https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1600&q=80)',
   },
   {
-    slug: 'products',
-    label: 'Products',
-    short: 'Products',
+    slug: 'objects',
+    label: 'Objects',
     image:
       'url(https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1600&q=80)',
+  },
+  {
+    slug: 'motion',
+    label: 'Motion',
+    image:
+      'url(https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80)',
   },
 ]
