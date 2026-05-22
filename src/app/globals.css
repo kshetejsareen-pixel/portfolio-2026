@@ -103,6 +103,40 @@ button, input, textarea, select { font: inherit; }
   object-fit: cover;
 }
 
+.ks-slot-tag {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, 50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 232, 224, 0.32);
+  white-space: nowrap;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────
+   Background frame numeral
+   ───────────────────────────────────────────── */
+.ks-counter {
+  position: absolute;
+  right: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 220px;
+  line-height: 1;
+  color: rgba(236, 232, 224, 0.045);
+  z-index: 5;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+}
+
 
 /* ─────────────────────────────────────────────
    Letterbox bars
@@ -248,6 +282,12 @@ button, input, textarea, select { font: inherit; }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
+}
+
+.ks-open-cat {
+  color: var(--paper);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* ─────────────────────────────────────────────
@@ -457,15 +497,38 @@ button, input, textarea, select { font: inherit; }
   }
   .ks-meta-above { margin-bottom: 10px; }
 
-  /* Compact name so the photo owns the top ~60% of the screen */
-  .ks-name { font-size: clamp(40px, 11vw, 56px); }
+  /* Background numeral: bigger + offset right on mobile */
+  .ks-counter {
+    font-size: clamp(180px, 50vw, 280px);
+    right: -20px;
+    top: 22%;
+    transform: none;
+    color: rgba(236, 232, 224, 0.08);
+    letter-spacing: -0.05em;
+  }
+
+  /* Compact name — collapse to a single line on mobile */
+  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; }
+  .ks-name br { display: none; }
+  .ks-name-last { display: inline; }
+  .ks-name-last::before { content: " "; }
 
   /* Hide everything that crowds the photo on mobile */
   .ks-subline        { display: none; }
   .ks-slate--desktop { display: none; }
-  .ks-slate--inline  { display: none; }
   .ks-footer-l, .ks-footer-r { display: none; }
   .ks-step-hint { display: none; }
+
+  /* Inline slate: show below name on mobile (no gear, compact) */
+  .ks-slate--inline {
+    display: block;
+    position: static;
+    text-align: left;
+    margin-top: 10px;
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    line-height: 1.6;
+  }
 }
 
 /* ─────────────────────────────────────────────

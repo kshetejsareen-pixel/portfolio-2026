@@ -114,15 +114,24 @@ export function CategoryLanding() {
                 key={`${c.id}-${fi}`}
                 className={`ks-frame${active ? ' active' : ''}`}
                 style={{ backgroundColor: c.tint }}
+                aria-hidden={!active}
               >
-                {f.image && (
-                  <img src={f.image} alt={f.subj} className="ks-frame-img" />
-                )}
+                {f.image
+                  ? <img src={f.image} alt={f.subj} className="ks-frame-img" />
+                  : active && (
+                    <div className="ks-slot-tag">
+                      {c.label.toUpperCase()} · DROP IMAGE — {f.subj.toUpperCase()}
+                    </div>
+                  )
+                }
               </div>
             )
           })
         )}
       </div>
+
+      {/* Background frame numeral */}
+      <div className="ks-counter" aria-hidden="true">{pad2(frameIdx + 1)}</div>
 
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
@@ -184,6 +193,7 @@ export function CategoryLanding() {
           <span className="ks-eyebrow">
             Featured — {cat.label} · {pad2(frameIdx + 1)} / {pad2(totalFrames)}
           </span>
+          <a href={`/${cat.id}`} className="ks-eyebrow ks-open-cat">Open ↗</a>
         </div>
         <h1 className="ks-name">
           Kshetej<br /><span className="ks-name-last">Sareen</span>
@@ -196,6 +206,11 @@ export function CategoryLanding() {
           <div className="ks-subline-col">
             Available for commission and prints.<br />Booking — studio@ksareen.com
           </div>
+        </div>
+        {/* Inline slate — shown on mobile only, hidden on desktop via CSS */}
+        <div className="ks-slate ks-slate--inline">
+          <div className="ks-slate-subj">{frame.subj}</div>
+          <div>{frame.loc} · {frame.year}</div>
         </div>
       </div>
 
