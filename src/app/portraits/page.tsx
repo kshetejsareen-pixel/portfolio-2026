@@ -1,18 +1,8 @@
-import { CategoryPage } from '@/components/CategoryPage'
-import { categoryMap } from '@/lib/portfolio'
+import { KsCategoryPage } from '@/components/KsCategoryPage'
+import { portraitsData } from '@/lib/categoryData'
 
-const category = categoryMap.portraits
-
-export const metadata = {
-  title: 'Founder Portraits — Kshetej Sareen Studios',
-  description: category.seoDescription,
-  openGraph: {
-    title: 'Founder Portraits — Kshetej Sareen Studios',
-    description: category.seoDescription,
-    type: 'website',
-  },
-}
+export const metadata = { title: 'Portraits — Kshetej Sareen' }
 
 export default function PortraitsPage() {
-  return <CategoryPage category={category} />
+  return <KsCategoryPage data={portraitsData} />
 }
