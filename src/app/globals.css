@@ -318,6 +318,7 @@ button, input, textarea, select { font: inherit; }
 .ks-name {
   font-family: var(--font-serif);
   font-weight: 400;
+  font-style: normal;
   font-size: clamp(48px, 9.5vw, 124px);
   line-height: 0.94;
   letter-spacing: -0.035em;
@@ -325,8 +326,8 @@ button, input, textarea, select { font: inherit; }
   color: var(--paper);
 }
 .ks-name-last {
-  font-style: italic;
-  color: var(--paper-dim);
+  font-style: normal;
+  color: var(--paper);
 }
 
 .ks-subline {
