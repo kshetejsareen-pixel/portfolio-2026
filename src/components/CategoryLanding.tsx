@@ -21,6 +21,7 @@ export function CategoryLanding() {
   const router = useRouter()
   const [catIdx, setCatIdx] = useState(0)
   const [frameIdx, setFrameIdx] = useState(0)
+  const [menuOpen, setMenuOpen] = useState(false)
   const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -161,7 +162,9 @@ export function CategoryLanding() {
           <span className="ks-eyebrow">Photography</span>
         </div>
         <nav className="ks-top-nav">
-          <a className="ks-menu-only">Menu +</a>
+          <button className="ks-menu-btn" onClick={() => setMenuOpen((o) => !o)}>
+            {menuOpen ? 'Close ×' : 'Menu +'}
+          </button>
           <a>Journal</a>
           <a>Info</a>
           <a className="active">Contact</a>
@@ -249,6 +252,33 @@ export function CategoryLanding() {
       {/* Footer corners — desktop only (hidden on mobile via CSS) */}
       <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
       <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
+
+      {/* Full-screen menu overlay */}
+      <div className={`ks-menu-overlay${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+        <div className="ks-menu-inner">
+          <div className="ks-menu-eyebrow">Navigation</div>
+          <nav className="ks-menu-cats">
+            {categories.map((c) => (
+              <a
+                key={c.id}
+                href={CATEGORY_ROUTES[c.id]}
+                className="ks-menu-cat-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="ks-menu-cat-n">{c.n}</span>
+                <span className="ks-menu-cat-name">{c.label}</span>
+              </a>
+            ))}
+          </nav>
+          <div className="ks-menu-divider" />
+          <div className="ks-menu-links">
+            <a className="ks-menu-link" href="mailto:studio@ksareen.com">Contact</a>
+            <a className="ks-menu-link">Info</a>
+            <a className="ks-menu-link">Journal</a>
+          </div>
+          <div className="ks-menu-footer">studio@ksareen.com</div>
+        </div>
+      </div>
     </div>
   )
 }
