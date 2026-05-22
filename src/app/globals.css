@@ -363,25 +363,45 @@ button, input, textarea, select { font: inherit; }
    Mobile — ≤767px
    ───────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Top letterbox stays 36px; bottom expands to cover iOS home indicator */
-  .ks-letterbox--top    { height: 36px; }
-  .ks-letterbox--bottom { height: calc(36px + env(safe-area-inset-bottom, 0px)); }
+  /*
+   * No letterbox bars on mobile.
+   * env(safe-area-inset-bottom) on iOS Safari with bottom address bar
+   * returns the full address-bar + home-indicator height (~71pt), so
+   * adding it to a 36px bar created 107px of dead space. Instead we
+   * let the category strip itself handle the bottom clearance, and
+   * use env(safe-area-inset-top) directly on the top bar.
+   */
+  .ks-letterbox { display: none; }
 
-  .ks-top-bar { top: 36px; padding: 18px 22px; }
+  /* Top bar: start at screen edge, padding clears status bar on iOS + Android */
+  .ks-top-bar {
+    top: 0;
+    padding-top: max(18px, env(safe-area-inset-top, 0px));
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-bottom: 14px;
+    align-items: center;
+  }
   .ks-wordmark-ks { font-size: 22px; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a:not(.ks-menu-only) { display: none; }
   .ks-top-nav .ks-menu-only { display: inline; }
 
-  /* Category strip: sits right above bottom letterbox */
+  /* Category strip: flush to bottom, padding clears home indicator / Android nav */
   .ks-cat-rail {
     right: 0; left: 0;
-    top: auto;
-    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    top: auto; bottom: 0;
     flex-direction: row;
     justify-content: space-between;
-    padding: 0 22px;
+    align-items: center;
     gap: 0;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+    /* semi-opaque backing so strip reads cleanly over the photo */
+    background: rgba(11, 11, 12, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
   .ks-cat {
     display: flex;
@@ -412,30 +432,27 @@ button, input, textarea, select { font: inherit; }
     margin: 4px auto 0;
   }
 
-  /* Scrubber: just above category strip */
+  /* Scrubber: just above the category strip (52px fixed height + safe area) */
   .ks-scrubber {
     left: 22px; right: 22px;
-    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(52px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Meta: name + eyebrow only — subline hidden so photo dominates */
+  /* Meta block: above scrubber — name + eyebrow only, subline hidden */
   .ks-meta {
     left: 22px; right: 22px;
-    bottom: calc(114px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
   .ks-meta-above { margin-bottom: 10px; }
 
-  /* Smaller name so the photo takes the upper ~55% of the screen */
+  /* Compact name so the photo owns the top ~60% of the screen */
   .ks-name { font-size: clamp(40px, 11vw, 56px); }
 
-  /* Hide subline and slate on mobile — photo needs to breathe */
-  .ks-subline       { display: none; }
+  /* Hide everything that crowds the photo on mobile */
+  .ks-subline        { display: none; }
   .ks-slate--desktop { display: none; }
   .ks-slate--inline  { display: none; }
-
-  .ks-footer-l,
-  .ks-footer-r { display: none; }
-
+  .ks-footer-l, .ks-footer-r { display: none; }
   .ks-step-hint { display: none; }
 }
