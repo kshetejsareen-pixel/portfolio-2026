@@ -12,6 +12,7 @@ export function CategoryLanding() {
   const [frameIdx, setFrameIdx] = useState(0)
   const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
   const cat = categories[catIdx]
   const frame = cat.frames[frameIdx]
@@ -68,8 +69,40 @@ export function CategoryLanding() {
     startIdleCountdown()
   }
 
+  // Touch swipe — horizontal for frames, vertical for categories
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y
+    touchStartRef.current = null
+
+    const absDx = Math.abs(dx)
+    const absDy = Math.abs(dy)
+    if (Math.max(absDx, absDy) < 30) return
+
+    if (absDx > absDy) {
+      // Horizontal swipe → step through frames
+      if (dx < 0) setFrameIdx((f) => (f + 1) % totalFrames)
+      else setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)
+    } else {
+      // Vertical swipe → change category
+      stopCycle()
+      if (dy < 0) setCatIdx((c) => (c + 1) % categories.length)
+      else setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
+      startIdleCountdown()
+    }
+  }
+
   return (
-    <div className="ks-stage">
+    <div
+      className="ks-stage"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
 
       {/* Photo layers — one per category × frame, only active is opaque */}
       <div className="ks-photo-layer">
@@ -90,9 +123,6 @@ export function CategoryLanding() {
           })
         )}
       </div>
-
-      {/* Background numeral */}
-      <div className="ks-counter" aria-hidden="true">{pad2(frameIdx + 1)}</div>
 
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
@@ -158,6 +188,7 @@ export function CategoryLanding() {
         <h1 className="ks-name">
           Kshetej<br /><span className="ks-name-last">Sareen</span>
         </h1>
+        {/* Subline hidden on mobile via CSS */}
         <div className="ks-subline">
           <div className="ks-subline-col">
             <strong>Independent photographer.</strong><br />New York · Bombay.
@@ -165,11 +196,6 @@ export function CategoryLanding() {
           <div className="ks-subline-col">
             Available for commission and prints.<br />Booking — studio@ksareen.com
           </div>
-        </div>
-        {/* Mobile-only inline slate */}
-        <div className="ks-slate ks-slate--inline">
-          <div className="ks-slate-subj">{frame.subj}</div>
-          <div>{frame.loc} · {frame.year}</div>
         </div>
       </div>
 

@@ -100,24 +100,6 @@ button, input, textarea, select { font: inherit; }
   object-fit: cover;
 }
 
-/* ─────────────────────────────────────────────
-   Background numeral
-   ───────────────────────────────────────────── */
-.ks-counter {
-  position: absolute;
-  right: 56px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 220px;
-  line-height: 1;
-  color: rgba(236, 232, 224, 0.045);
-  z-index: 5;
-  pointer-events: none;
-  user-select: none;
-  letter-spacing: -0.04em;
-}
 
 /* ─────────────────────────────────────────────
    Letterbox bars
@@ -381,7 +363,9 @@ button, input, textarea, select { font: inherit; }
    Mobile — ≤767px
    ───────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .ks-letterbox { height: 36px; }
+  /* Top letterbox stays 36px; bottom expands to cover iOS home indicator */
+  .ks-letterbox--top    { height: 36px; }
+  .ks-letterbox--bottom { height: calc(36px + env(safe-area-inset-bottom, 0px)); }
 
   .ks-top-bar { top: 36px; padding: 18px 22px; }
   .ks-wordmark-ks { font-size: 22px; }
@@ -389,9 +373,11 @@ button, input, textarea, select { font: inherit; }
   .ks-top-nav a:not(.ks-menu-only) { display: none; }
   .ks-top-nav .ks-menu-only { display: inline; }
 
+  /* Category strip: sits right above bottom letterbox */
   .ks-cat-rail {
     right: 0; left: 0;
-    top: auto; bottom: 88px;
+    top: auto;
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
     flex-direction: row;
     justify-content: space-between;
     padding: 0 22px;
@@ -403,6 +389,7 @@ button, input, textarea, select { font: inherit; }
     grid-template-columns: none;
     gap: 4px;
     min-width: 0;
+    min-height: 52px;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -425,15 +412,27 @@ button, input, textarea, select { font: inherit; }
     margin: 4px auto 0;
   }
 
-  .ks-meta { left: 22px; right: 22px; bottom: 156px; max-width: none; }
-  .ks-subline { flex-direction: column; gap: 12px; }
+  /* Scrubber: just above category strip */
+  .ks-scrubber {
+    left: 22px; right: 22px;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
 
+  /* Meta: name + eyebrow only — subline hidden so photo dominates */
+  .ks-meta {
+    left: 22px; right: 22px;
+    bottom: calc(114px + env(safe-area-inset-bottom, 0px));
+    max-width: none;
+  }
+  .ks-meta-above { margin-bottom: 10px; }
+
+  /* Smaller name so the photo takes the upper ~55% of the screen */
+  .ks-name { font-size: clamp(40px, 11vw, 56px); }
+
+  /* Hide subline and slate on mobile — photo needs to breathe */
+  .ks-subline       { display: none; }
   .ks-slate--desktop { display: none; }
-  .ks-slate--inline  { display: block; }
-
-  .ks-scrubber { left: 22px; right: 22px; bottom: 140px; }
-
-  .ks-counter { font-size: 110px; right: 16px; top: 30%; }
+  .ks-slate--inline  { display: none; }
 
   .ks-footer-l,
   .ks-footer-r { display: none; }
