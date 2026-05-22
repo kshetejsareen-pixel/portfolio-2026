@@ -130,8 +130,8 @@ export function CategoryLanding() {
         )}
       </div>
 
-      {/* Background frame numeral */}
-      <div className="ks-counter" aria-hidden="true">{pad2(frameIdx + 1)}</div>
+      {/* Background frame numeral — shows category number so it updates on category switch */}
+      <div className="ks-counter" aria-hidden="true">{cat.n}</div>
 
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
