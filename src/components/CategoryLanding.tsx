@@ -8,7 +8,6 @@ function pad2(n: number) {
   return String(n).padStart(2, '0')
 }
 
-// Maps category id → its editorial page route
 const CATEGORY_ROUTES: Record<string, string> = {
   culinary:  '/culinary',
   spaces:    '/spaces',
@@ -17,48 +16,31 @@ const CATEGORY_ROUTES: Record<string, string> = {
   motion:    '/motion',
 }
 
+// How long the system must be idle before auto-cycling begins (ms)
+const IDLE_DELAY = 5000
+// How fast it cycles once idle (ms per category)
+const CYCLE_INTERVAL = 5000
+
 export function CategoryLanding() {
   const router = useRouter()
   const [catIdx, setCatIdx] = useState(0)
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
   const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const idleRef  = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
   const cat = categories[catIdx]
   const frame = cat.frames[frameIdx]
   const totalFrames = cat.frames.length
 
-  // Reset frame when category changes
+  // Reset frame index whenever the active category changes
   useEffect(() => { setFrameIdx(0) }, [catIdx])
 
-  // Keyboard navigation — re-registers whenever catIdx changes to keep totalFrames fresh
-  useEffect(() => {
-    const total = categories[catIdx].frames.length
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        setFrameIdx((f) => (f + 1) % total)
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        setFrameIdx((f) => ((f - 1) + total) % total)
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setCatIdx((c) => (c + 1) % categories.length)
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [catIdx])
-
-  // Idle cycling — 4s idle then advance category every 5s
+  // ── Idle-cycle helpers ───────────────────────────────────────────────────
   const stopCycle = useCallback(() => {
     if (cycleRef.current) { clearInterval(cycleRef.current); cycleRef.current = null }
-    if (idleRef.current) { clearTimeout(idleRef.current); idleRef.current = null }
+    if (idleRef.current)  { clearTimeout(idleRef.current);  idleRef.current  = null }
   }, [])
 
   const startIdleCountdown = useCallback(() => {
@@ -66,18 +48,38 @@ export function CategoryLanding() {
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
         setCatIdx((c) => (c + 1) % categories.length)
-      }, 5000)
-    }, 4000)
+      }, CYCLE_INTERVAL)
+    }, IDLE_DELAY)
   }, [stopCycle])
 
+  // Start the countdown on mount; clean up on unmount
   useEffect(() => {
     startIdleCountdown()
     return stopCycle
   }, [startIdleCountdown, stopCycle])
 
+  // ── Keyboard navigation ──────────────────────────────────────────────────
+  // Stops the cycle immediately on any keypress, then restarts the idle countdown.
+  // Re-registers on catIdx change so `total` stays current.
+  useEffect(() => {
+    const total = categories[catIdx].frames.length
+    const onKey = (e: KeyboardEvent) => {
+      if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
+      e.preventDefault()
+      stopCycle()
+      if (e.key === 'ArrowRight') setFrameIdx((f) => (f + 1) % total)
+      else if (e.key === 'ArrowLeft') setFrameIdx((f) => ((f - 1) + total) % total)
+      else if (e.key === 'ArrowDown') setCatIdx((c) => (c + 1) % categories.length)
+      else if (e.key === 'ArrowUp')   setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
+      startIdleCountdown()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [catIdx, stopCycle, startIdleCountdown])
+
+  // ── Category-strip click ─────────────────────────────────────────────────
   const handleCatClick = (i: number) => {
     if (i === catIdx) {
-      // Already active — navigate to the category's editorial page
       const route = CATEGORY_ROUTES[categories[i].id]
       if (route) router.push(route)
       return
@@ -87,8 +89,10 @@ export function CategoryLanding() {
     startIdleCountdown()
   }
 
-  // Touch swipe — horizontal for frames, vertical for categories
+  // ── Touch swipe ──────────────────────────────────────────────────────────
+  // Stop cycle the moment the finger touches the screen so there's no race.
   const handleTouchStart = (e: React.TouchEvent) => {
+    stopCycle()
     touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
   }
 
@@ -100,19 +104,21 @@ export function CategoryLanding() {
 
     const absDx = Math.abs(dx)
     const absDy = Math.abs(dy)
-    if (Math.max(absDx, absDy) < 30) return
 
-    if (absDx > absDy) {
-      // Horizontal swipe → step through frames
-      if (dx < 0) setFrameIdx((f) => (f + 1) % totalFrames)
-      else setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)
-    } else {
-      // Vertical swipe → change category
-      stopCycle()
-      if (dy < 0) setCatIdx((c) => (c + 1) % categories.length)
-      else setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
-      startIdleCountdown()
+    if (Math.max(absDx, absDy) >= 30) {
+      if (absDx > absDy) {
+        // Horizontal → step through frames
+        if (dx < 0) setFrameIdx((f) => (f + 1) % totalFrames)
+        else        setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)
+      } else {
+        // Vertical → change category
+        if (dy < 0) setCatIdx((c) => (c + 1) % categories.length)
+        else        setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
+      }
     }
+
+    // Always restart the idle countdown after any touch interaction
+    startIdleCountdown()
   }
 
   return (
@@ -121,8 +127,7 @@ export function CategoryLanding() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-
-      {/* Photo layers — one per category × frame, only active is opaque */}
+      {/* Photo layers */}
       <div className="ks-photo-layer">
         {categories.map((c, ci) =>
           c.frames.map((f, fi) => {
@@ -148,22 +153,22 @@ export function CategoryLanding() {
         )}
       </div>
 
-      {/* Background frame numeral — shows category number so it updates on category switch */}
+      {/* Background category numeral */}
       <div className="ks-counter" aria-hidden="true">{cat.n}</div>
 
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
       <div className="ks-letterbox ks-letterbox--bottom" />
 
-      {/* Top bar — wordmark left, nav right */}
+      {/* Top bar */}
       <div className="ks-top-bar">
         <div className="ks-wordmark">
           <span className="ks-wordmark-ks">Ks</span>
           <span className="ks-eyebrow">Photography</span>
         </div>
         <nav className="ks-top-nav">
-          <button className="ks-menu-btn" onClick={() => setMenuOpen((o) => !o)}>
-            {menuOpen ? 'Close ×' : 'Menu +'}
+          <button className="ks-menu-btn" onClick={() => setMenuOpen(true)}>
+            Menu +
           </button>
           <a>Journal</a>
           <a>Info</a>
@@ -171,7 +176,7 @@ export function CategoryLanding() {
         </nav>
       </div>
 
-      {/* Category rail (right on desktop, bottom strip on mobile) */}
+      {/* Category rail */}
       <div className="ks-cat-rail">
         {categories.map((c, i) => (
           <button
@@ -186,27 +191,23 @@ export function CategoryLanding() {
         ))}
       </div>
 
-      {/* Step hints — hidden on mobile via CSS */}
+      {/* Step hints — desktop only */}
       {totalFrames > 1 && (
         <>
           <button
             className="ks-step-hint ks-step-hint--prev"
             onClick={() => setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)}
             aria-label="Previous frame"
-          >
-            ←
-          </button>
+          >←</button>
           <button
             className="ks-step-hint ks-step-hint--next"
             onClick={() => setFrameIdx((f) => (f + 1) % totalFrames)}
             aria-label="Next frame"
-          >
-            →
-          </button>
+          >→</button>
         </>
       )}
 
-      {/* Meta block — bottom-left */}
+      {/* Meta block */}
       <div className="ks-meta">
         <div className="ks-meta-above">
           <span className="ks-dot" />
@@ -218,7 +219,6 @@ export function CategoryLanding() {
         <h1 className="ks-name">
           Kshetej<br /><span className="ks-name-last">Sareen</span>
         </h1>
-        {/* Subline hidden on mobile via CSS */}
         <div className="ks-subline">
           <div className="ks-subline-col">
             <strong>Independent photographer.</strong><br />New York · Bombay.
@@ -227,21 +227,21 @@ export function CategoryLanding() {
             Available for commission and prints.<br />Booking — studio@ksareen.com
           </div>
         </div>
-        {/* Inline slate — shown on mobile only, hidden on desktop via CSS */}
+        {/* Inline slate — mobile only */}
         <div className="ks-slate ks-slate--inline">
           <div className="ks-slate-subj">{frame.subj}</div>
           <div>{frame.loc} · {frame.year}</div>
         </div>
       </div>
 
-      {/* Slate — desktop bottom-right (hidden on mobile via CSS) */}
+      {/* Slate — desktop bottom-right */}
       <div className="ks-slate ks-slate--desktop">
         <div className="ks-slate-subj">{frame.subj}</div>
         <div>{frame.loc} · {frame.year}</div>
         <div>{frame.gear}</div>
       </div>
 
-      {/* Scrubber bar */}
+      {/* Scrubber */}
       <div className="ks-scrubber" aria-hidden="true">
         <div
           className="ks-scrubber-fill"
@@ -249,12 +249,16 @@ export function CategoryLanding() {
         />
       </div>
 
-      {/* Footer corners — desktop only (hidden on mobile via CSS) */}
+      {/* Footer corners — desktop only */}
       <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
       <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
 
-      {/* Full-screen menu overlay */}
+      {/* Full-screen menu overlay — z-index 20, close button lives inside */}
       <div className={`ks-menu-overlay${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+        {/* Close button sits at the same visual position as Menu + in the top bar */}
+        <button className="ks-menu-close-btn" onClick={() => setMenuOpen(false)}>
+          Close ×
+        </button>
         <div className="ks-menu-inner">
           <div className="ks-menu-eyebrow">Navigation</div>
           <nav className="ks-menu-cats">

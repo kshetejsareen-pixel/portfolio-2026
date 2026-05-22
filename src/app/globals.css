@@ -566,6 +566,25 @@ button, input, textarea, select { font: inherit; }
   pointer-events: auto;
 }
 
+/* Close button — mirrored position of the Menu + button in the top bar */
+.ks-menu-close-btn {
+  position: absolute;
+  top: 56px;
+  right: 56px;
+  padding: 32px 0 32px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 200ms ease;
+  z-index: 21;
+}
+.ks-menu-close-btn:hover { color: var(--paper-dim); }
+
 .ks-menu-inner {
   padding: 0 56px;
   width: 100%;
@@ -648,6 +667,12 @@ button, input, textarea, select { font: inherit; }
 
 /* Mobile adjustments */
 @media (max-width: 767px) {
+  .ks-menu-close-btn {
+    top: 0;
+    right: 22px;
+    padding-top: max(18px, env(safe-area-inset-top, 0px));
+    padding-bottom: 14px;
+  }
   .ks-menu-inner { padding: 0 22px; }
   .ks-menu-eyebrow { margin-bottom: 32px; }
   .ks-menu-cat-link { padding: 14px 0; }
