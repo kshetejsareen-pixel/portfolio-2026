@@ -26,7 +26,7 @@ export function CategoryLanding() {
           const idx = categories.findIndex((c) => c.slug === prev)
           return categories[(idx + 1) % categories.length].slug
         })
-      }, 3000)
+      }, 5000)
     }, 4000)
   }, [stopCycle])
 
@@ -58,7 +58,7 @@ export function CategoryLanding() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: cat.image }}
             animate={{ opacity: active === cat.slug ? 1 : 0 }}
-            transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
           />
         ))}
 
@@ -85,7 +85,7 @@ export function CategoryLanding() {
 
           <div>
             <motion.h1
-              className="text-[clamp(3rem,7vw,6.5rem)] font-light leading-[1.02] tracking-[-0.025em] text-white"
+              className="text-[clamp(3.2rem,12vw,12rem)] font-extralight leading-[0.97] tracking-[-0.03em] text-white"
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
@@ -128,7 +128,7 @@ export function CategoryLanding() {
           <Link
             key={cat.slug}
             href={`/${cat.slug}`}
-            className="group relative flex flex-1 flex-col items-center justify-center gap-1"
+            className="group relative flex flex-1 flex-col items-center justify-center overflow-hidden px-1"
             onMouseEnter={() => handleEnter(cat.slug)}
             onMouseLeave={handleLeave}
           >
@@ -142,43 +142,29 @@ export function CategoryLanding() {
                   ? '0 0 8px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,0.25)'
                   : '0 0 8px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0)',
               }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             />
 
             {i > 0 && (
               <span className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/[0.06]" />
             )}
 
-            {/* Number */}
-            <motion.span
-              className="text-[9px] tabular-nums tracking-[0.28em]"
-              animate={{
-                color: active === cat.slug
-                  ? 'rgba(255,255,255,0.55)'
-                  : 'rgba(255,255,255,0.2)',
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              0{i + 1}
-            </motion.span>
-
             {/* Label with glow on active */}
             <motion.span
+              className="truncate text-[9px] font-medium uppercase tracking-[0.05em] md:text-[13px] md:tracking-[0.08em]"
               animate={{
                 color: active === cat.slug
                   ? 'rgba(255,255,255,1)'
                   : hovered
-                  ? 'rgba(255,255,255,0.28)'
-                  : 'rgba(255,255,255,0.65)',
+                  ? 'rgba(255,255,255,0.3)'
+                  : 'rgba(255,255,255,0.72)',
                 textShadow: active === cat.slug
                   ? '0 0 16px rgba(255,255,255,0.5), 0 0 32px rgba(255,255,255,0.2)'
                   : '0 0 16px rgba(255,255,255,0), 0 0 32px rgba(255,255,255,0)',
               }}
               transition={{ duration: 0.35 }}
             >
-              <span className="text-[10px] font-medium tracking-[0.2em] uppercase md:text-[12px]">
-                {cat.label}
-              </span>
+              {cat.label}
             </motion.span>
           </Link>
         ))}
