@@ -172,7 +172,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-wordmark-ks {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 28px;
   letter-spacing: -0.02em;
 }
