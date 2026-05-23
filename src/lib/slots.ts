@@ -12,7 +12,7 @@ function landingSlotLabel(catId: string, index: number): string {
   const cat = categories.find((c) => c.id === catId)
   const frame = cat?.frames[index]
   const catLabel = cat?.label ?? catId
-  return frame ? `${catLabel} · ${frame.subj}` : `${catLabel} · Frame ${index + 1}`
+  return frame ? `${catLabel} · ${frame.title}` : `${catLabel} · Frame ${index + 1}`
 }
 
 // Generate landing slots dynamically for a given config

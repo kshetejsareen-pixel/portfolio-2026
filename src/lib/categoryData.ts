@@ -1,9 +1,10 @@
 export type FlowPhoto = {
   tint: string
   aspect: 'wide' | 'square' | 'tall' | 'pano' | 'portrait'
-  subj: string
-  loc: string
-  yr: string
+  title: string
+  location: string
+  year: string
+  camera?: string
   image?: string
 }
 
@@ -24,8 +25,8 @@ export interface Project {
   id: string
   title: string
   it?: string
-  yr: string
-  loc: string
+  year:string
+  location:string
   count: number
   tint: string
   desc: string
@@ -55,59 +56,59 @@ export const portraitsData: CategoryData = {
     attr: 'Studio note · 2023',
   },
   flow: [
-    { kind: 'full-bleed', photo: { tint: '#1d1c1a', aspect: 'wide', subj: 'Eli, between takes', loc: 'Brooklyn Studio', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#1d1c1a', aspect: 'wide', title:'Eli, between takes', location:'Brooklyn Studio', year:'2025' } },
 
     {
       kind: 'asym',
-      large: { tint: '#1a1815', aspect: 'tall', subj: 'Mira, late afternoon', loc: 'Bombay', yr: '2025' },
+      large: { tint: '#1a1815', aspect: 'tall', title:'Mira, late afternoon', location:'Bombay', year:'2025' },
       smalls: [
-        { tint: '#22201d', aspect: 'square', subj: 'Mira, no. 2', loc: 'Bombay', yr: '2025' },
-        { tint: '#161513', aspect: 'square', subj: 'Mira, hands', loc: 'Bombay', yr: '2025' },
+        { tint: '#22201d', aspect: 'square', title:'Mira, no. 2', location:'Bombay', year:'2025' },
+        { tint: '#161513', aspect: 'square', title:'Mira, hands', location:'Bombay', year:'2025' },
       ],
     },
 
     {
       kind: 'centered-tall',
-      photo: { tint: '#1e1c19', aspect: 'portrait', subj: 'Jonas, porch', loc: 'Catskills, NY', yr: '2024' },
+      photo: { tint: '#1e1c19', aspect: 'portrait', title:'Jonas, porch', location:'Catskills, NY', year:'2024' },
       side: { text: 'From the long-form series. Pentax 67, 105mm, ambient porch light, no fill.' },
     },
 
     {
       kind: 'three-up',
       photos: [
-        { tint: '#1a1916', aspect: 'tall', subj: 'Sade', loc: 'Studio · Vol. iv', yr: '2024' },
-        { tint: '#1d1b18', aspect: 'tall', subj: 'Imran', loc: 'Mehrauli', yr: '2023' },
-        { tint: '#171614', aspect: 'tall', subj: 'Niloofar', loc: 'Tehran', yr: '2023' },
+        { tint: '#1a1916', aspect: 'tall', title:'Sade', location:'Studio · Vol. iv', year:'2024' },
+        { tint: '#1d1b18', aspect: 'tall', title:'Imran', location:'Mehrauli', year:'2023' },
+        { tint: '#171614', aspect: 'tall', title:'Niloofar', location:'Tehran', year:'2023' },
       ],
     },
 
     { kind: 'pull-quote' },
 
-    { kind: 'full-bleed-pano', photo: { tint: '#16151a', aspect: 'pano', subj: 'Choir, before rehearsal', loc: "St. Mark's, NYC", yr: '2024' } },
+    { kind: 'full-bleed-pano', photo: { tint: '#16151a', aspect: 'pano', title:'Choir, before rehearsal', location:"St. Mark's, NYC", year:'2024' } },
 
     {
       kind: 'diptych',
       photos: [
-        { tint: '#1c1a17', aspect: 'square', subj: 'Twins · Maya', loc: 'Studio', yr: '2024' },
-        { tint: '#1a1815', aspect: 'square', subj: 'Twins · Mira', loc: 'Studio', yr: '2024' },
+        { tint: '#1c1a17', aspect: 'square', title:'Twins · Maya', location:'Studio', year:'2024' },
+        { tint: '#1a1815', aspect: 'square', title:'Twins · Mira', location:'Studio', year:'2024' },
       ],
     },
 
     {
       kind: 'duo',
       photos: [
-        { tint: '#1e1c19', aspect: 'wide', subj: 'Reader, no. 1', loc: 'Lisbon', yr: '2024' },
-        { tint: '#1a1816', aspect: 'wide', subj: 'Reader, no. 2', loc: 'Lisbon', yr: '2024' },
+        { tint: '#1e1c19', aspect: 'wide', title:'Reader, no. 1', location:'Lisbon', year:'2024' },
+        { tint: '#1a1816', aspect: 'wide', title:'Reader, no. 2', location:'Lisbon', year:'2024' },
       ],
     },
 
     {
       kind: 'offset',
-      photo: { tint: '#1c1a17', aspect: 'portrait', subj: 'Self, late', loc: 'Studio mirror', yr: '2025' },
+      photo: { tint: '#1c1a17', aspect: 'portrait', title:'Self, late', location:'Studio mirror', year:'2025' },
       text: 'What stays, after the sitter has gone.',
     },
 
-    { kind: 'full-bleed', photo: { tint: '#1a1815', aspect: 'wide', subj: 'Last light, studio north', loc: 'Brooklyn', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#1a1815', aspect: 'wide', title:'Last light, studio north', location:'Brooklyn', year:'2025' } },
   ],
 
   projects: [
@@ -115,8 +116,8 @@ export const portraitsData: CategoryData = {
       id: 'long-form',
       title: 'Long form',
       it: 'twelve sittings',
-      yr: '2024',
-      loc: 'Studio · Various',
+      year:'2024',
+      location:'Studio · Various',
       count: 84,
       tint: '#1a1816',
       desc: 'Twelve sitters, an hour each, six rolls of medium-format film per session. The portraits that survived the cut.',
@@ -125,8 +126,8 @@ export const portraitsData: CategoryData = {
       id: 'strangers',
       title: 'Strangers',
       it: 'an open call',
-      yr: '2023',
-      loc: 'Bombay · NYC',
+      year:'2023',
+      location:'Bombay · NYC',
       count: 56,
       tint: '#1d1b18',
       desc: 'A monthlong project advertising free thirty-minute sittings to anyone who showed up. No prep, no styling, ambient light only.',
@@ -135,8 +136,8 @@ export const portraitsData: CategoryData = {
       id: 'editors',
       title: 'Editors',
       it: 'publishing portraits',
-      yr: '2025',
-      loc: 'London · NYC',
+      year:'2025',
+      location:'London · NYC',
       count: 24,
       tint: '#22201d',
       desc: 'Commissioned portraits of magazine and book editors — at desk, at home, in the spaces they make decisions.',
@@ -145,8 +146,8 @@ export const portraitsData: CategoryData = {
       id: 'the-studio',
       title: 'The Studio',
       it: 'self portraits',
-      yr: '2021—2026',
-      loc: 'Brooklyn',
+      year:'2021—2026',
+      location:'Brooklyn',
       count: 38,
       tint: '#161513',
       desc: 'A five-year self-portrait project. One frame a month, same chair, same window. The slow record of staying.',
@@ -169,59 +170,59 @@ export const culinaryData: CategoryData = {
     attr: 'Studio note · 2024',
   },
   flow: [
-    { kind: 'full-bleed', photo: { tint: '#3a2a1c', aspect: 'wide', subj: 'Stone fruit, late summer', loc: 'Mallorca', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#3a2a1c', aspect: 'wide', title:'Stone fruit, late summer', location:'Mallorca', year:'2025' } },
 
     {
       kind: 'asym',
-      large: { tint: '#2a1f17', aspect: 'tall', subj: 'Brick lane kitchen pass', loc: 'London E1', yr: '2024' },
+      large: { tint: '#2a1f17', aspect: 'tall', title:'Brick lane kitchen pass', location:'London E1', year:'2024' },
       smalls: [
-        { tint: '#3a2418', aspect: 'square', subj: 'Mise en place', loc: 'Studio', yr: '2024' },
-        { tint: '#1f1814', aspect: 'square', subj: 'Cast iron, no. 3', loc: 'Studio', yr: '2024' },
+        { tint: '#3a2418', aspect: 'square', title:'Mise en place', location:'Studio', year:'2024' },
+        { tint: '#1f1814', aspect: 'square', title:'Cast iron, no. 3', location:'Studio', year:'2024' },
       ],
     },
 
     {
       kind: 'centered-tall',
-      photo: { tint: '#2a1814', aspect: 'portrait', subj: 'Persimmons, after rain', loc: 'Kyoto', yr: '2024' },
+      photo: { tint: '#2a1814', aspect: 'portrait', title:'Persimmons, after rain', location:'Kyoto', year:'2024' },
       side: { text: 'Untitled, from the fruit table series. 4×5 large format, Velvia 50.' },
     },
 
     {
       kind: 'three-up',
       photos: [
-        { tint: '#3a2e1a', aspect: 'tall', subj: 'Oil & paprika', loc: 'Sevilla', yr: '2023' },
-        { tint: '#241a14', aspect: 'tall', subj: 'Bread, day three', loc: 'Studio', yr: '2024' },
-        { tint: '#4a2e1a', aspect: 'tall', subj: 'Saffron threads', loc: 'Studio', yr: '2024' },
+        { tint: '#3a2e1a', aspect: 'tall', title:'Oil & paprika', location:'Sevilla', year:'2023' },
+        { tint: '#241a14', aspect: 'tall', title:'Bread, day three', location:'Studio', year:'2024' },
+        { tint: '#4a2e1a', aspect: 'tall', title:'Saffron threads', location:'Studio', year:'2024' },
       ],
     },
 
     { kind: 'pull-quote' },
 
-    { kind: 'full-bleed-pano', photo: { tint: '#1f1a14', aspect: 'pano', subj: 'Twelve, before service', loc: 'Copenhagen', yr: '2023' } },
+    { kind: 'full-bleed-pano', photo: { tint: '#1f1a14', aspect: 'pano', title:'Twelve, before service', location:'Copenhagen', year:'2023' } },
 
     {
       kind: 'diptych',
       photos: [
-        { tint: '#2a1f17', aspect: 'square', subj: 'Hands, hers', loc: 'Tehran', yr: '2023' },
-        { tint: '#3a2a1c', aspect: 'square', subj: 'Hands, his', loc: 'Tehran', yr: '2023' },
+        { tint: '#2a1f17', aspect: 'square', title:'Hands, hers', location:'Tehran', year:'2023' },
+        { tint: '#3a2a1c', aspect: 'square', title:'Hands, his', location:'Tehran', year:'2023' },
       ],
     },
 
     {
       kind: 'duo',
       photos: [
-        { tint: '#2c2014', aspect: 'wide', subj: 'Tomato, beefsteak', loc: 'Long Island', yr: '2024' },
-        { tint: '#1f1a14', aspect: 'wide', subj: 'Tomato, sungold', loc: 'Long Island', yr: '2024' },
+        { tint: '#2c2014', aspect: 'wide', title:'Tomato, beefsteak', location:'Long Island', year:'2024' },
+        { tint: '#1f1a14', aspect: 'wide', title:'Tomato, sungold', location:'Long Island', year:'2024' },
       ],
     },
 
     {
       kind: 'offset',
-      photo: { tint: '#2a1814', aspect: 'portrait', subj: 'Knife, oak handle', loc: 'Studio', yr: '2025' },
+      photo: { tint: '#2a1814', aspect: 'portrait', title:'Knife, oak handle', location:'Studio', year:'2025' },
       text: 'A working archive — partial, particular, never finished.',
     },
 
-    { kind: 'full-bleed', photo: { tint: '#3a2418', aspect: 'wide', subj: 'Last light, kitchen window', loc: 'Bombay', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#3a2418', aspect: 'wide', title:'Last light, kitchen window', location:'Bombay', year:'2025' } },
   ],
 
   projects: [
@@ -229,8 +230,8 @@ export const culinaryData: CategoryData = {
       id: 'twelve',
       title: 'Twelve',
       it: 'before service',
-      yr: '2023',
-      loc: 'Copenhagen',
+      year:'2023',
+      location:'Copenhagen',
       count: 42,
       tint: '#1f1a14',
       desc: 'A residency at a single-seating restaurant. Forty-two frames made in the hour before twelve guests arrived for dinner.',
@@ -239,8 +240,8 @@ export const culinaryData: CategoryData = {
       id: 'fruit-table',
       title: 'The Fruit Table',
       it: 'studies',
-      yr: '2024',
-      loc: 'Studio · Kyoto',
+      year:'2024',
+      location:'Studio · Kyoto',
       count: 28,
       tint: '#2a1814',
       desc: 'An ongoing study of seasonal fruit photographed on a single Japanese pine table, large-format, ambient light only.',
@@ -249,8 +250,8 @@ export const culinaryData: CategoryData = {
       id: 'passing',
       title: 'Passing',
       it: 'kitchens of London',
-      yr: '2024',
-      loc: 'London',
+      year:'2024',
+      location:'London',
       count: 60,
       tint: '#2a1f17',
       desc: 'Six kitchens, twelve shifts, sixty frames. A portrait of the working line at the pass — the moment a plate leaves the kitchen.',
@@ -259,8 +260,8 @@ export const culinaryData: CategoryData = {
       id: 'hands',
       title: 'Hands',
       it: 'a tabletop book',
-      yr: '2023',
-      loc: 'Tehran · Studio',
+      year:'2023',
+      location:'Tehran · Studio',
       count: 36,
       tint: '#3a2a1c',
       desc: 'A collaboration with chef Niloofar K. Thirty-six photographs of hands at work — kneading, sorting, pouring, plating.',
@@ -283,59 +284,59 @@ export const spacesData: CategoryData = {
     attr: 'Studio note · 2025',
   },
   flow: [
-    { kind: 'full-bleed', photo: { tint: '#1a2226', aspect: 'wide', subj: 'Marble stair, north light', loc: 'Tribeca Loft', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#1a2226', aspect: 'wide', title:'Marble stair, north light', location:'Tribeca Loft', year:'2025' } },
 
     {
       kind: 'asym',
-      large: { tint: '#1c2428', aspect: 'tall', subj: 'Atelier, morning', loc: 'Lisbon', yr: '2024' },
+      large: { tint: '#1c2428', aspect: 'tall', title:'Atelier, morning', location:'Lisbon', year:'2024' },
       smalls: [
-        { tint: '#181f23', aspect: 'square', subj: 'Table, after lunch', loc: 'Lisbon', yr: '2024' },
-        { tint: '#161c1f', aspect: 'square', subj: 'Window, north', loc: 'Lisbon', yr: '2024' },
+        { tint: '#181f23', aspect: 'square', title:'Table, after lunch', location:'Lisbon', year:'2024' },
+        { tint: '#161c1f', aspect: 'square', title:'Window, north', location:'Lisbon', year:'2024' },
       ],
     },
 
     {
       kind: 'centered-tall',
-      photo: { tint: '#16191d', aspect: 'portrait', subj: 'Concrete chapel', loc: 'Tadao Ando, Naoshima', yr: '2023' },
+      photo: { tint: '#16191d', aspect: 'portrait', title:'Concrete chapel', location:'Tadao Ando, Naoshima', year:'2023' },
       side: { text: 'From the sacred spaces series. Mamiya 7, 65mm, ambient daylight only.' },
     },
 
     {
       kind: 'three-up',
       photos: [
-        { tint: '#1a2226', aspect: 'tall', subj: 'Library, west wing', loc: 'Cambridge', yr: '2023' },
-        { tint: '#171c1f', aspect: 'tall', subj: 'Stair, marble', loc: 'Roma', yr: '2024' },
-        { tint: '#1c2428', aspect: 'tall', subj: 'Kitchen, empty', loc: 'Aarhus', yr: '2024' },
+        { tint: '#1a2226', aspect: 'tall', title:'Library, west wing', location:'Cambridge', year:'2023' },
+        { tint: '#171c1f', aspect: 'tall', title:'Stair, marble', location:'Roma', year:'2024' },
+        { tint: '#1c2428', aspect: 'tall', title:'Kitchen, empty', location:'Aarhus', year:'2024' },
       ],
     },
 
     { kind: 'pull-quote' },
 
-    { kind: 'full-bleed-pano', photo: { tint: '#161c1f', aspect: 'pano', subj: 'Auditorium, before talk', loc: 'Helsinki', yr: '2024' } },
+    { kind: 'full-bleed-pano', photo: { tint: '#161c1f', aspect: 'pano', title:'Auditorium, before talk', location:'Helsinki', year:'2024' } },
 
     {
       kind: 'diptych',
       photos: [
-        { tint: '#1a2226', aspect: 'square', subj: 'Door, open', loc: 'Lisbon', yr: '2024' },
-        { tint: '#181f23', aspect: 'square', subj: 'Door, closed', loc: 'Lisbon', yr: '2024' },
+        { tint: '#1a2226', aspect: 'square', title:'Door, open', location:'Lisbon', year:'2024' },
+        { tint: '#181f23', aspect: 'square', title:'Door, closed', location:'Lisbon', year:'2024' },
       ],
     },
 
     {
       kind: 'duo',
       photos: [
-        { tint: '#1c2428', aspect: 'wide', subj: 'Pool, empty', loc: 'Mexico City', yr: '2025' },
-        { tint: '#161c1f', aspect: 'wide', subj: 'Court, empty', loc: 'Mexico City', yr: '2025' },
+        { tint: '#1c2428', aspect: 'wide', title:'Pool, empty', location:'Mexico City', year:'2025' },
+        { tint: '#161c1f', aspect: 'wide', title:'Court, empty', location:'Mexico City', year:'2025' },
       ],
     },
 
     {
       kind: 'offset',
-      photo: { tint: '#1a2226', aspect: 'portrait', subj: 'Chapel, lower nave', loc: 'Naoshima', yr: '2023' },
+      photo: { tint: '#1a2226', aspect: 'portrait', title:'Chapel, lower nave', location:'Naoshima', year:'2023' },
       text: 'Light, made architecture.',
     },
 
-    { kind: 'full-bleed', photo: { tint: '#181f23', aspect: 'wide', subj: 'Hall, last light', loc: 'Lisbon', yr: '2024' } },
+    { kind: 'full-bleed', photo: { tint: '#181f23', aspect: 'wide', title:'Hall, last light', location:'Lisbon', year:'2024' } },
   ],
 
   projects: [
@@ -343,8 +344,8 @@ export const spacesData: CategoryData = {
       id: 'tadao',
       title: 'Tadao',
       it: 'Naoshima',
-      yr: '2023',
-      loc: 'Naoshima, Japan',
+      year:'2023',
+      location:'Naoshima, Japan',
       count: 32,
       tint: '#16191d',
       desc: 'A two-week residency photographing Tadao Ando\'s concrete works on the art island. Long exposures, no people, the building as subject.',
@@ -353,8 +354,8 @@ export const spacesData: CategoryData = {
       id: 'domestic-light',
       title: 'Domestic light',
       it: 'twelve homes',
-      yr: '2024',
-      loc: 'Lisbon',
+      year:'2024',
+      location:'Lisbon',
       count: 48,
       tint: '#1c2428',
       desc: 'Twelve homes across Lisbon, photographed at the same hour over twelve months. Same light, twelve different lives.',
@@ -363,8 +364,8 @@ export const spacesData: CategoryData = {
       id: 'loft',
       title: 'Loft',
       it: 'an apartment over a year',
-      yr: '2025',
-      loc: 'Tribeca',
+      year:'2025',
+      location:'Tribeca',
       count: 60,
       tint: '#1a2226',
       desc: 'One Tribeca loft, twelve site visits, sixty interiors. A portrait of a single space across four seasons.',
@@ -373,8 +374,8 @@ export const spacesData: CategoryData = {
       id: 'sacred',
       title: 'Sacred',
       it: 'rooms set apart',
-      yr: '2024',
-      loc: 'Various',
+      year:'2024',
+      location:'Various',
       count: 28,
       tint: '#181f23',
       desc: 'Churches, temples, prayer halls, library reading rooms — spaces that ask for quiet. Photographed without people.',
@@ -397,59 +398,59 @@ export const objectsData: CategoryData = {
     attr: 'Studio note · 2024',
   },
   flow: [
-    { kind: 'full-bleed', photo: { tint: '#24211a', aspect: 'wide', subj: 'Brass kettle, no. 4', loc: 'Studio', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#24211a', aspect: 'wide', title:'Brass kettle, no. 4', location:'Studio', year:'2025' } },
 
     {
       kind: 'asym',
-      large: { tint: '#26231c', aspect: 'tall', subj: 'Vessels, set of eight', loc: 'Studio', yr: '2024' },
+      large: { tint: '#26231c', aspect: 'tall', title:'Vessels, set of eight', location:'Studio', year:'2024' },
       smalls: [
-        { tint: '#221f18', aspect: 'square', subj: 'Cup, single', loc: 'Studio', yr: '2024' },
-        { tint: '#1e1c16', aspect: 'square', subj: 'Cup, two', loc: 'Studio', yr: '2024' },
+        { tint: '#221f18', aspect: 'square', title:'Cup, single', location:'Studio', year:'2024' },
+        { tint: '#1e1c16', aspect: 'square', title:'Cup, two', location:'Studio', year:'2024' },
       ],
     },
 
     {
       kind: 'centered-tall',
-      photo: { tint: '#22201a', aspect: 'portrait', subj: 'Linen, folded', loc: 'Studio', yr: '2024' },
+      photo: { tint: '#22201a', aspect: 'portrait', title:'Linen, folded', location:'Studio', year:'2024' },
       side: { text: 'From the catalogue series. Phase One, 120mm macro, north-window light.' },
     },
 
     {
       kind: 'three-up',
       photos: [
-        { tint: '#24211a', aspect: 'tall', subj: 'Knife, oak handle', loc: 'Studio', yr: '2025' },
-        { tint: '#1e1c16', aspect: 'tall', subj: 'Spoon, brass', loc: 'Studio', yr: '2025' },
-        { tint: '#26231c', aspect: 'tall', subj: 'Tongs, salvaged', loc: 'Studio', yr: '2025' },
+        { tint: '#24211a', aspect: 'tall', title:'Knife, oak handle', location:'Studio', year:'2025' },
+        { tint: '#1e1c16', aspect: 'tall', title:'Spoon, brass', location:'Studio', year:'2025' },
+        { tint: '#26231c', aspect: 'tall', title:'Tongs, salvaged', location:'Studio', year:'2025' },
       ],
     },
 
     { kind: 'pull-quote' },
 
-    { kind: 'full-bleed-pano', photo: { tint: '#1e1c16', aspect: 'pano', subj: 'The full catalogue · 48 objects', loc: 'Studio', yr: '2024' } },
+    { kind: 'full-bleed-pano', photo: { tint: '#1e1c16', aspect: 'pano', title:'The full catalogue · 48 objects', location:'Studio', year:'2024' } },
 
     {
       kind: 'diptych',
       photos: [
-        { tint: '#24211a', aspect: 'square', subj: 'Empty bowl', loc: 'Studio', yr: '2024' },
-        { tint: '#221f18', aspect: 'square', subj: 'Full bowl', loc: 'Studio', yr: '2024' },
+        { tint: '#24211a', aspect: 'square', title:'Empty bowl', location:'Studio', year:'2024' },
+        { tint: '#221f18', aspect: 'square', title:'Full bowl', location:'Studio', year:'2024' },
       ],
     },
 
     {
       kind: 'duo',
       photos: [
-        { tint: '#26231c', aspect: 'wide', subj: 'Linen, white', loc: 'Studio', yr: '2024' },
-        { tint: '#22201a', aspect: 'wide', subj: 'Linen, ecru', loc: 'Studio', yr: '2024' },
+        { tint: '#26231c', aspect: 'wide', title:'Linen, white', location:'Studio', year:'2024' },
+        { tint: '#22201a', aspect: 'wide', title:'Linen, ecru', location:'Studio', year:'2024' },
       ],
     },
 
     {
       kind: 'offset',
-      photo: { tint: '#1e1c16', aspect: 'portrait', subj: 'Salt cellar, single', loc: 'Studio', yr: '2025' },
+      photo: { tint: '#1e1c16', aspect: 'portrait', title:'Salt cellar, single', location:'Studio', year:'2025' },
       text: 'A working archive — partial, particular, never finished.',
     },
 
-    { kind: 'full-bleed', photo: { tint: '#24211a', aspect: 'wide', subj: 'Table, after the shoot', loc: 'Studio', yr: '2025' } },
+    { kind: 'full-bleed', photo: { tint: '#24211a', aspect: 'wide', title:'Table, after the shoot', location:'Studio', year:'2025' } },
   ],
 
   projects: [
@@ -457,8 +458,8 @@ export const objectsData: CategoryData = {
       id: 'vessels',
       title: 'Vessels',
       it: 'set of eight',
-      yr: '2024',
-      loc: 'Studio',
+      year:'2024',
+      location:'Studio',
       count: 24,
       tint: '#26231c',
       desc: 'Eight hand-thrown vessels by potter Hye-Jin Park, photographed individually and as a set under identical light over three weeks.',
@@ -467,8 +468,8 @@ export const objectsData: CategoryData = {
       id: 'linen',
       title: 'Linen',
       it: 'fold studies',
-      yr: '2024',
-      loc: 'Studio',
+      year:'2024',
+      location:'Studio',
       count: 36,
       tint: '#22201a',
       desc: 'Three dozen photographs of a single piece of linen, folded and refolded. A study in tone and shadow.',
@@ -477,8 +478,8 @@ export const objectsData: CategoryData = {
       id: 'catalogue',
       title: 'The Catalogue',
       it: 'forty-eight objects',
-      yr: '2024',
-      loc: 'Studio',
+      year:'2024',
+      location:'Studio',
       count: 48,
       tint: '#1e1c16',
       desc: 'A reference archive of forty-eight everyday objects, shot from identical angles and distances. Made for a forthcoming monograph.',
@@ -487,8 +488,8 @@ export const objectsData: CategoryData = {
       id: 'kitchen-tools',
       title: 'Kitchen tools',
       it: 'an inventory',
-      yr: '2025',
-      loc: 'Studio',
+      year:'2025',
+      location:'Studio',
       count: 30,
       tint: '#24211a',
       desc: 'Knives, spoons, tongs, brushes — the tools chef Niloofar K. has carried between five kitchens over twenty years.',
@@ -511,59 +512,59 @@ export const motionData: CategoryData = {
     attr: 'Studio note · 2025',
   },
   flow: [
-    { kind: 'full-bleed', photo: { tint: '#0f1418', aspect: 'wide', subj: 'Rain, 24fps', loc: 'Bombay Monsoon', yr: '2024' } },
+    { kind: 'full-bleed', photo: { tint: '#0f1418', aspect: 'wide', title:'Rain, 24fps', location:'Bombay Monsoon', year:'2024' } },
 
     {
       kind: 'asym',
-      large: { tint: '#12161a', aspect: 'tall', subj: 'Loop · 8mm', loc: 'Goa', yr: '2023' },
+      large: { tint: '#12161a', aspect: 'tall', title:'Loop · 8mm', location:'Goa', year:'2023' },
       smalls: [
-        { tint: '#0c1115', aspect: 'square', subj: 'Frame · 04 / 240', loc: 'Goa', yr: '2023' },
-        { tint: '#101418', aspect: 'square', subj: 'Frame · 88 / 240', loc: 'Goa', yr: '2023' },
+        { tint: '#0c1115', aspect: 'square', title:'Frame · 04 / 240', location:'Goa', year:'2023' },
+        { tint: '#101418', aspect: 'square', title:'Frame · 88 / 240', location:'Goa', year:'2023' },
       ],
     },
 
     {
       kind: 'centered-tall',
-      photo: { tint: '#0e1216', aspect: 'portrait', subj: 'Single-shot · sixty seconds', loc: 'Marfa, TX', yr: '2024' },
+      photo: { tint: '#0e1216', aspect: 'portrait', title:'Single-shot · sixty seconds', location:'Marfa, TX', year:'2024' },
       side: { text: 'Bolex H16, 16mm, Tri-X reversal. One continuous take, no edit.' },
     },
 
     {
       kind: 'three-up',
       photos: [
-        { tint: '#0f1418', aspect: 'tall', subj: 'Curtain · loop', loc: 'Studio', yr: '2025' },
-        { tint: '#12161a', aspect: 'tall', subj: 'Hand · loop', loc: 'Studio', yr: '2025' },
-        { tint: '#0c1115', aspect: 'tall', subj: 'Window · loop', loc: 'Studio', yr: '2025' },
+        { tint: '#0f1418', aspect: 'tall', title:'Curtain · loop', location:'Studio', year:'2025' },
+        { tint: '#12161a', aspect: 'tall', title:'Hand · loop', location:'Studio', year:'2025' },
+        { tint: '#0c1115', aspect: 'tall', title:'Window · loop', location:'Studio', year:'2025' },
       ],
     },
 
     { kind: 'pull-quote' },
 
-    { kind: 'full-bleed-pano', photo: { tint: '#101418', aspect: 'pano', subj: 'Monsoon · twelve minutes', loc: 'Bombay', yr: '2024' } },
+    { kind: 'full-bleed-pano', photo: { tint: '#101418', aspect: 'pano', title:'Monsoon · twelve minutes', location:'Bombay', year:'2024' } },
 
     {
       kind: 'diptych',
       photos: [
-        { tint: '#0f1418', aspect: 'square', subj: 'Before', loc: 'Marfa', yr: '2024' },
-        { tint: '#12161a', aspect: 'square', subj: 'After', loc: 'Marfa', yr: '2024' },
+        { tint: '#0f1418', aspect: 'square', title:'Before', location:'Marfa', year:'2024' },
+        { tint: '#12161a', aspect: 'square', title:'After', location:'Marfa', year:'2024' },
       ],
     },
 
     {
       kind: 'duo',
       photos: [
-        { tint: '#0c1115', aspect: 'wide', subj: 'Tide, incoming', loc: 'Goa', yr: '2023' },
-        { tint: '#0e1216', aspect: 'wide', subj: 'Tide, outgoing', loc: 'Goa', yr: '2023' },
+        { tint: '#0c1115', aspect: 'wide', title:'Tide, incoming', location:'Goa', year:'2023' },
+        { tint: '#0e1216', aspect: 'wide', title:'Tide, outgoing', location:'Goa', year:'2023' },
       ],
     },
 
     {
       kind: 'offset',
-      photo: { tint: '#101418', aspect: 'portrait', subj: 'Smoke, slow', loc: 'Studio', yr: '2025' },
+      photo: { tint: '#101418', aspect: 'portrait', title:'Smoke, slow', location:'Studio', year:'2025' },
       text: 'Time, given a frame.',
     },
 
-    { kind: 'full-bleed', photo: { tint: '#0f1418', aspect: 'wide', subj: 'Last reel, ARRI A', loc: 'Bombay', yr: '2024' } },
+    { kind: 'full-bleed', photo: { tint: '#0f1418', aspect: 'wide', title:'Last reel, ARRI A', location:'Bombay', year:'2024' } },
   ],
 
   projects: [
@@ -571,8 +572,8 @@ export const motionData: CategoryData = {
       id: 'monsoon',
       title: 'Monsoon',
       it: 'a twelve-minute film',
-      yr: '2024',
-      loc: 'Bombay',
+      year:'2024',
+      location:'Bombay',
       count: 1,
       tint: '#101418',
       desc: 'A single-take twelve-minute portrait of Bombay\'s first rain. ARRI Alexa Mini, 35mm prime, no cut.',
@@ -581,8 +582,8 @@ export const motionData: CategoryData = {
       id: '8mm-diary',
       title: '8mm Diary',
       it: 'five reels',
-      yr: '2023',
-      loc: 'Goa · Catskills',
+      year:'2023',
+      location:'Goa · Catskills',
       count: 5,
       tint: '#12161a',
       desc: 'Five reels of Super-8 Kodachrome shot across a year and edited into a thirty-minute personal diary. Silent.',
@@ -591,8 +592,8 @@ export const motionData: CategoryData = {
       id: 'loops',
       title: 'Loops',
       it: 'studio studies',
-      yr: '2025',
-      loc: 'Studio',
+      year:'2025',
+      location:'Studio',
       count: 12,
       tint: '#0c1115',
       desc: 'Twelve four-second loops of small studio gestures — a curtain moving, a hand turning, smoke leaving a cup.',
@@ -601,8 +602,8 @@ export const motionData: CategoryData = {
       id: 'marfa',
       title: 'Marfa, sixty seconds',
       it: 'single takes',
-      yr: '2024',
-      loc: 'Marfa, TX',
+      year:'2024',
+      location:'Marfa, TX',
       count: 18,
       tint: '#0e1216',
       desc: 'Eighteen single-take, sixty-second 16mm films made over a two-week residency in west Texas.',

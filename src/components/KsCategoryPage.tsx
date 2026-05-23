@@ -33,8 +33,8 @@ function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?
   return (
     <div className={`cat-photo ${aspect}`} style={{ backgroundColor: photo.tint }}>
       {photo.image
-        ? <img src={photo.image} alt={photo.subj} className="cat-photo-img" />
-        : <div className="cat-photo-ctr">{photo.subj.toUpperCase()}</div>
+        ? <img src={photo.image} alt={photo.title} className="cat-photo-img" />
+        : <div className="cat-photo-ctr">{photo.title.toUpperCase()}</div>
       }
     </div>
   )
@@ -43,8 +43,8 @@ function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?
 function CatCap({ photo, idx }: { photo: FlowPhoto; idx: number }) {
   return (
     <div className="cat-cap">
-      <span className="cat-cap-subj">{pad2(idx)} · {photo.subj}</span>
-      <span>{photo.loc} · {photo.yr}</span>
+      <span className="cat-cap-subj">{pad2(idx)} · {photo.title}</span>
+      <span>{photo.location} · {photo.year}</span>
     </div>
   )
 }
@@ -104,7 +104,7 @@ function RowCenteredTall({ row, idx }: { row: Extract<FlowRow, { kind: 'centered
           </div>
           <CatPhotoWithCap photo={row.photo} idx={idx} />
           <div className="cat-row-ct-side" style={{ textAlign: 'right' }}>
-            {row.photo.loc}<br />{row.photo.yr}
+            {row.photo.location}<br />{row.photo.year}
           </div>
         </div>
       </div>
@@ -301,8 +301,8 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
                   {p.title}{p.it && <em>, {p.it}</em>}
                 </h3>
                 <div className="cat-project-meta">
-                  <span className="cat-project-yr">{p.yr}</span>
-                  <span>{p.loc}</span><br />
+                  <span className="cat-project-yr">{p.year}</span>
+                  <span>{p.location}</span><br />
                   <span>{p.count} frames</span>
                 </div>
               </div>

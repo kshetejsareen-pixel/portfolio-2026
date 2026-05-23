@@ -20,23 +20,32 @@ const CATEGORY_ROUTES: Record<string, string> = {
 const IDLE_DELAY    = 5000
 const CYCLE_INTERVAL = 5000
 
-// Build the active categories list from config + Cloudinary assignments
+interface LandingAssignment {
+  url: string
+  title: string
+  location: string
+  year: string
+  camera: string
+}
+
+// Build the active categories list from config + Cloudinary assignments.
+// Cloudinary copy (ks_* context fields) takes precedence over static categories.ts data.
 function buildCategories(
   config: Record<string, number>,
-  assignments: Record<string, string>,
+  assignments: Record<string, LandingAssignment>,
 ): Category[] {
   return categories.map((cat) => {
     const count = config[cat.id] ?? cat.frames.length
     const frames: Frame[] = Array.from({ length: count }, (_, i) => {
-      const slotId  = `landing-${cat.id}-${i}`
-      const imgUrl  = assignments[slotId]
-      const base    = cat.frames[i]
+      const slotId = `landing-${cat.id}-${i}`
+      const asgn   = assignments[slotId]
+      const base   = cat.frames[i]
       return {
-        subj:  base?.subj  ?? `Frame ${i + 1}`,
-        loc:   base?.loc   ?? '',
-        year:  base?.year  ?? '',
-        gear:  base?.gear  ?? '',
-        image: imgUrl ?? base?.image,
+        title:    asgn?.title    || base?.title    || `Frame ${i + 1}`,
+        location: asgn?.location || base?.location || '',
+        year:     asgn?.year     || base?.year     || '',
+        camera:   asgn?.camera   || base?.camera   || '',
+        image:    asgn?.url      ?? base?.image,
       }
     })
     return { ...cat, frames }
@@ -176,10 +185,10 @@ export function CategoryLanding() {
                 aria-hidden={!active}
               >
                 {f.image
-                  ? <img src={f.image} alt={f.subj} className="ks-frame-img" />
+                  ? <img src={f.image} alt={f.title} className="ks-frame-img" />
                   : active && (
                     <div className="ks-slot-tag">
-                      {c.label.toUpperCase()} · DROP IMAGE — {f.subj.toUpperCase()}
+                      {c.label.toUpperCase()} · DROP IMAGE — {f.title.toUpperCase()}
                     </div>
                   )
                 }
@@ -264,16 +273,16 @@ export function CategoryLanding() {
         </div>
         {/* Inline slate — mobile only */}
         <div className="ks-slate ks-slate--inline">
-          <div className="ks-slate-subj">{frame.subj}</div>
-          <div>{frame.loc} · {frame.year}</div>
+          <div className="ks-slate-subj">{frame.title}</div>
+          <div>{[frame.location, frame.year].filter(Boolean).join(' · ')}</div>
         </div>
       </div>
 
       {/* Slate — desktop bottom-right */}
       <div className="ks-slate ks-slate--desktop">
-        <div className="ks-slate-subj">{frame.subj}</div>
-        <div>{frame.loc} · {frame.year}</div>
-        <div>{frame.gear}</div>
+        <div className="ks-slate-subj">{frame.title}</div>
+        <div>{[frame.location, frame.year].filter(Boolean).join(' · ')}</div>
+        {frame.camera && <div>{frame.camera}</div>}
       </div>
 
       {/* Scrubber */}

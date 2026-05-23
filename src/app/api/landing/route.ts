@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
 import { readLandingConfig } from '@/lib/landingConfig'
 
-// Public endpoint — returns frame config + image assignments for the landing page
+// Public endpoint — returns frame config + image assignments (with copy) for the landing page.
+// Copy fields: title, location, year, camera (sourced from Cloudinary context ks_* fields).
 export async function GET() {
   const [config, searchResult] = await Promise.all([
     readLandingConfig(),
@@ -14,15 +15,24 @@ export async function GET() {
       .catch(() => ({ resources: [] })),
   ])
 
-  const assignments: Record<string, string> = {}
+  const assignments: Record<string, {
+    url: string
+    title: string
+    location: string
+    year: string
+    camera: string
+  }> = {}
+
   for (const img of searchResult.resources) {
     const slotId = img.context?.custom?.portfolio_slot
-    if (slotId) {
-      assignments[slotId] = cloudinary.url(img.public_id, {
-        fetch_format: 'auto',
-        quality: 'auto',
-        width: 2400,
-      })
+    if (!slotId) continue
+    const ctx = img.context?.custom ?? {}
+    assignments[slotId] = {
+      url:      cloudinary.url(img.public_id, { fetch_format: 'auto', quality: 'auto', width: 2400 }),
+      title:    ctx.ks_title    ?? '',
+      location: ctx.ks_location ?? '',
+      year:     ctx.ks_year     ?? '',
+      camera:   ctx.ks_camera   ?? '',
     }
   }
 

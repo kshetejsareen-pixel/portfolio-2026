@@ -1,8 +1,8 @@
 export interface Frame {
-  subj: string
-  loc: string
+  title: string
+  location: string
   year: string
-  gear: string
+  camera: string
   image?: string
 }
 
@@ -21,10 +21,10 @@ export const categories: Category[] = [
     label: 'Culinary',
     tint: '#2a1f17',
     frames: [
-      { subj: 'Stone fruit, late summer', loc: 'Sant Yago, Mallorca', year: '2025', gear: 'Phase One · 80mm' },
-      { subj: 'Brick Lane kitchen pass',  loc: 'London E1',           year: '2024', gear: 'Leica SL2-S · 35mm' },
-      { subj: 'Persimmons, after rain',   loc: 'Kyoto',               year: '2024', gear: 'Hasselblad · 120mm' },
-      { subj: "Chef's table · twelve",    loc: 'Copenhagen',          year: '2023', gear: 'Pentax 67' },
+      { title: 'Stone fruit, late summer', location: 'Sant Yago, Mallorca', year: '2025', camera: 'Phase One · 80mm' },
+      { title: 'Brick Lane kitchen pass',  location: 'London E1',           year: '2024', camera: 'Leica SL2-S · 35mm' },
+      { title: 'Persimmons, after rain',   location: 'Kyoto',               year: '2024', camera: 'Hasselblad · 120mm' },
+      { title: "Chef's table · twelve",    location: 'Copenhagen',          year: '2023', camera: 'Pentax 67' },
     ],
   },
   {
@@ -33,9 +33,9 @@ export const categories: Category[] = [
     label: 'Spaces',
     tint: '#1a2226',
     frames: [
-      { subj: 'Marble stair',         loc: 'Tribeca Loft',         year: '2025', gear: 'Cambo Wide · 38mm' },
-      { subj: 'Atelier, north light', loc: 'Lisbon',               year: '2024', gear: 'Hasselblad · 50mm' },
-      { subj: 'Concrete chapel',      loc: 'Tadao Ando, Naoshima', year: '2023', gear: 'Mamiya 7' },
+      { title: 'Marble stair',         location: 'Tribeca Loft',         year: '2025', camera: 'Cambo Wide · 38mm' },
+      { title: 'Atelier, north light', location: 'Lisbon',               year: '2024', camera: 'Hasselblad · 50mm' },
+      { title: 'Concrete chapel',      location: 'Tadao Ando, Naoshima', year: '2023', camera: 'Mamiya 7' },
     ],
   },
   {
@@ -44,11 +44,11 @@ export const categories: Category[] = [
     label: 'Portraits',
     tint: '#1d1c1a',
     frames: [
-      { subj: 'Eli',   loc: 'Brooklyn Studio',  year: '2025', gear: 'Hasselblad 500C/M · 80mm' },
-      { subj: 'Mira',  loc: 'Bombay',           year: '2025', gear: 'Leica M6 · 50mm · Tri-X 400' },
-      { subj: 'Jonas', loc: 'Catskills Porch',  year: '2024', gear: 'Pentax 67 · 105mm' },
-      { subj: 'Sade',  loc: 'Studio · Vol. iv', year: '2024', gear: 'Mamiya RZ67 · 110mm' },
-      { subj: 'Imran', loc: 'Mehrauli',         year: '2023', gear: 'Leica Q2' },
+      { title: 'Eli',   location: 'Brooklyn Studio',  year: '2025', camera: 'Hasselblad 500C/M · 80mm' },
+      { title: 'Mira',  location: 'Bombay',           year: '2025', camera: 'Leica M6 · 50mm · Tri-X 400' },
+      { title: 'Jonas', location: 'Catskills Porch',  year: '2024', camera: 'Pentax 67 · 105mm' },
+      { title: 'Sade',  location: 'Studio · Vol. iv', year: '2024', camera: 'Mamiya RZ67 · 110mm' },
+      { title: 'Imran', location: 'Mehrauli',         year: '2023', camera: 'Leica Q2' },
     ],
   },
   {
@@ -57,9 +57,9 @@ export const categories: Category[] = [
     label: 'Objects',
     tint: '#24211a',
     frames: [
-      { subj: 'Brass kettle, no. 4',   loc: 'Studio', year: '2025', gear: 'Phase One · 120mm macro' },
-      { subj: 'Vessels, set of eight', loc: 'Studio', year: '2024', gear: 'Mamiya RZ67 · 140mm' },
-      { subj: 'Linen, folded',         loc: 'Studio', year: '2024', gear: 'Hasselblad · 80mm' },
+      { title: 'Brass kettle, no. 4',   location: 'Studio', year: '2025', camera: 'Phase One · 120mm macro' },
+      { title: 'Vessels, set of eight', location: 'Studio', year: '2024', camera: 'Mamiya RZ67 · 140mm' },
+      { title: 'Linen, folded',         location: 'Studio', year: '2024', camera: 'Hasselblad · 80mm' },
     ],
   },
   {
@@ -68,8 +68,8 @@ export const categories: Category[] = [
     label: 'Motion',
     tint: '#0f1418',
     frames: [
-      { subj: 'Rain, 24fps', loc: 'Bombay Monsoon', year: '2024', gear: 'Arri Alexa Mini · 35mm' },
-      { subj: 'Loop · 8mm', loc: 'Goa',            year: '2023', gear: 'Bolex H8' },
+      { title: 'Rain, 24fps', location: 'Bombay Monsoon', year: '2024', camera: 'Arri Alexa Mini · 35mm' },
+      { title: 'Loop · 8mm', location: 'Goa',            year: '2023', camera: 'Bolex H8' },
     ],
   },
 ]
