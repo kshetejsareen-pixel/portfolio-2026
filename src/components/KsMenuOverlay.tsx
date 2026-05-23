@@ -32,7 +32,7 @@ export function KsMenuOverlay({ open, onClose }: { open: boolean; onClose: () =>
         <div className="ks-menu-divider" />
         <div className="ks-menu-links">
           <a className="ks-menu-link" href="/contact">Contact</a>
-          <a className="ks-menu-link">Info</a>
+          <a className="ks-menu-link" href="/info">Info</a>
           <a className="ks-menu-link">Journal</a>
         </div>
         <div className="ks-menu-footer">info@kshetejsareen.com</div>

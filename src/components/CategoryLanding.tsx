@@ -171,9 +171,8 @@ export function CategoryLanding() {
           <button className="ks-menu-btn" onClick={() => setMenuOpen(true)}>
             Menu +
           </button>
-          <a>Journal</a>
-          <a>Info</a>
-          <a className="active">Contact</a>
+          <a href="/info">Info</a>
+          <a href="/contact">Contact</a>
         </nav>
       </div>
 
