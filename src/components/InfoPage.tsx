@@ -13,29 +13,29 @@ const PRACTICE = [
 ]
 
 const NOW = [
-  { label: 'Residency', value: 'Lower East Side Studio, NY' },
-  { label: 'In progress', value: 'Bombay street portraits series' },
-  { label: 'Available', value: 'For commission & editorial' },
-  { label: 'Print sales', value: 'Open edition · on request' },
+  'Residency — Kindred Studio, Brooklyn — through Aug 2026',
+  'In progress — The Fruit Table, vol. ii (Kyoto)',
+  'Available — Bookings · May–Sept 2026',
+  'Print sales — Editions of 12 — by request',
 ]
 
 const CLIENTS = [
-  { name: 'Apartamento', year: '2021–' },
-  { name: 'Cereal Magazine', year: '2022–' },
-  { name: 'Kinfolk', year: '2023–' },
-  { name: 'The New York Times', year: '2024–' },
+  { name: 'Apartamento', year: '2021—' },
+  { name: 'Cereal Magazine', year: '2022—' },
+  { name: 'Kinfolk', year: '2023—' },
+  { name: 'The New York Times', year: '2024—' },
   { name: 'The Gentlewoman', year: '2024' },
-  { name: 'Aēsop', year: '2023 / 2025' },
+  { name: 'Aēsop', year: '2023, 2025' },
   { name: 'Le Labo', year: '2024' },
   { name: 'Hermès', year: '2025' },
 ]
 
 const PRESS = [
-  { name: 'Pier 24 Photography', year: '2025' },
-  { name: 'Aperture Foundation', year: '2024' },
-  { name: 'Foam Talent', year: '2024' },
+  { name: 'Pier 24 — group show', year: '2025' },
+  { name: 'Aperture, vol. 246', year: '2024' },
+  { name: 'Foam Talent — finalist', year: '2024' },
   { name: 'British Journal of Photography', year: '2023' },
-  { name: "It's Nice That", year: '2023' },
+  { name: "It's Nice That · profile", year: '2023' },
 ]
 
 export function InfoPage() {
@@ -69,112 +69,108 @@ export function InfoPage() {
 
       <main className="info-main">
 
-        {/* Hero — split */}
+        {/* ── Hero ── */}
         <section className="info-hero">
           <div className="info-hero-photo-col">
-            <div className="info-hero-photo">
+            <div className="info-hero-photo-wrap">
               <div className="info-hero-photo-inner">
-                <div className="info-photo-placeholder">
-                  PORTRAIT · 4 : 5<br />Drop your image here
-                </div>
+                <div className="info-photo-slot-label">Portrait · 4 : 5</div>
+                <div className="info-photo-slot-cta">Drop your image here</div>
+                <div className="info-photo-slot-hint">Drag any photo onto this slot to preview</div>
               </div>
             </div>
-            <div className="info-hero-photo-cap">
-              <span className="ks-eyebrow">Self · Studio · 2026</span>
-            </div>
+            <div className="info-hero-cap ks-eyebrow">Self · Studio · 2026</div>
           </div>
 
           <div className="info-hero-text-col">
             <div className="info-hero-eyebrow ks-eyebrow">
-              <span className="ks-dot" />
               Info · A working biography
             </div>
             <h1 className="info-hero-name">
               Kshetej<br />
-              <span className="info-hero-name-last">Sareen.</span>
+              <span className="info-hero-name-last">Sareen<span className="info-hero-dot">.</span></span>
             </h1>
             <p className="info-hero-intro">
-              Independent photographer working between New York and Bombay.
+              Independent photographer working between{' '}
+              <em>New York and Bombay.</em>{' '}
               Portraits, interiors, and the quiet objects in between.
             </p>
           </div>
         </section>
 
-        {/* Biography */}
+        {/* ── Biography ── */}
         <section className="info-bio">
-          <div className="info-bio-inner">
+          <div className="info-bio-label ks-eyebrow">Biography</div>
+          <div className="info-bio-body">
             <p className="info-bio-para">
-              Born in New Delhi, raised across cities. Began making photographs
-              seriously in 2018 after a decade spent between design studios and
-              film sets. The discipline of both still informs the work — a
-              restlessness with composition, a suspicion of the obvious frame.
+              Kshetej Sareen is a photographer whose work moves between studio
+              portraits and the small, particular objects of everyday life —{' '}
+              <em>vessels, linens, fruit on a table, hands at work.</em> Trained
+              as an architect, his frames lean toward the still, the patient, the
+              carefully lit.
             </p>
             <p className="info-bio-para">
-              The practice spans editorial, commercial, and personal bodies of
-              work. Formally trained in visual communication; largely self-taught
-              in photography. Drawn to the space between documentation and
-              fiction, the image that sits still long enough to become something
-              else.
-            </p>
-            <p className="info-bio-para">
-              Currently based in New York. Available for assignment worldwide.
+              He keeps two studios — one in Brooklyn, one in Bombay — and works
+              on commission for editorial, hospitality, and book projects.
+              Available worldwide and currently booking for 2026.
             </p>
           </div>
         </section>
 
-        {/* Four-section grid */}
+        {/* ── Four sections ── */}
         <section className="info-sections">
-          <div className="info-rule" />
+          <div className="info-sections-rule" />
 
-          <div className="info-grid">
+          <div className="info-quad">
 
             {/* 01 Practice */}
-            <div className="info-section">
-              <div className="info-section-header">
-                <span className="info-section-n">01</span>
-                <div>
-                  <div className="info-section-title">Practice</div>
-                  <div className="info-section-sub">categories of work</div>
-                </div>
+            <div className="info-quad-cell">
+              <div className="info-quad-head">
+                <span className="info-quad-n">01</span>
+                <h2 className="info-quad-title">
+                  Practice, <em>categories of work</em>
+                </h2>
               </div>
+              <div className="info-quad-rule" />
               <ul className="info-practice-list">
                 {PRACTICE.map((p) => (
                   <li key={p.label} className="info-practice-item">
                     <span className="info-practice-label">{p.label}</span>
-                    <span className="info-practice-frames">{p.frames} frames</span>
+                    <span className="info-practice-frames">{p.frames}&thinsp;frames</span>
                   </li>
                 ))}
               </ul>
+              <p className="info-practice-note">
+                Selected frames live in the category index — Portraits, Culinary,
+                Spaces, Objects, Motion.
+              </p>
             </div>
 
             {/* 02 Now */}
-            <div className="info-section">
-              <div className="info-section-header">
-                <span className="info-section-n">02</span>
-                <div>
-                  <div className="info-section-title">Now</div>
-                  <div className="info-section-sub">current</div>
-                </div>
+            <div className="info-quad-cell">
+              <div className="info-quad-head">
+                <span className="info-quad-n">02</span>
+                <h2 className="info-quad-title">
+                  Now, <em>current</em>
+                </h2>
               </div>
+              <div className="info-quad-rule" />
               <ul className="info-now-list">
                 {NOW.map((item) => (
-                  <li key={item.label} className="info-now-item">
-                    <span className="info-now-label">{item.label}</span>
-                    <span className="info-now-value">{item.value}</span>
-                  </li>
+                  <li key={item} className="info-now-item">{item}</li>
                 ))}
               </ul>
             </div>
 
             {/* 03 Clients */}
-            <div className="info-section">
-              <div className="info-section-header">
-                <span className="info-section-n">03</span>
-                <div>
-                  <div className="info-section-title">Selected clients</div>
-                  <div className="info-section-sub">recent</div>
-                </div>
+            <div className="info-quad-cell">
+              <div className="info-quad-head">
+                <span className="info-quad-n">03</span>
+                <h2 className="info-quad-title">
+                  Selected clients, <em>recent</em>
+                </h2>
               </div>
+              <div className="info-quad-rule" />
               <ul className="info-clients-list">
                 {CLIENTS.map((c) => (
                   <li key={c.name} className="info-client-item">
@@ -186,14 +182,14 @@ export function InfoPage() {
             </div>
 
             {/* 04 Press */}
-            <div className="info-section">
-              <div className="info-section-header">
-                <span className="info-section-n">04</span>
-                <div>
-                  <div className="info-section-title">Press &amp; exhibitions</div>
-                  <div className="info-section-sub">selected</div>
-                </div>
+            <div className="info-quad-cell">
+              <div className="info-quad-head">
+                <span className="info-quad-n">04</span>
+                <h2 className="info-quad-title">
+                  Press &amp; exhibitions, <em>selected</em>
+                </h2>
               </div>
+              <div className="info-quad-rule" />
               <ul className="info-clients-list">
                 {PRESS.map((p) => (
                   <li key={p.name} className="info-client-item">
@@ -207,38 +203,36 @@ export function InfoPage() {
           </div>
         </section>
 
-        {/* Get in touch */}
+        {/* ── Get in touch ── */}
         <section className="info-touch">
-          <div className="info-touch-inner">
-            <h2 className="info-touch-heading">
-              Get in touch<span className="info-touch-dot">.</span>
-            </h2>
-            <div className="info-touch-grid">
-              <div className="info-touch-col">
-                <div className="info-touch-col-label">Studio</div>
-                <a href="mailto:info@kshetejsareen.com" className="info-touch-email">
-                  info@kshetejsareen.com
-                </a>
-                <div className="info-touch-note">For commissions &amp; prints</div>
-              </div>
-              <div className="info-touch-col">
-                <div className="info-touch-col-label">By appointment</div>
-                <div className="info-touch-addr">New York · Bombay</div>
-                <div className="info-touch-note">Studio visits welcome</div>
-              </div>
-              <div className="info-touch-col">
-                <div className="info-touch-col-label">Elsewhere</div>
-                <div className="info-touch-social">
-                  <a
-                    href="https://instagram.com/kshetejsareen"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="info-touch-social-link"
-                  >
-                    @kshetejsareen<span className="info-touch-platform">Instagram</span>
-                  </a>
-                </div>
-              </div>
+          <div className="info-touch-rule" />
+          <h2 className="info-touch-heading">
+            Get in touch<span className="info-touch-period">.</span>
+          </h2>
+          <div className="info-touch-cols">
+            <div className="info-touch-col">
+              <div className="info-touch-col-label">Studio</div>
+              <a href="mailto:info@kshetejsareen.com" className="info-touch-val">
+                info@kshetejsareen.com
+              </a>
+              <div className="info-touch-sub">For commissions &amp; prints</div>
+            </div>
+            <div className="info-touch-col">
+              <div className="info-touch-col-label">By appointment</div>
+              <div className="info-touch-val">New York · Bombay</div>
+              <div className="info-touch-sub">Studio visits welcome</div>
+            </div>
+            <div className="info-touch-col">
+              <div className="info-touch-col-label">Elsewhere</div>
+              <a
+                href="https://instagram.com/kshetejsareen"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="info-touch-val"
+              >
+                @kshetejsareen
+              </a>
+              <div className="info-touch-sub">Instagram</div>
             </div>
           </div>
         </section>
