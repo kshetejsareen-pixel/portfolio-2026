@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { categories } from '@/lib/categories'
+import { categories, type Category, type Frame } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { useNavigate } from '@/components/PageTransition'
 
@@ -17,22 +17,56 @@ const CATEGORY_ROUTES: Record<string, string> = {
   motion:    '/motion',
 }
 
-// How long the system must be idle before auto-cycling begins (ms)
-const IDLE_DELAY = 5000
-// How fast it cycles once idle (ms per category)
+const IDLE_DELAY    = 5000
 const CYCLE_INTERVAL = 5000
+
+// Build the active categories list from config + Cloudinary assignments
+function buildCategories(
+  config: Record<string, number>,
+  assignments: Record<string, string>,
+): Category[] {
+  return categories.map((cat) => {
+    const count = config[cat.id] ?? cat.frames.length
+    const frames: Frame[] = Array.from({ length: count }, (_, i) => {
+      const slotId  = `landing-${cat.id}-${i}`
+      const imgUrl  = assignments[slotId]
+      const base    = cat.frames[i]
+      return {
+        subj:  base?.subj  ?? `Frame ${i + 1}`,
+        loc:   base?.loc   ?? '',
+        year:  base?.year  ?? '',
+        gear:  base?.gear  ?? '',
+        image: imgUrl ?? base?.image,
+      }
+    })
+    return { ...cat, frames }
+  })
+}
 
 export function CategoryLanding() {
   const navigate = useNavigate()
-  const [catIdx, setCatIdx] = useState(0)
+  const [catIdx, setCatIdx]   = useState(0)
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
-  const cycleRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const idleRef  = useRef<ReturnType<typeof setTimeout>  | null>(null)
+
+  // Dynamic data from the admin panel
+  const [activeCategories, setActiveCategories] = useState<Category[]>(categories)
+  const cycleRef      = useRef<ReturnType<typeof setInterval> | null>(null)
+  const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
-  const cat = categories[catIdx]
-  const frame = cat.frames[frameIdx]
+  // Fetch config + assignments on mount
+  useEffect(() => {
+    fetch('/api/landing')
+      .then((r) => r.json())
+      .then(({ config, assignments }) => {
+        setActiveCategories(buildCategories(config ?? {}, assignments ?? {}))
+      })
+      .catch(() => {/* keep static defaults */})
+  }, [])
+
+  const cat = activeCategories[catIdx] ?? activeCategories[0]
+  const frame = cat.frames[frameIdx] ?? cat.frames[0]
   const totalFrames = cat.frames.length
 
   // Reset frame index whenever the active category changes
@@ -48,10 +82,10 @@ export function CategoryLanding() {
     stopCycle()
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
-        setCatIdx((c) => (c + 1) % categories.length)
+        setCatIdx((c) => (c + 1) % activeCategories.length)
       }, CYCLE_INTERVAL)
     }, IDLE_DELAY)
-  }, [stopCycle])
+  }, [stopCycle, activeCategories.length])
 
   // Start the countdown on mount; clean up on unmount
   useEffect(() => {
@@ -63,25 +97,26 @@ export function CategoryLanding() {
   // Stops the cycle immediately on any keypress, then restarts the idle countdown.
   // Re-registers on catIdx change so `total` stays current.
   useEffect(() => {
-    const total = categories[catIdx].frames.length
+    const total   = activeCategories[catIdx]?.frames.length ?? 1
+    const catLen  = activeCategories.length
     const onKey = (e: KeyboardEvent) => {
       if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
       e.preventDefault()
       stopCycle()
       if (e.key === 'ArrowRight') setFrameIdx((f) => (f + 1) % total)
       else if (e.key === 'ArrowLeft') setFrameIdx((f) => ((f - 1) + total) % total)
-      else if (e.key === 'ArrowDown') setCatIdx((c) => (c + 1) % categories.length)
-      else if (e.key === 'ArrowUp')   setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
+      else if (e.key === 'ArrowDown') setCatIdx((c) => (c + 1) % catLen)
+      else if (e.key === 'ArrowUp')   setCatIdx((c) => ((c - 1) + catLen) % catLen)
       startIdleCountdown()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [catIdx, stopCycle, startIdleCountdown])
+  }, [catIdx, activeCategories, stopCycle, startIdleCountdown])
 
   // ── Category-strip click ─────────────────────────────────────────────────
   const handleCatClick = (i: number) => {
     if (i === catIdx) {
-      const route = CATEGORY_ROUTES[categories[i].id]
+      const route = CATEGORY_ROUTES[activeCategories[i]?.id]
       if (route) navigate(route)
       return
     }
@@ -113,8 +148,8 @@ export function CategoryLanding() {
         else        setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)
       } else {
         // Vertical → change category
-        if (dy < 0) setCatIdx((c) => (c + 1) % categories.length)
-        else        setCatIdx((c) => ((c - 1) + categories.length) % categories.length)
+        if (dy < 0) setCatIdx((c) => (c + 1) % activeCategories.length)
+        else        setCatIdx((c) => ((c - 1) + activeCategories.length) % activeCategories.length)
       }
     }
 
@@ -130,7 +165,7 @@ export function CategoryLanding() {
     >
       {/* Photo layers */}
       <div className="ks-photo-layer">
-        {categories.map((c, ci) =>
+        {activeCategories.map((c, ci) =>
           c.frames.map((f, fi) => {
             const active = ci === catIdx && fi === frameIdx
             return (
@@ -178,7 +213,7 @@ export function CategoryLanding() {
 
       {/* Category rail */}
       <div className="ks-cat-rail">
-        {categories.map((c, i) => (
+        {activeCategories.map((c, i) => (
           <button
             key={c.id}
             className={`ks-cat${i === catIdx ? ' active' : ''}`}

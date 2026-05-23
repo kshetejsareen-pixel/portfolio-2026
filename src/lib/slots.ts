@@ -1,32 +1,35 @@
+import { categories } from '@/lib/categories'
+
 export interface Slot {
   id: string
   page: string
   label: string
-  hint: string   // aspect ratio / size hint
+  hint: string
 }
 
-// Landing page — one slot per frame per category
-const LANDING_SLOTS: Slot[] = [
-  { id: 'landing-culinary-0',  page: 'Landing',   label: 'Culinary · Stone fruit, late summer',  hint: 'Full bleed · any ratio' },
-  { id: 'landing-culinary-1',  page: 'Landing',   label: 'Culinary · Brick Lane kitchen pass',   hint: 'Full bleed · any ratio' },
-  { id: 'landing-culinary-2',  page: 'Landing',   label: 'Culinary · Persimmons, after rain',    hint: 'Full bleed · any ratio' },
-  { id: 'landing-culinary-3',  page: 'Landing',   label: "Culinary · Chef's table · twelve",     hint: 'Full bleed · any ratio' },
-  { id: 'landing-spaces-0',    page: 'Landing',   label: 'Spaces · Marble stair',                hint: 'Full bleed · any ratio' },
-  { id: 'landing-spaces-1',    page: 'Landing',   label: 'Spaces · Atelier, north light',        hint: 'Full bleed · any ratio' },
-  { id: 'landing-spaces-2',    page: 'Landing',   label: 'Spaces · Concrete chapel',             hint: 'Full bleed · any ratio' },
-  { id: 'landing-portraits-0', page: 'Landing',   label: 'Portraits · Eli',                      hint: 'Full bleed · any ratio' },
-  { id: 'landing-portraits-1', page: 'Landing',   label: 'Portraits · Mira',                     hint: 'Full bleed · any ratio' },
-  { id: 'landing-portraits-2', page: 'Landing',   label: 'Portraits · Jonas',                    hint: 'Full bleed · any ratio' },
-  { id: 'landing-portraits-3', page: 'Landing',   label: 'Portraits · Sade',                     hint: 'Full bleed · any ratio' },
-  { id: 'landing-portraits-4', page: 'Landing',   label: 'Portraits · Imran',                    hint: 'Full bleed · any ratio' },
-  { id: 'landing-objects-0',   page: 'Landing',   label: 'Objects · Brass kettle, no. 4',        hint: 'Full bleed · any ratio' },
-  { id: 'landing-objects-1',   page: 'Landing',   label: 'Objects · Vessels, set of eight',      hint: 'Full bleed · any ratio' },
-  { id: 'landing-objects-2',   page: 'Landing',   label: 'Objects · Linen, folded',              hint: 'Full bleed · any ratio' },
-  { id: 'landing-motion-0',    page: 'Landing',   label: 'Motion · Rain, 24fps',                 hint: 'Full bleed · any ratio' },
-  { id: 'landing-motion-1',    page: 'Landing',   label: 'Motion · Loop · 8mm',                  hint: 'Full bleed · any ratio' },
-]
+// Frame label: use categories.ts metadata if it exists, else fall back to a number
+function landingSlotLabel(catId: string, index: number): string {
+  const cat = categories.find((c) => c.id === catId)
+  const frame = cat?.frames[index]
+  const catLabel = cat?.label ?? catId
+  return frame ? `${catLabel} · ${frame.subj}` : `${catLabel} · Frame ${index + 1}`
+}
 
-// Category gallery pages — placeholder slots for portfolio work
+// Generate landing slots dynamically for a given config
+export function getLandingSlots(config: Record<string, number>): Slot[] {
+  const CAT_IDS = ['culinary', 'spaces', 'portraits', 'objects', 'motion']
+  return CAT_IDS.flatMap((catId) => {
+    const count = config[catId] ?? 0
+    return Array.from({ length: count }, (_, i) => ({
+      id: `landing-${catId}-${i}`,
+      page: 'Landing',
+      label: landingSlotLabel(catId, i),
+      hint: 'Full bleed · any ratio',
+    }))
+  })
+}
+
+// Category gallery pages
 const CULINARY_SLOTS: Slot[] = Array.from({ length: 12 }, (_, i) => ({
   id: `culinary-${i}`,
   page: 'Culinary',
@@ -66,8 +69,8 @@ const INFO_SLOTS: Slot[] = [
   { id: 'info-portrait', page: 'Info', label: 'Info · Portrait photo (4:5)', hint: '4:5 portrait · 800×1000px min' },
 ]
 
-export const ALL_SLOTS: Slot[] = [
-  ...LANDING_SLOTS,
+// Static non-landing slots (used for gallery pages etc.)
+export const GALLERY_SLOTS: Slot[] = [
   ...CULINARY_SLOTS,
   ...SPACES_SLOTS,
   ...PORTRAITS_SLOTS,
