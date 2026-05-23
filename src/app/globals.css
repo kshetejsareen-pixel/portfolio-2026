@@ -1376,8 +1376,12 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 
 /* ── Mobile ── */
 @media (max-width: 767px) {
-  .contact-ticker { top: 72px; }
-  .contact-main-v2 { padding-top: 120px; }
+  .contact-ticker {
+    position: relative;
+    top: auto;
+    margin-top: 72px; /* push below fixed topbar */
+  }
+  .contact-main-v2 { padding-top: 0; }
   .contact-hero-v2 { padding: 40px var(--cat-pad) 56px; }
   .contact-hero-cols { grid-template-columns: 1fr; gap: 24px; }
   .contact-inquiry { grid-template-columns: 1fr; gap: 40px; padding: 48px var(--cat-pad); }
