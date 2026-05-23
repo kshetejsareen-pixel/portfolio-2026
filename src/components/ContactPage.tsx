@@ -167,7 +167,6 @@ export function ContactPage() {
           <div className="contact-hero-eyebrow ks-eyebrow">Contact</div>
           <h1 className="contact-hero-title">
             Say hello<span className="contact-hero-period">.</span>
-            <span className="contact-hero-dot" aria-hidden="true" />
           </h1>
           <div className="contact-hero-cols">
             <p className="contact-hero-col">
