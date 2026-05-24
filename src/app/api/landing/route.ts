@@ -3,14 +3,15 @@ import cloudinary from '@/lib/cloudinary'
 import { readLandingConfig } from '@/lib/landingConfig'
 
 // Public endpoint — returns frame config + image assignments (with copy) for the landing page.
-// Copy fields: title, location, year, camera (sourced from Cloudinary context ks_* fields).
+// Cloudinary doesn't support wildcard context searches, so we fetch all images with context
+// and filter for landing-* slots on the server.
 export async function GET() {
   const [config, searchResult] = await Promise.all([
     readLandingConfig(),
     cloudinary.search
-      .expression('resource_type:image AND context.portfolio_slot:landing-*')
+      .expression('resource_type:image')
       .with_field('context')
-      .max_results(200)
+      .max_results(500)
       .execute()
       .catch(() => ({ resources: [] })),
   ])
@@ -25,7 +26,7 @@ export async function GET() {
 
   for (const img of searchResult.resources) {
     const slotId = img.context?.custom?.portfolio_slot
-    if (!slotId) continue
+    if (!slotId?.startsWith('landing-')) continue
     const ctx = img.context?.custom ?? {}
     assignments[slotId] = {
       url:      cloudinary.url(img.public_id, { fetch_format: 'auto', quality: 'auto', width: 2400 }),

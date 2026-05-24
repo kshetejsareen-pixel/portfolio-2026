@@ -9,12 +9,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Remove this slot from any image that currently holds it
+    // Remove this slot from any image that currently holds it.
+    // Use context.key:value (no quotes, no wildcard) — exact match works fine.
     const existing = await cloudinary.search
-      .expression(`resource_type:image AND context.portfolio_slot="${slotId}"`)
+      .expression(`resource_type:image AND context.portfolio_slot:${slotId}`)
       .with_field('context')
       .max_results(10)
       .execute()
+      .catch(() => ({ resources: [] }))
 
     for (const img of existing.resources) {
       if (img.public_id !== publicId) {
@@ -25,7 +27,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Assign the new image
+    // Assign the new image to this slot
     await cloudinary.uploader.explicit(publicId, {
       type: 'upload',
       context: `portfolio_slot=${slotId}`,
