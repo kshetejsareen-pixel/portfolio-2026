@@ -1,9 +1,108 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import type { CategoryData, FlowRow, FlowPhoto, IntroPart } from '@/lib/categoryData'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import { PROJECT_TAGS } from '@/lib/tags'
+
+interface CategoryCopy {
+  introLabel?: string
+  introBody?: string
+  pullQuoteText?: string
+  pullQuoteAttr?: string
+  heroTitle?: string
+  projectsSectionTitle?: string
+}
+
+interface AdminProject {
+  id: string
+  folder: string
+  title: string
+  it?: string
+  year: string
+  location: string
+  desc?: string
+  imageCount?: number
+  coverUrl?: string | null
+  tags?: string[]
+}
+
+interface GalleryAssignment {
+  url: string
+  title: string
+  location: string
+  year: string
+  camera: string
+}
+
+// Walks the flow in render order and overlays Cloudinary assignments onto each photo.
+// Photo indices match gallery slot IDs: catId-0 → first photo, catId-1 → second, etc.
+function applyGalleryAssignments(
+  flow: FlowRow[],
+  assignments: Record<string, GalleryAssignment>,
+): FlowRow[] {
+  let idx = 0
+
+  function enrich(photo: FlowPhoto): FlowPhoto {
+    const a = assignments[String(idx++)]
+    if (!a) return photo
+    return {
+      ...photo,
+      image:    a.url      || photo.image,
+      title:    a.title    || photo.title,
+      location: a.location || photo.location,
+      year:     a.year     || photo.year,
+      camera:   a.camera   || photo.camera,
+    }
+  }
+
+  return flow.map((row) => {
+    switch (row.kind) {
+      case 'pull-quote':
+        return row
+      case 'full-bleed':
+      case 'full-bleed-pano':
+      case 'centered-tall':
+      case 'offset':
+        return { ...row, photo: enrich(row.photo) }
+      case 'asym':
+        return { ...row, large: enrich(row.large), smalls: row.smalls.map(enrich) }
+      case 'three-up':
+      case 'diptych':
+      case 'duo':
+        return { ...row, photos: row.photos.map(enrich) }
+    }
+  })
+}
+
+function photoHasImage(p: FlowPhoto) { return !!p.image }
+
+// A row is "visible" if at least one photo in it has an assigned image.
+// Pull-quotes are handled separately (shown only if any photos exist).
+function rowHasAnyImage(row: FlowRow): boolean {
+  switch (row.kind) {
+    case 'pull-quote':   return false
+    case 'asym':         return photoHasImage(row.large) || row.smalls.some(photoHasImage)
+    case 'three-up':
+    case 'diptych':
+    case 'duo':          return row.photos.some(photoHasImage)
+    default:             return photoHasImage(row.photo)
+  }
+}
+
+function countAssigned(flow: FlowRow[]): number {
+  return flow.reduce((n, row) => {
+    switch (row.kind) {
+      case 'pull-quote': return n
+      case 'asym':       return n + (photoHasImage(row.large) ? 1 : 0) + row.smalls.filter(photoHasImage).length
+      case 'three-up':
+      case 'diptych':
+      case 'duo':        return n + row.photos.filter(photoHasImage).length
+      default:           return n + (photoHasImage(row.photo) ? 1 : 0)
+    }
+  }, 0)
+}
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -41,10 +140,11 @@ function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?
 }
 
 function CatCap({ photo, idx }: { photo: FlowPhoto; idx: number }) {
+  const meta = [photo.location, photo.year].filter(Boolean).join(' · ')
   return (
     <div className="cat-cap">
       <span className="cat-cap-subj">{pad2(idx)} · {photo.title}</span>
-      <span>{photo.location} · {photo.year}</span>
+      {meta && <span>{meta}</span>}
     </div>
   )
 }
@@ -168,20 +268,30 @@ function RowOffset({ row, idx }: { row: Extract<FlowRow, { kind: 'offset' }>; id
   )
 }
 
-function RowPullQuote({ pullQuote }: { pullQuote: { text: string; attr: string } }) {
+function RowPullQuote({ pullQuote, copyOverride }: {
+  pullQuote: { text: string; attr: string }
+  copyOverride?: { text?: string; attr?: string }
+}) {
   return (
     <div className="cat-row">
       <div className="cat-pull-quote">
-        <p className="cat-pull-quote-text">{pullQuote.text}</p>
-        <div className="cat-pull-quote-attr">{pullQuote.attr}</div>
+        <p className="cat-pull-quote-text">{copyOverride?.text || pullQuote.text}</p>
+        <div className="cat-pull-quote-attr">{copyOverride?.attr || pullQuote.attr}</div>
       </div>
     </div>
   )
 }
 
-export function KsCategoryPage({ data }: { data: CategoryData }) {
+export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: string }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [copy, setCopy] = useState<CategoryCopy>({})
+  const [adminProjects, setAdminProjects] = useState<AdminProject[] | null>(null)
+  const [activeTag, setActiveTag] = useState<string | null>(null)
+  const [showAllProjects, setShowAllProjects] = useState(false)
+  const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>({})
+
+  const PROJECTS_INITIAL = 4
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -190,11 +300,63 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const heroTint = getHeroTint(data.flow[0])
-  const totalFrames = data.flow.reduce((n, r) => n + countPhotos(r), 0)
+  useEffect(() => {
+    fetch('/api/copy')
+      .then((r) => r.json())
+      .then((d) => { if (d.copy?.[catId]) setCopy(d.copy[catId]) })
+      .catch(() => {})
+  }, [catId])
+
+  useEffect(() => {
+    fetch(`/api/projects?catId=${catId}`)
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.projects)) setAdminProjects(d.projects) })
+      .catch(() => {})
+  }, [catId])
+
+  const fetchGallery = useCallback(() => {
+    fetch(`/api/gallery?catId=${catId}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.assignments) setGalleryAssignments(d.assignments) })
+      .catch(() => {})
+  }, [catId])
+
+  useEffect(() => {
+    fetchGallery()
+    // Poll every 3s while visible so admin assignments appear without a manual refresh
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') fetchGallery()
+    }, 3000)
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchGallery() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [fetchGallery])
+
+  // Tags across admin projects
+  const allTagIds = [...new Set((adminProjects ?? []).flatMap((p) => p.tags ?? []))]
+  const filterTags = PROJECT_TAGS.filter((t) => allTagIds.includes(t.id))
+  const filteredProjects = adminProjects
+    ? (activeTag ? adminProjects.filter((p) => p.tags?.includes(activeTag)) : adminProjects)
+    : null
+
+  const enrichedFlow = applyGalleryAssignments(data.flow, galleryAssignments)
+
+  // Only show rows where at least one photo is assigned; pull-quotes only when there's content
+  const assignedCount = countAssigned(enrichedFlow)
+  const anyAssigned   = assignedCount > 0
+  const visibleFlow   = enrichedFlow.filter((row) =>
+    row.kind === 'pull-quote' ? anyAssigned : rowHasAnyImage(row)
+  )
+
+  const heroTint     = getHeroTint(visibleFlow[0] ?? enrichedFlow[0] ?? data.flow[0])
+  const frameCount   = anyAssigned ? assignedCount : enrichedFlow.reduce((n, r) => n + countPhotos(r), 0)
+  const projectCount = adminProjects?.length ?? data.projects.length
 
   let photoIdx = 1
-  const flowWithIdx = data.flow.map(row => {
+  const flowWithIdx = visibleFlow.map(row => {
     const start = photoIdx
     photoIdx += countPhotos(row)
     return { row, start }
@@ -223,10 +385,10 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
             <span className="ks-dot" />
             <span className="ks-eyebrow">Category · {data.cat.n} of 05</span>
           </div>
-          <h1 className="cat-hero-title">{data.cat.name}</h1>
+          <h1 className="cat-hero-title">{copy.heroTitle || data.cat.name}</h1>
           <div className="cat-hero-stats">
-            <span><strong>{totalFrames}</strong> Frames</span>
-            <span><strong>{data.projects.length}</strong> Projects</span>
+            <span><strong>{frameCount}</strong> Frames</span>
+            <span><strong>{projectCount}</strong> Projects</span>
             <span><strong>2021–2026</strong></span>
           </div>
         </div>
@@ -237,79 +399,177 @@ export function KsCategoryPage({ data }: { data: CategoryData }) {
       </section>
 
       <section className="cat-intro">
-        <div className="cat-intro-label ks-eyebrow">{data.intro.label}</div>
+        <div className="cat-intro-label ks-eyebrow">{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body">
-          {data.intro.body.map((seg: IntroPart, i: number) =>
-            typeof seg === 'string'
-              ? <span key={i}>{seg}</span>
-              : <em key={i}>{(seg as { it: string }).it}</em>
-          )}
+          {copy.introBody
+            ? copy.introBody
+            : data.intro.body.map((seg: IntroPart, i: number) =>
+                typeof seg === 'string'
+                  ? <span key={i}>{seg}</span>
+                  : <em key={i}>{(seg as { it: string }).it}</em>
+              )
+          }
         </p>
       </section>
 
-      <section className="cat-editorial">
-        {flowWithIdx.map(({ row, start }, i) => {
-          const key = `${row.kind}-${i}`
-          switch (row.kind) {
-            case 'full-bleed':
-              return <RowFullBleed key={key} row={row} idx={start} />
-            case 'full-bleed-pano':
-              return <RowFullBleedPano key={key} row={row} idx={start} />
-            case 'asym':
-              return <RowAsym key={key} row={row} idxBase={start} />
-            case 'centered-tall':
-              return <RowCenteredTall key={key} row={row} idx={start} />
-            case 'three-up':
-              return <RowThreeUp key={key} row={row} idxBase={start} />
-            case 'diptych':
-              return <RowDiptych key={key} row={row} idxBase={start} />
-            case 'duo':
-              return <RowDuo key={key} row={row} idxBase={start} />
-            case 'offset':
-              return <RowOffset key={key} row={row} idx={start} />
-            case 'pull-quote':
-              return <RowPullQuote key={key} pullQuote={data.pullQuote} />
-            default:
-              return null
-          }
-        })}
-      </section>
+      {anyAssigned && (
+        <section className="cat-editorial">
+          {flowWithIdx.map(({ row, start }, i) => {
+            const key = `${row.kind}-${i}`
+            switch (row.kind) {
+              case 'full-bleed':
+                return <RowFullBleed key={key} row={row} idx={start} />
+              case 'full-bleed-pano':
+                return <RowFullBleedPano key={key} row={row} idx={start} />
+              case 'asym':
+                return <RowAsym key={key} row={row} idxBase={start} />
+              case 'centered-tall':
+                return <RowCenteredTall key={key} row={row} idx={start} />
+              case 'three-up':
+                return <RowThreeUp key={key} row={row} idxBase={start} />
+              case 'diptych':
+                return <RowDiptych key={key} row={row} idxBase={start} />
+              case 'duo':
+                return <RowDuo key={key} row={row} idxBase={start} />
+              case 'offset':
+                return <RowOffset key={key} row={row} idx={start} />
+              case 'pull-quote':
+                return (
+                  <RowPullQuote
+                    key={key}
+                    pullQuote={data.pullQuote}
+                    copyOverride={{ text: copy.pullQuoteText, attr: copy.pullQuoteAttr }}
+                  />
+                )
+              default:
+                return null
+            }
+          })}
+        </section>
+      )}
 
       <section className="cat-projects">
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
-            Selected<br />
-            projects<span style={{ fontStyle: 'normal', color: 'var(--paper-dim)' }}>.</span>
+            {copy.projectsSectionTitle
+              ? <>{copy.projectsSectionTitle}<span style={{ fontStyle: 'normal', color: 'var(--paper-dim)' }}>.</span></>
+              : <>Selected<br />projects<span style={{ fontStyle: 'normal', color: 'var(--paper-dim)' }}>.</span></>
+            }
           </h2>
           <p className="cat-projects-note">
             Bodies of work made over weeks or months. Full edits, contact sheets, and shoot notes.
           </p>
         </header>
-        <div className="cat-projects-grid">
-          {data.projects.map((p) => (
-            <a key={p.id} className="cat-project">
-              <div className="cat-project-cover">
-                <div className="cat-photo" style={{ backgroundColor: p.tint, width: '100%', height: '100%' }}>
-                  {p.image
-                    ? <img src={p.image} alt={p.title} className="cat-photo-img" />
-                    : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
-                  }
-                </div>
+
+        {filterTags.length > 0 && (
+          <div className="cat-tag-filter">
+            <button
+              className={`cat-tag-btn${activeTag === null ? ' active' : ''}`}
+              onClick={() => setActiveTag(null)}
+            >
+              All
+            </button>
+            {filterTags.map((t) => (
+              <button
+                key={t.id}
+                className={`cat-tag-btn${activeTag === t.id ? ' active' : ''}`}
+                style={{ '--tag-color': t.color } as React.CSSProperties}
+                onClick={() => setActiveTag(activeTag === t.id ? null : t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {(() => {
+          const source = filteredProjects ?? data.projects
+          const visible = showAllProjects ? source : source.slice(0, PROJECTS_INITIAL)
+          const remaining = source.length - PROJECTS_INITIAL
+
+          return (
+            <>
+              <div className="cat-projects-grid">
+                {filteredProjects !== null
+                  ? (visible as AdminProject[]).map((p) => (
+                      <a key={p.id} className="cat-project">
+                        <div className="cat-project-cover">
+                          <div className="cat-photo" style={{ backgroundColor: '#1a1a1c', width: '100%', height: '100%' }}>
+                            {p.coverUrl
+                              ? <img src={p.coverUrl} alt={p.title} className="cat-photo-img" />
+                              : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
+                            }
+                          </div>
+                        </div>
+                        {p.tags && p.tags.length > 0 && (
+                          <div className="cat-project-tags">
+                            {p.tags.map((tid) => {
+                              const tag = PROJECT_TAGS.find((t) => t.id === tid)
+                              return tag ? (
+                                <span
+                                  key={tid}
+                                  className="cat-project-tag"
+                                  style={{ '--tag-color': tag.color } as React.CSSProperties}
+                                >
+                                  {tag.label}
+                                </span>
+                              ) : null
+                            })}
+                          </div>
+                        )}
+                        <div className="cat-project-info">
+                          <h3 className="cat-project-title">
+                            {p.title}{p.it && <em>, {p.it}</em>}
+                          </h3>
+                          <div className="cat-project-meta">
+                            <span className="cat-project-yr">{p.year}</span>
+                            <span>{p.location}</span><br />
+                            {p.imageCount != null && <span>{p.imageCount} frames</span>}
+                          </div>
+                        </div>
+                        {p.desc && <p className="cat-project-desc">{p.desc}</p>}
+                      </a>
+                    ))
+                  : (visible as typeof data.projects).map((p) => (
+                      <a key={p.id} className="cat-project">
+                        <div className="cat-project-cover">
+                          <div className="cat-photo" style={{ backgroundColor: p.tint, width: '100%', height: '100%' }}>
+                            {p.image
+                              ? <img src={p.image} alt={p.title} className="cat-photo-img" />
+                              : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
+                            }
+                          </div>
+                        </div>
+                        <div className="cat-project-info">
+                          <h3 className="cat-project-title">
+                            {p.title}{p.it && <em>, {p.it}</em>}
+                          </h3>
+                          <div className="cat-project-meta">
+                            <span className="cat-project-yr">{p.year}</span>
+                            <span>{p.location}</span><br />
+                            <span>{p.count} frames</span>
+                          </div>
+                        </div>
+                        <p className="cat-project-desc">{p.desc}</p>
+                      </a>
+                    ))
+                }
               </div>
-              <div className="cat-project-info">
-                <h3 className="cat-project-title">
-                  {p.title}{p.it && <em>, {p.it}</em>}
-                </h3>
-                <div className="cat-project-meta">
-                  <span className="cat-project-yr">{p.year}</span>
-                  <span>{p.location}</span><br />
-                  <span>{p.count} frames</span>
+
+              {!showAllProjects && remaining > 0 && (
+                <div className="cat-projects-more-wrap">
+                  <button
+                    className="cat-projects-more"
+                    onClick={() => setShowAllProjects(true)}
+                  >
+                    View more projects
+                    <span className="cat-projects-more-count">+{remaining}</span>
+                  </button>
                 </div>
-              </div>
-              <p className="cat-project-desc">{p.desc}</p>
-            </a>
-          ))}
-        </div>
+              )}
+            </>
+          )
+        })()}
       </section>
 
       <footer className="cat-footer">

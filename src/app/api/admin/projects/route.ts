@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile } from 'fs/promises'
-import path from 'path'
 import cloudinary from '@/lib/cloudinary'
+import { cloudinaryRead, cloudinaryWrite } from '@/lib/cloudinaryStore'
 
-const CONFIG_PATH = path.join(process.cwd(), 'data', 'projects-config.json')
+const PUBLIC_ID = 'ks-projects-config'
 
 export interface AdminProject {
   id: string
@@ -15,26 +14,23 @@ export interface AdminProject {
   desc?: string
   coverId?: string
   imageCount?: number
+  tags?: string[]
+  hiddenImages?: string[]   // Cloudinary public_ids excluded from display
 }
 
 type ProjectsConfig = Record<string, AdminProject[]>
 
 async function readConfig(): Promise<ProjectsConfig> {
-  try {
-    return JSON.parse(await readFile(CONFIG_PATH, 'utf-8'))
-  } catch {
-    return {}
-  }
+  return cloudinaryRead<ProjectsConfig>(PUBLIC_ID, {})
 }
 
-async function saveConfig(config: ProjectsConfig) {
-  await writeFile(CONFIG_PATH, JSON.stringify(config, null, 2))
+async function saveConfig(config: ProjectsConfig): Promise<void> {
+  await cloudinaryWrite(PUBLIC_ID, config)
 }
 
 export async function GET() {
   const config = await readConfig()
 
-  // Enrich with live image counts from Cloudinary
   const enriched: ProjectsConfig = {}
   for (const [catId, projects] of Object.entries(config)) {
     enriched[catId] = await Promise.all(
@@ -69,11 +65,7 @@ export async function POST(req: Request) {
   const config = await readConfig()
   if (!config[categoryId]) config[categoryId] = []
 
-  const newProject: AdminProject = {
-    ...project,
-    id: `proj_${Date.now()}`,
-  }
-
+  const newProject: AdminProject = { ...project, id: `proj_${Date.now()}` }
   config[categoryId] = [newProject, ...config[categoryId]]
   await saveConfig(config)
 
@@ -98,8 +90,8 @@ export async function DELETE(req: Request) {
 
 export async function PATCH(req: Request) {
   const { categoryId, projectId, updates } = await req.json()
-  const config = await readConfig()
 
+  const config = await readConfig()
   if (config[categoryId]) {
     config[categoryId] = config[categoryId].map((p) =>
       p.id === projectId ? { ...p, ...updates } : p

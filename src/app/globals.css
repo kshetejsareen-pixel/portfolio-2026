@@ -764,17 +764,18 @@ button, input, textarea, select { font: inherit; }
 .cat-hero-letter--top    { top: 0; }
 .cat-hero-letter--bottom { bottom: 0; }
 .cat-hero-meta {
-  position: absolute; left: var(--cat-pad); bottom: 96px; z-index: 4; max-width: 760px;
+  position: absolute; left: var(--cat-pad); bottom: 96px; z-index: 4;
 }
 .cat-hero-eyebrow { margin-bottom: 18px; display: flex; gap: 14px; align-items: center; }
 .cat-hero-title {
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(72px, 14vw, 220px);
-  line-height: 0.88; letter-spacing: -0.04em; margin: 0;
+  line-height: 0.9; letter-spacing: -0.04em; margin: 0;
   font-style: italic; color: var(--paper);
+  white-space: nowrap;
 }
 .cat-hero-stats {
-  margin-top: 22px; display: flex; flex-wrap: wrap; gap: 32px;
+  margin-top: 36px; display: flex; flex-wrap: wrap; gap: 32px;
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--mute);
 }
@@ -915,12 +916,15 @@ button, input, textarea, select { font: inherit; }
 
 /* Offset row */
 .cat-row-offset-grid {
-  display: grid; grid-template-columns: 1fr 0.7fr 0.6fr; gap: 40px; align-items: end;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 40px;
+  align-items: start;
 }
-.cat-row-offset-neg { min-height: 100%; }
+.cat-row-offset-neg { /* purely structural spacer — no height needed */ }
 .cat-row-offset-text {
   font-family: var(--font-serif); font-style: italic; font-size: 22px; line-height: 1.4;
-  color: var(--paper-dim); padding-bottom: 8px;
+  color: var(--paper-dim); padding-top: 8px;
 }
 @media (max-width: 1023px) {
   .cat-row-offset-grid { grid-template-columns: 1fr; }
@@ -998,6 +1002,54 @@ button, input, textarea, select { font: inherit; }
 .cat-project-desc {
   margin-top: 14px; font-size: 13px; line-height: 1.55;
   color: var(--paper-dim); max-width: 460px;
+}
+
+/* ── View more projects ──────────────────────────────────────────────────── */
+.cat-projects-more-wrap {
+  margin-top: 64px; display: flex; justify-content: center;
+}
+.cat-projects-more {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--paper-dim);
+  background: transparent; border: 1px solid var(--rule);
+  padding: 14px 32px; cursor: pointer;
+  transition: color 250ms, border-color 250ms;
+}
+.cat-projects-more:hover { color: var(--paper); border-color: var(--paper-dim); }
+.cat-projects-more-count {
+  font-size: 9px; letter-spacing: 0.1em;
+  color: var(--mute); background: #1e1e1e;
+  padding: 2px 7px; border-radius: 100px;
+}
+
+/* ── Tag filter bar ─────────────────────────────────────────────────────── */
+.cat-tag-filter {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 48px;
+}
+.cat-tag-btn {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
+  border: 1px solid var(--rule); background: transparent;
+  color: var(--mute); cursor: pointer;
+  transition: color 150ms, border-color 150ms, background 150ms;
+}
+.cat-tag-btn:hover { color: var(--paper-dim); border-color: #444; }
+.cat-tag-btn.active {
+  background: var(--tag-color, #555);
+  border-color: var(--tag-color, #555);
+  color: #fff;
+}
+
+/* ── Project tag pills ───────────────────────────────────────────────────── */
+.cat-project-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+}
+.cat-project-tag {
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 3px 9px; border-radius: 100px;
+  background: var(--tag-color, #555); color: #fff; white-space: nowrap;
 }
 
 /* Footer */
@@ -2375,6 +2427,22 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-slot.selecting { border-color: #e8e8e0; }
 .adm-slot.assigned { border-color: #2a2a2a; }
+.adm-slot.assigning { border-color: #555; }
+
+.adm-slot-pending {
+  width: 100%; aspect-ratio: 4/3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; background: #0c0c0c;
+}
+.adm-slot-spinner {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid #2a2a2a; border-top-color: #888;
+  animation: adm-spin 0.7s linear infinite;
+}
+@keyframes adm-spin { to { transform: rotate(360deg); } }
+.adm-slot-pending-label {
+  font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: #555;
+}
 
 .adm-slot-img-wrap {
   width: 100%;
@@ -2585,7 +2653,8 @@ a.info-touch-val:hover { color: var(--paper); }
    ADMIN — Slot card edit-copy button
 ═══════════════════════════════════════════════════════════════ */
 
-.adm-slot-copy-btn {
+.adm-slot-copy-btn,
+.adm-slot-link-btn {
   font-family: var(--font-mono);
   font-size: 11px;
   padding: 4px 7px;
@@ -2596,6 +2665,26 @@ a.info-touch-val:hover { color: var(--paper); }
   transition: color 150ms, border-color 150ms;
 }
 .adm-slot-copy-btn:hover { color: #d4a84b; border-color: #d4a84b; }
+.adm-slot-link-btn:hover { color: #7ab8e8; border-color: #7ab8e8; }
+
+.adm-slot-order {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+.adm-slot-order-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid #2a2a2a;
+  background: transparent;
+  color: #444;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+  flex: 1;
+}
+.adm-slot-order-btn:not(:disabled):hover { color: #e8e8e0; border-color: #555; }
+.adm-slot-order-btn:disabled { opacity: 0.25; cursor: default; }
 
 /* ═══════════════════════════════════════════════════════════════
    ADMIN — Copy editor panel
@@ -2753,6 +2842,120 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-copy-save:disabled { opacity: 0.4; cursor: not-allowed; }
 .adm-copy-save:hover:not(:disabled) { opacity: 0.85; }
 
+/* ── Tag pills (admin) ───────────────────────────────────────────────────── */
+.adm-tag-pill {
+  display: inline-block;
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 100px;
+  background: color-mix(in srgb, var(--tag-color, #555) 30%, transparent);
+  color: color-mix(in srgb, var(--tag-color, #888) 90%, #ccc);
+  white-space: nowrap; border: 1px solid color-mix(in srgb, var(--tag-color, #555) 50%, transparent);
+}
+
+.adm-project-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+
+/* ── Tag picker (folder form) ────────────────────────────────────────────── */
+.adm-tag-picker {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0;
+}
+.adm-tag-pick-btn {
+  cursor: pointer; border: none; background: color-mix(in srgb, var(--tag-color, #555) 18%, transparent);
+  color: color-mix(in srgb, var(--tag-color, #888) 70%, #666);
+  opacity: 0.65; transition: opacity 150ms, background 150ms;
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px;
+}
+.adm-tag-pick-btn:hover { opacity: 0.9; }
+.adm-tag-pick-btn.selected {
+  background: color-mix(in srgb, var(--tag-color, #555) 60%, transparent);
+  color: #ddd; opacity: 1;
+  outline: 1px solid color-mix(in srgb, var(--tag-color, #555) 80%, transparent);
+}
+
+/* ── Tag filter bar (admin projects) ─────────────────────────────────────── */
+.adm-tag-filter {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  padding: 8px 12px; border-bottom: 1px solid #181818;
+  flex-shrink: 0;
+}
+.adm-tag-filter-btn {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 100px;
+  background: transparent; border: 1px solid #2a2a2a;
+  color: #555; cursor: pointer; transition: color 150ms, border-color 150ms, background 150ms;
+}
+.adm-tag-filter-btn:hover { color: #888; border-color: #3a3a3a; }
+.adm-tag-filter-btn.active:not(.adm-tag-pill) { color: #aaa; border-color: #444; background: #1a1a1a; }
+.adm-tag-filter-btn.adm-tag-pill.active {
+  background: color-mix(in srgb, var(--tag-color, #555) 50%, transparent);
+  color: #ddd; border-color: transparent;
+}
+
+/* ── URL paste assign ────────────────────────────────────────────────────── */
+.adm-url-assign {
+  display: flex; gap: 6px; padding: 8px 12px;
+  border-bottom: 1px solid #1a1a1a; flex-shrink: 0;
+}
+.adm-url-input {
+  flex: 1; background: #111; border: 1px solid #222; border-radius: 4px;
+  color: #bbb; font-size: 11px; font-family: var(--font-mono, monospace);
+  padding: 6px 9px; min-width: 0; transition: border-color 150ms, opacity 150ms;
+}
+.adm-url-input:focus { outline: none; border-color: #444; }
+.adm-url-input::placeholder { color: #333; }
+.adm-url-input:disabled { opacity: 0.4; cursor: not-allowed; }
+.adm-url-assign-btn {
+  flex-shrink: 0; font-size: 10px; letter-spacing: 0.08em;
+  padding: 6px 12px; border-radius: 4px;
+  background: #222; border: 1px solid #333; color: #888;
+  cursor: pointer; transition: background 150ms, color 150ms;
+  white-space: nowrap;
+}
+.adm-url-assign-btn:hover:not(:disabled) { background: #2a2a2a; color: #bbb; }
+.adm-url-assign-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.adm-copy-section-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #555;
+  padding: 12px 0 4px;
+  border-bottom: 1px solid #1e1e1e;
+  margin-bottom: 4px;
+}
+
+.adm-copy-textarea {
+  width: 100%;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 4px;
+  color: #ccc;
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  padding: 8px 10px;
+  resize: vertical;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.adm-copy-textarea:focus { outline: none; border-color: #444; }
+.adm-copy-textarea::placeholder { color: #444; }
+
+.adm-page-copy-btn {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #666;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+  margin-left: auto;
+}
+.adm-page-copy-btn:hover { color: #aaa; border-color: #444; }
+.adm-page-copy-btn.active { color: #ccc; border-color: #555; background: #1a1a1a; }
+
 /* ═══════════════════════════════════════════════════════════════
    ADMIN — Projects section (category pages)
 ═══════════════════════════════════════════════════════════════ */
@@ -2878,6 +3081,27 @@ a.info-touch-val:hover { color: var(--paper); }
   white-space: nowrap;
 }
 
+.adm-project-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.adm-project-img-btn {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #888;
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms, border-color 150ms;
+}
+.adm-project-img-btn:hover { color: #bbb; border-color: #444; }
 .adm-project-remove {
   background: transparent;
   border: none;
@@ -2889,6 +3113,88 @@ a.info-touch-val:hover { color: var(--paper); }
   transition: color 150ms;
 }
 .adm-project-remove:hover { color: #c44; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — Project images panel
+═══════════════════════════════════════════════════════════════ */
+
+.adm-proj-images-panel {
+  display: flex;
+  flex-direction: column;
+  background: #0f0f0f;
+  overflow: hidden;
+}
+.adm-proj-images-folder {
+  display: block;
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: #444;
+  margin-top: 2px;
+  letter-spacing: 0.06em;
+}
+.adm-proj-images-summary {
+  padding: 10px 16px;
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #666;
+  border-bottom: 1px solid #1a1a1a;
+}
+.adm-proj-images-summary strong { color: #bbb; font-weight: 500; }
+.adm-proj-images-hidden-count { color: #885;  }
+.adm-proj-images-hidden-count strong { color: #bb8; }
+.adm-proj-images-hint {
+  padding: 8px 16px;
+  font-size: 10.5px;
+  color: #444;
+  border-bottom: 1px solid #1a1a1a;
+}
+.adm-proj-images-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.adm-proj-img-item {
+  position: relative;
+  background: #111;
+  border: 1.5px solid transparent;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  aspect-ratio: 1;
+  transition: border-color 150ms, opacity 150ms;
+}
+.adm-proj-img-item:hover { border-color: #555; }
+.adm-proj-img-item.hidden { opacity: 0.35; border-color: #442; }
+.adm-proj-img-item.hidden:hover { opacity: 0.55; border-color: #664; }
+.adm-proj-img-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.adm-proj-img-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 6px;
+  font-size: 9px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  background: rgba(0,0,0,0.75);
+  color: #888;
+}
+.adm-proj-img-item.hidden .adm-proj-img-badge { color: #aa9955; }
 
 /* ═══════════════════════════════════════════════════════════════
    ADMIN — Folder browser panel

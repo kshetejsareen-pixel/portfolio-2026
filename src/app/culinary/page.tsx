@@ -4,5 +4,5 @@ import { culinaryData } from '@/lib/categoryData'
 export const metadata = { title: 'Culinary — Kshetej Sareen' }
 
 export default function CulinaryPage() {
-  return <KsCategoryPage data={culinaryData} />
+  return <KsCategoryPage data={culinaryData} catId="culinary" />
 }

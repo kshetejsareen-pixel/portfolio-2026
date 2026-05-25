@@ -4,6 +4,7 @@ export interface Frame {
   year: string
   camera: string
   image?: string
+  mobileImage?: string  // portrait crop for mobile viewports
 }
 
 export interface Category {

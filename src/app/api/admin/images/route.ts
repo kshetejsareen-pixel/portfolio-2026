@@ -3,36 +3,36 @@ import cloudinary from '@/lib/cloudinary'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const cursor    = searchParams.get('cursor') || undefined
-  const search    = searchParams.get('q') || ''
-  const maxResults = 40
+  const cursor     = searchParams.get('cursor') || undefined
+  const search     = searchParams.get('q') || ''
+  const folder     = searchParams.get('folder') || ''
+  const fetchAll   = searchParams.get('all') === 'true'
+  const maxResults = fetchAll ? 500 : 40
 
   try {
-    let result
-
-    if (search) {
-      result = await cloudinary.search
-        .expression(`resource_type:image AND ${search}`)
-        .with_field('context')
-        .with_field('tags')
-        .sort_by('created_at', 'desc')
-        .max_results(maxResults)
-        .next_cursor(cursor as string)
-        .execute()
+    let expression: string
+    if (folder) {
+      expression = `folder="${folder}" AND resource_type:image`
+    } else if (search) {
+      expression = `resource_type:image AND ${search}`
     } else {
-      result = await cloudinary.search
-        .expression('resource_type:image')
-        .with_field('context')
-        .with_field('tags')
-        .sort_by('created_at', 'desc')
-        .max_results(maxResults)
-        .next_cursor(cursor as string)
-        .execute()
+      expression = 'resource_type:image'
     }
 
+    const query = cloudinary.search
+      .expression(expression)
+      .with_field('context')
+      .with_field('tags')
+      .sort_by('created_at', 'desc')
+      .max_results(maxResults)
+
+    if (!fetchAll && cursor) query.next_cursor(cursor)
+
+    const result = await query.execute()
+
     return NextResponse.json({
-      images: result.resources,
-      next_cursor: result.next_cursor ?? null,
+      images:      result.resources,
+      next_cursor: fetchAll ? null : (result.next_cursor ?? null),
     })
   } catch (err) {
     console.error('Cloudinary list error:', err)

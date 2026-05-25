@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { getLandingSlots, GALLERY_SLOTS, PAGES, type Slot } from '@/lib/slots'
 import { categories } from '@/lib/categories'
+import { PROJECT_TAGS } from '@/lib/tags'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -44,14 +45,27 @@ interface AdminProject {
   coverId?: string
   imageCount?: number
   coverUrl?: string | null
+  tags?: string[]
+  hiddenImages?: string[]
 }
 
 type LandingConfig = Record<string, number>
+
+interface CategoryCopy {
+  introLabel?: string
+  introBody?: string
+  pullQuoteText?: string
+  pullQuoteAttr?: string
+  heroTitle?: string
+  projectsSectionTitle?: string
+}
 
 type RightPanel =
   | { mode: 'library' }
   | { mode: 'copy-editor'; slotId: string; publicId: string; initial: ImageCopy }
   | { mode: 'folder-browser'; categoryId: string }
+  | { mode: 'page-copy'; categoryId: string }
+  | { mode: 'project-images'; categoryId: string; project: AdminProject }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -67,6 +81,14 @@ const CAT_IDS = ['culinary', 'spaces', 'portraits', 'objects', 'motion']
 
 function thumb(url: string) {
   return url.replace('/upload/', '/upload/w_200,h_150,c_fill,q_auto/')
+}
+
+function extractPublicId(input: string): string {
+  const s = input.trim()
+  if (!s.startsWith('http')) return s
+  const m = s.match(/\/upload\/(?:v\d+\/)?(.+)$/)
+  if (!m) return s
+  return m[1].replace(/\.[^/.]+$/, '')
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -89,10 +111,13 @@ export function AdminPanel() {
   // Projects
   const [projects, setProjects]         = useState<Record<string, AdminProject[]>>({})
 
+  // Page copy
+  const [copyCfg, setCopyCfg]           = useState<Record<string, CategoryCopy>>({})
+
   // Selection / panel state
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null)
   const [activePage, setActivePage]     = useState('Landing')
-  const [assigning, setAssigning]       = useState(false)
+  const [assigningSlotId, setAssigningSlotId] = useState<string | null>(null)
   const [rightPanel, setRightPanel]     = useState<RightPanel>({ mode: 'library' })
   const [toast, setToast]               = useState('')
 
@@ -133,12 +158,19 @@ export function AdminPanel() {
     if (data.projects) setProjects(data.projects)
   }, [])
 
+  // ── Fetch page copy config ─────────────────────────────────────────────────
+  const fetchCopyCfg = useCallback(async () => {
+    const data = await fetch('/api/admin/copy').then((r) => r.json())
+    if (data.copy) setCopyCfg(data.copy)
+  }, [])
+
   useEffect(() => {
     fetchImages('')
     fetchAssignments()
     fetchConfig()
     fetchProjects()
-  }, [fetchImages, fetchAssignments, fetchConfig, fetchProjects])
+    fetchCopyCfg()
+  }, [fetchImages, fetchAssignments, fetchConfig, fetchProjects, fetchCopyCfg])
 
   // ── Search debounce ────────────────────────────────────────────────────────
   const handleSearch = (q: string) => {
@@ -168,32 +200,96 @@ export function AdminPanel() {
   // ── Assign image to slot ───────────────────────────────────────────────────
   const assignImage = async (img: CloudinaryImage) => {
     if (!selectedSlot) return
-    setAssigning(true)
+    const slot = selectedSlot
+    setSelectedSlot(null)
+    setAssigningSlotId(slot.id)
     const res = await fetch('/api/admin/assign', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ publicId: img.public_id, slotId: selectedSlot.id }),
+      body: JSON.stringify({ publicId: img.public_id, slotId: slot.id }),
     })
     if (res.ok) {
-      await fetchAssignments()
-      showToast(`Assigned to ${selectedSlot.label}`)
+      // Optimistic update — Cloudinary search index lags behind; don't re-fetch
+      setAssignments((prev) => ({
+        ...prev,
+        [slot.id]: {
+          publicId: img.public_id,
+          url: img.secure_url,
+          thumbnailUrl: thumb(img.secure_url),
+        },
+      }))
+      showToast(`Assigned to ${slot.label}`)
     } else {
       showToast('Error assigning image')
     }
-    setAssigning(false)
+    setAssigningSlotId(null)
+  }
+
+  // ── Assign by public_id or URL ─────────────────────────────────────────────
+  const assignByPublicId = async (rawInput: string) => {
+    if (!selectedSlot) return
+    const publicId = extractPublicId(rawInput)
+    if (!publicId) { showToast('Invalid URL or public ID'); return }
+    const slot = selectedSlot
     setSelectedSlot(null)
+    setAssigningSlotId(slot.id)
+    const res = await fetch('/api/admin/assign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ publicId, slotId: slot.id }),
+    })
+    if (res.ok) {
+      const baseUrl = `https://res.cloudinary.com/dsouvrzlr/image/upload/${publicId}`
+      setAssignments((prev) => ({
+        ...prev,
+        [slot.id]: {
+          publicId,
+          url: baseUrl,
+          thumbnailUrl: baseUrl.replace('/upload/', '/upload/w_400,h_300,c_fill,q_auto,f_auto/'),
+        },
+      }))
+      showToast(`Assigned to ${slot.label}`)
+    } else {
+      showToast('Error — check the URL or public ID')
+    }
+    setAssigningSlotId(null)
+  }
+
+  // ── Swap slot assignments (reorder) ───────────────────────────────────────
+  const swapSlots = async (slotA: string, slotB: string) => {
+    setAssignments((prev) => {
+      const next = { ...prev }
+      const a = prev[slotA]
+      const b = prev[slotB]
+      if (a) next[slotB] = a; else delete next[slotB]
+      if (b) next[slotA] = b; else delete next[slotA]
+      return next
+    })
+    await fetch('/api/admin/assign', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slotA, slotB }),
+    })
+    showToast(`Reordered`)
   }
 
   // ── Unassign slot ──────────────────────────────────────────────────────────
   const unassignSlot = async (slot: Slot) => {
     const asgn = assignments[slot.id]
     if (!asgn) return
+    setAssigningSlotId(slot.id)
     await fetch('/api/admin/assign', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ publicId: asgn.publicId }),
     })
-    await fetchAssignments()
+    // Optimistic remove
+    setAssignments((prev) => {
+      const next = { ...prev }
+      delete next[slot.id]
+      return next
+    })
+    setAssigningSlotId(null)
     showToast('Slot cleared')
   }
 
@@ -275,6 +371,18 @@ export function AdminPanel() {
       <main className="adm-slots-panel">
         <div className="adm-slots-head">
           <div className="adm-slots-title">{activePage}</div>
+          {activePage !== 'Landing' && CAT_IDS.includes(activeCatId) && (
+            <button
+              className={`adm-page-copy-btn${rightPanel.mode === 'page-copy' ? ' active' : ''}`}
+              onClick={() => setRightPanel(
+                rightPanel.mode === 'page-copy'
+                  ? { mode: 'library' }
+                  : { mode: 'page-copy', categoryId: activeCatId }
+              )}
+            >
+              Edit page copy
+            </button>
+          )}
           {selectedSlot && (
             <div className="adm-selecting-badge">
               Selecting for: <strong>{selectedSlot.label}</strong>
@@ -324,6 +432,9 @@ export function AdminPanel() {
               await fetchProjects()
               showToast('Project removed')
             }}
+            onManageImages={(project) =>
+              setRightPanel({ mode: 'project-images', categoryId: activeCatId, project })
+            }
           />
         )}
 
@@ -346,6 +457,7 @@ export function AdminPanel() {
                       slot={slot}
                       assignment={assignments[slot.id]}
                       selected={selectedSlot?.id === slot.id}
+                      assigningThis={assigningSlotId === slot.id}
                       onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
                       onClear={() => unassignSlot(slot)}
                       onEditCopy={() => openCopyEditor(slot)}
@@ -357,15 +469,21 @@ export function AdminPanel() {
           </div>
         ) : (
           <div className="adm-slots-grid adm-slots-grid--padded">
-            {pageSlots.map((slot) => (
+            {pageSlots.map((slot, i) => (
               <SlotCard
                 key={slot.id}
                 slot={slot}
                 assignment={assignments[slot.id]}
                 selected={selectedSlot?.id === slot.id}
+                assigningThis={assigningSlotId === slot.id}
                 onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
                 onClear={() => unassignSlot(slot)}
                 onEditCopy={() => openCopyEditor(slot)}
+                onViewLink={assignments[slot.id]
+                  ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
+                  : undefined}
+                onMoveUp={i > 0 ? () => swapSlots(slot.id, pageSlots[i - 1].id) : undefined}
+                onMoveDown={i < pageSlots.length - 1 ? () => swapSlots(slot.id, pageSlots[i + 1].id) : undefined}
               />
             ))}
           </div>
@@ -404,6 +522,43 @@ export function AdminPanel() {
           }}
           onCancel={() => setRightPanel({ mode: 'library' })}
         />
+      ) : rightPanel.mode === 'page-copy' ? (
+        <PageCopyEditorPanel
+          key={rightPanel.categoryId}
+          categoryId={rightPanel.categoryId}
+          initial={copyCfg[rightPanel.categoryId] ?? {}}
+          onSave={async (copy) => {
+            await fetch('/api/admin/copy', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ categoryId: rightPanel.categoryId, updates: copy }),
+            })
+            setCopyCfg((prev) => ({ ...prev, [rightPanel.categoryId]: copy }))
+            showToast('Page copy saved')
+          }}
+          onClose={() => setRightPanel({ mode: 'library' })}
+        />
+      ) : rightPanel.mode === 'project-images' ? (
+        <ProjectImagesPanel
+          key={rightPanel.project.id}
+          project={rightPanel.project}
+          categoryId={rightPanel.categoryId}
+          onSave={async (hiddenImages) => {
+            await fetch('/api/admin/projects', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                categoryId: rightPanel.categoryId,
+                projectId: rightPanel.project.id,
+                updates: { hiddenImages },
+              }),
+            })
+            await fetchProjects()
+            showToast('Image visibility saved')
+            setRightPanel({ mode: 'library' })
+          }}
+          onCancel={() => setRightPanel({ mode: 'library' })}
+        />
       ) : (
         <LibraryPanel
           images={images}
@@ -411,9 +566,10 @@ export function AdminPanel() {
           loadingImages={loadingImages}
           searchQ={searchQ}
           selectedSlot={selectedSlot}
-          assigning={assigning}
+          assigning={assigningSlotId !== null}
           onSearch={handleSearch}
           onSelectImage={assignImage}
+          onAssignUrl={assignByPublicId}
           onLoadMore={() => fetchImages(searchQ, nextCursor ?? undefined)}
         />
       )}
@@ -426,18 +582,27 @@ export function AdminPanel() {
 // ─── SlotCard ─────────────────────────────────────────────────────────────────
 
 function SlotCard({
-  slot, assignment, selected, onSelect, onClear, onEditCopy,
+  slot, assignment, selected, assigningThis, onSelect, onClear, onEditCopy, onViewLink, onMoveUp, onMoveDown,
 }: {
   slot: Slot
   assignment?: Assignment
   selected: boolean
+  assigningThis: boolean
   onSelect: () => void
   onClear: () => void
   onEditCopy: () => void
+  onViewLink?: () => void
+  onMoveUp?: () => void
+  onMoveDown?: () => void
 }) {
   return (
-    <div className={`adm-slot${selected ? ' selecting' : ''}${assignment ? ' assigned' : ''}`}>
-      {assignment ? (
+    <div className={`adm-slot${selected ? ' selecting' : ''}${assignment ? ' assigned' : ''}${assigningThis ? ' assigning' : ''}`}>
+      {assigningThis ? (
+        <div className="adm-slot-pending">
+          <div className="adm-slot-spinner" />
+          <div className="adm-slot-pending-label">Saving…</div>
+        </div>
+      ) : assignment ? (
         <div className="adm-slot-img-wrap">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={assignment.thumbnailUrl} alt={slot.label} className="adm-slot-img" />
@@ -449,16 +614,25 @@ function SlotCard({
         <div className="adm-slot-label">{slot.label}</div>
         <div className="adm-slot-hint">{slot.hint}</div>
         <div className="adm-slot-actions">
-          <button className="adm-slot-assign-btn" onClick={onSelect}>
+          <button className="adm-slot-assign-btn" onClick={onSelect} disabled={assigningThis}>
             {selected ? 'Cancel' : assignment ? 'Replace' : 'Assign'}
           </button>
-          {assignment && (
+          {assignment && !assigningThis && (
             <>
+              {onViewLink && (
+                <button className="adm-slot-link-btn" onClick={onViewLink} title="Open in Cloudinary">↗</button>
+              )}
               <button className="adm-slot-copy-btn" onClick={onEditCopy} title="Edit copy">✏</button>
               <button className="adm-slot-clear-btn" onClick={onClear}>Clear</button>
             </>
           )}
         </div>
+        {(onMoveUp !== undefined || onMoveDown !== undefined) && (
+          <div className="adm-slot-order">
+            <button className="adm-slot-order-btn" onClick={onMoveUp} disabled={!onMoveUp} title="Move up">↑</button>
+            <button className="adm-slot-order-btn" onClick={onMoveDown} disabled={!onMoveDown} title="Move down">↓</button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -548,13 +722,20 @@ function CopyEditorPanel({
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
 
 function ProjectsSection({
-  categoryId, projects, onAdd, onRemove,
+  categoryId, projects, onAdd, onRemove, onManageImages,
 }: {
   categoryId: string
   projects: AdminProject[]
   onAdd: () => void
   onRemove: (id: string) => void
+  onManageImages: (project: AdminProject) => void
 }) {
+  const [filterTag, setFilterTag] = useState<string | null>(null)
+
+  const usedTagIds = [...new Set(projects.flatMap((p) => p.tags ?? []))]
+  const usedTags = PROJECT_TAGS.filter((t) => usedTagIds.includes(t.id))
+  const filtered = filterTag ? projects.filter((p) => p.tags?.includes(filterTag)) : projects
+
   return (
     <div className="adm-projects-section">
       <div className="adm-projects-head">
@@ -567,13 +748,36 @@ function ProjectsSection({
         </button>
       </div>
 
-      {projects.length === 0 ? (
+      {usedTags.length > 0 && (
+        <div className="adm-tag-filter">
+          <button
+            className={`adm-tag-filter-btn${filterTag === null ? ' active' : ''}`}
+            onClick={() => setFilterTag(null)}
+          >
+            All
+          </button>
+          {usedTags.map((t) => (
+            <button
+              key={t.id}
+              className={`adm-tag-pill adm-tag-filter-btn${filterTag === t.id ? ' active' : ''}`}
+              style={{ '--tag-color': t.color } as React.CSSProperties}
+              onClick={() => setFilterTag(filterTag === t.id ? null : t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {filtered.length === 0 ? (
         <div className="adm-projects-empty">
-          No projects yet. Add a Cloudinary folder to create one.
+          {projects.length === 0
+            ? 'No projects yet. Add a Cloudinary folder to create one.'
+            : 'No projects match this tag.'}
         </div>
       ) : (
         <div className="adm-projects-list">
-          {projects.map((p) => (
+          {filtered.map((p) => (
             <div key={p.id} className="adm-project-row">
               {p.coverUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -588,9 +792,30 @@ function ProjectsSection({
                   {p.location}{p.year ? ` · ${p.year}` : ''}
                   {p.imageCount != null ? ` · ${p.imageCount} images` : ''}
                 </div>
+                {p.tags && p.tags.length > 0 && (
+                  <div className="adm-project-tags">
+                    {p.tags.map((tid) => {
+                      const tag = PROJECT_TAGS.find((t) => t.id === tid)
+                      return tag ? (
+                        <span
+                          key={tid}
+                          className="adm-tag-pill"
+                          style={{ '--tag-color': tag.color } as React.CSSProperties}
+                        >
+                          {tag.label}
+                        </span>
+                      ) : null
+                    })}
+                  </div>
+                )}
                 <div className="adm-project-folder">{p.folder}</div>
               </div>
-              <button className="adm-project-remove" onClick={() => onRemove(p.id)} title="Remove project">×</button>
+              <div className="adm-project-actions">
+                <button className="adm-project-img-btn" onClick={() => onManageImages(p)} title="Manage visible images">
+                  Images {p.hiddenImages?.length ? `· ${p.hiddenImages.length} hidden` : ''}
+                </button>
+                <button className="adm-project-remove" onClick={() => onRemove(p.id)} title="Remove project">×</button>
+              </div>
             </div>
           ))}
         </div>
@@ -613,7 +838,11 @@ function FolderBrowserPanel({
   const [loading, setLoading]         = useState(false)
   const [selectedFolder, setSelectedFolder] = useState<CloudinaryFolder | null>(null)
   const [form, setForm]               = useState({ title: '', it: '', year: '', location: '', desc: '' })
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [saving, setSaving]           = useState(false)
+
+  const toggleTag = (id: string) =>
+    setSelectedTags((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id])
 
   const loadFolders = useCallback(async (p: string) => {
     setLoading(true)
@@ -647,6 +876,7 @@ function FolderBrowserPanel({
       year:     form.year,
       location: form.location,
       desc:     form.desc || undefined,
+      tags:     selectedTags.length > 0 ? selectedTags : undefined,
     })
     setSaving(false)
   }
@@ -734,6 +964,24 @@ function FolderBrowserPanel({
               </label>
               <input className="adm-copy-input" value={form.desc} onChange={(e) => setForm((f) => ({ ...f, desc: e.target.value }))} placeholder="One-line summary of the shoot" />
             </div>
+            <div className="adm-copy-field">
+              <label className="adm-copy-label">
+                Tags <span className="adm-copy-hint">optional — for filtering</span>
+              </label>
+              <div className="adm-tag-picker">
+                {PROJECT_TAGS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`adm-tag-pill adm-tag-pick-btn${selectedTags.includes(t.id) ? ' selected' : ''}`}
+                    style={{ '--tag-color': t.color } as React.CSSProperties}
+                    onClick={() => toggleTag(t.id)}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="adm-copy-actions">
@@ -748,11 +996,226 @@ function FolderBrowserPanel({
   )
 }
 
+// ─── PageCopyEditorPanel ──────────────────────────────────────────────────────
+
+function PageCopyEditorPanel({
+  categoryId, initial, onSave, onClose,
+}: {
+  categoryId: string
+  initial: CategoryCopy
+  onSave: (copy: CategoryCopy) => Promise<void>
+  onClose: () => void
+}) {
+  const [copy, setCopy]   = useState<CategoryCopy>(initial)
+  const [saving, setSaving] = useState(false)
+
+  const set = (k: keyof CategoryCopy) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setCopy((prev) => ({ ...prev, [k]: e.target.value }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    await onSave(copy)
+    setSaving(false)
+  }
+
+  const label = categoryId.charAt(0).toUpperCase() + categoryId.slice(1)
+
+  return (
+    <aside className="adm-library adm-copy-editor">
+      <div className="adm-library-head">
+        <div className="adm-library-title">Page copy · {label}</div>
+        <button className="adm-folder-cancel" onClick={onClose}>← Back</button>
+      </div>
+
+      <div className="adm-copy-fields">
+        <div className="adm-copy-section-label">Hero</div>
+
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Hero title
+            <span className="adm-copy-hint">Overrides the category name in the hero</span>
+          </label>
+          <input
+            className="adm-copy-input"
+            value={copy.heroTitle ?? ''}
+            onChange={set('heroTitle')}
+            placeholder={`e.g. ${label}`}
+          />
+        </div>
+
+        <div className="adm-copy-section-label">Intro</div>
+
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Intro label
+            <span className="adm-copy-hint">Small eyebrow above the intro paragraph</span>
+          </label>
+          <input
+            className="adm-copy-input"
+            value={copy.introLabel ?? ''}
+            onChange={set('introLabel')}
+            placeholder="e.g. On the table"
+          />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Intro body
+            <span className="adm-copy-hint">Main paragraph text (plain text, no formatting)</span>
+          </label>
+          <textarea
+            className="adm-copy-textarea"
+            value={copy.introBody ?? ''}
+            onChange={set('introBody')}
+            rows={5}
+            placeholder="Describe the work in a few sentences…"
+          />
+        </div>
+
+        <div className="adm-copy-section-label">Pull quote</div>
+
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Quote text</label>
+          <textarea
+            className="adm-copy-textarea"
+            value={copy.pullQuoteText ?? ''}
+            onChange={set('pullQuoteText')}
+            rows={3}
+            placeholder="A short, memorable quote or statement…"
+          />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Attribution
+            <span className="adm-copy-hint">Who said it, or a source</span>
+          </label>
+          <input
+            className="adm-copy-input"
+            value={copy.pullQuoteAttr ?? ''}
+            onChange={set('pullQuoteAttr')}
+            placeholder="e.g. — Kshetej Sareen, 2025"
+          />
+        </div>
+
+        <div className="adm-copy-section-label">Projects section</div>
+
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Section title
+            <span className="adm-copy-hint">Overrides &quot;Selected projects&quot;</span>
+          </label>
+          <input
+            className="adm-copy-input"
+            value={copy.projectsSectionTitle ?? ''}
+            onChange={set('projectsSectionTitle')}
+            placeholder="e.g. Selected shoots"
+          />
+        </div>
+      </div>
+
+      <div className="adm-copy-actions">
+        <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
+        <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
+          {saving ? 'Saving…' : 'Save copy →'}
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+// ─── ProjectImagesPanel ───────────────────────────────────────────────────────
+
+function ProjectImagesPanel({
+  project, categoryId, onSave, onCancel,
+}: {
+  project: AdminProject
+  categoryId: string
+  onSave: (hiddenImages: string[]) => Promise<void>
+  onCancel: () => void
+}) {
+  const [images, setImages]   = useState<CloudinaryImage[]>([])
+  const [loading, setLoading] = useState(true)
+  const [hidden, setHidden]   = useState<Set<string>>(new Set(project.hiddenImages ?? []))
+  const [saving, setSaving]   = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    fetch(`/api/admin/images?folder=${encodeURIComponent(project.folder)}&all=true`)
+      .then((r) => r.json())
+      .then((d) => { setImages(d.images ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [project.folder])
+
+  const toggle = (publicId: string) => {
+    setHidden((prev) => {
+      const next = new Set(prev)
+      if (next.has(publicId)) next.delete(publicId)
+      else next.add(publicId)
+      return next
+    })
+  }
+
+  const visibleCount = images.length - hidden.size
+  const hiddenCount  = hidden.size
+
+  const handleSave = async () => {
+    setSaving(true)
+    await onSave([...hidden])
+    setSaving(false)
+  }
+
+  return (
+    <aside className="adm-library adm-proj-images-panel">
+      <div className="adm-library-head">
+        <div className="adm-library-title">
+          {project.title}
+          <span className="adm-proj-images-folder">{project.folder}</span>
+        </div>
+        <button className="adm-folder-cancel" onClick={onCancel}>← Back</button>
+      </div>
+
+      <div className="adm-proj-images-summary">
+        <span><strong>{visibleCount}</strong> visible</span>
+        {hiddenCount > 0 && <span className="adm-proj-images-hidden-count"><strong>{hiddenCount}</strong> hidden</span>}
+        {loading && <span>Loading…</span>}
+      </div>
+      <div className="adm-proj-images-hint">
+        Click an image to toggle its visibility. Hidden images won&apos;t appear in the project gallery.
+      </div>
+
+      <div className="adm-proj-images-grid">
+        {images.map((img) => {
+          const isHidden = hidden.has(img.public_id)
+          return (
+            <button
+              key={img.public_id}
+              className={`adm-proj-img-item${isHidden ? ' hidden' : ''}`}
+              onClick={() => toggle(img.public_id)}
+              title={isHidden ? 'Click to show' : 'Click to hide'}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={thumb(img.secure_url)} alt="" className="adm-proj-img-thumb" />
+              <div className="adm-proj-img-badge">{isHidden ? 'Hidden' : 'Visible'}</div>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="adm-copy-actions">
+        <button className="adm-copy-cancel" onClick={onCancel}>Cancel</button>
+        <button className="adm-copy-save" onClick={handleSave} disabled={saving || loading}>
+          {saving ? 'Saving…' : 'Save →'}
+        </button>
+      </div>
+    </aside>
+  )
+}
+
 // ─── LibraryPanel ─────────────────────────────────────────────────────────────
 
 function LibraryPanel({
   images, nextCursor, loadingImages, searchQ, selectedSlot, assigning,
-  onSearch, onSelectImage, onLoadMore,
+  onSearch, onSelectImage, onAssignUrl, onLoadMore,
 }: {
   images: CloudinaryImage[]
   nextCursor: string | null
@@ -762,8 +1225,11 @@ function LibraryPanel({
   assigning: boolean
   onSearch: (q: string) => void
   onSelectImage: (img: CloudinaryImage) => void
+  onAssignUrl: (url: string) => Promise<void>
   onLoadMore: () => void
 }) {
+  const [urlInput, setUrlInput] = useState('')
+
   return (
     <aside className="adm-library">
       <div className="adm-library-head">
@@ -777,9 +1243,31 @@ function LibraryPanel({
         />
       </div>
 
+      <div className="adm-url-assign">
+        <input
+          className="adm-url-input"
+          value={urlInput}
+          onChange={(e) => setUrlInput(e.target.value)}
+          placeholder={selectedSlot ? 'Paste Cloudinary URL or public_id…' : 'Select a slot, then paste a URL…'}
+          disabled={!selectedSlot}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && urlInput.trim() && selectedSlot) {
+              onAssignUrl(urlInput.trim()).then(() => setUrlInput(''))
+            }
+          }}
+        />
+        <button
+          className="adm-url-assign-btn"
+          disabled={!urlInput.trim() || !selectedSlot || assigning}
+          onClick={() => onAssignUrl(urlInput.trim()).then(() => setUrlInput(''))}
+        >
+          Assign →
+        </button>
+      </div>
+
       {selectedSlot && (
         <div className="adm-library-hint">
-          Click an image to assign it to <strong>{selectedSlot.label}</strong>
+          Click an image below or paste a URL — assigning to <strong>{selectedSlot.label}</strong>
         </div>
       )}
 

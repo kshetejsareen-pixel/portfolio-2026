@@ -4,5 +4,5 @@ import { spacesData } from '@/lib/categoryData'
 export const metadata = { title: 'Spaces — Kshetej Sareen' }
 
 export default function SpacesPage() {
-  return <KsCategoryPage data={spacesData} />
+  return <KsCategoryPage data={spacesData} catId="spaces" />
 }

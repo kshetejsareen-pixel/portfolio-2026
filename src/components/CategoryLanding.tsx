@@ -22,6 +22,7 @@ const CYCLE_INTERVAL = 5000
 
 interface LandingAssignment {
   url: string
+  mobileUrl?: string
   title: string
   location: string
   year: string
@@ -41,11 +42,12 @@ function buildCategories(
       const asgn   = assignments[slotId]
       const base   = cat.frames[i]
       return {
-        title:    asgn?.title    || base?.title    || `Frame ${i + 1}`,
-        location: asgn?.location || base?.location || '',
-        year:     asgn?.year     || base?.year     || '',
-        camera:   asgn?.camera   || base?.camera   || '',
-        image:    asgn?.url      ?? base?.image,
+        title:       asgn?.title    || base?.title    || `Frame ${i + 1}`,
+        location:    asgn?.location || base?.location || '',
+        year:        asgn?.year     || base?.year     || '',
+        camera:      asgn?.camera   || base?.camera   || '',
+        image:       asgn?.url      ?? base?.image,
+        mobileImage: asgn?.mobileUrl,
       }
     })
     return { ...cat, frames }
@@ -64,15 +66,28 @@ export function CategoryLanding() {
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
-  // Fetch config + assignments on mount
-  useEffect(() => {
+  // Fetch config + assignments — polls every 3s while tab is visible for live admin preview
+  const fetchLanding = useCallback(() => {
     fetch('/api/landing')
       .then((r) => r.json())
       .then(({ config, assignments }) => {
         setActiveCategories(buildCategories(config ?? {}, assignments ?? {}))
       })
-      .catch(() => {/* keep static defaults */})
+      .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    fetchLanding()
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') fetchLanding()
+    }, 3000)
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchLanding() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [fetchLanding])
 
   const cat = activeCategories[catIdx] ?? activeCategories[0]
   const frame = cat.frames[frameIdx] ?? cat.frames[0]
@@ -185,7 +200,15 @@ export function CategoryLanding() {
                 aria-hidden={!active}
               >
                 {f.image
-                  ? <img src={f.image} alt={f.title} className="ks-frame-img" />
+                  ? (
+                    <picture>
+                      {f.mobileImage && (
+                        <source media="(max-width: 768px)" srcSet={f.mobileImage} />
+                      )}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={f.image} alt={f.title} className="ks-frame-img" />
+                    </picture>
+                  )
                   : active && (
                     <div className="ks-slot-tag">
                       {c.label.toUpperCase()} · DROP IMAGE — {f.title.toUpperCase()}

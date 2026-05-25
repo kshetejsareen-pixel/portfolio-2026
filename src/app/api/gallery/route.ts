@@ -1,18 +1,19 @@
 import { NextResponse } from 'next/server'
-import { readLandingConfig } from '@/lib/landingConfig'
 import { getAllAssignments } from '@/lib/assignmentsStore'
 
-// Public endpoint — returns frame config + image assignments for the landing page.
+// Public endpoint — returns gallery slot assignments for a given category page.
 // Reads from local data/assignments.json so results are immediate (no Cloudinary indexing lag).
-export async function GET() {
-  const [config, store] = await Promise.all([
-    readLandingConfig(),
-    getAllAssignments(),
-  ])
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const catId = searchParams.get('catId')
+
+  if (!catId) return NextResponse.json({ error: 'catId required' }, { status: 400 })
+
+  const store = await getAllAssignments()
+  const pattern = new RegExp(`^${catId}-(\\d+)$`)
 
   const assignments: Record<string, {
     url: string
-    mobileUrl: string
     title: string
     location: string
     year: string
@@ -20,10 +21,10 @@ export async function GET() {
   }> = {}
 
   for (const [slotId, data] of Object.entries(store)) {
-    if (!slotId.startsWith('landing-')) continue
-    assignments[slotId] = {
+    const m = slotId.match(pattern)
+    if (!m) continue
+    assignments[m[1]] = {
       url:      data.url,
-      mobileUrl: data.mobileUrl,
       title:    data.title,
       location: data.location,
       year:     data.year,
@@ -31,7 +32,7 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({ config, assignments }, {
+  return NextResponse.json({ assignments }, {
     headers: { 'Cache-Control': 'no-store' },
   })
 }

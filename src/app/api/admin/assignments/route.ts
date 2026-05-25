@@ -1,33 +1,24 @@
 import { NextResponse } from 'next/server'
-import cloudinary from '@/lib/cloudinary'
+import { getAllAssignments } from '@/lib/assignmentsStore'
+
+const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
+
+function thumbUrl(publicId: string) {
+  return `https://res.cloudinary.com/${CLOUD}/image/upload/w_400,h_300,c_fill,q_auto,f_auto/${publicId}`
+}
 
 // Returns a map of slotId → { publicId, url, thumbnailUrl }
-// Cloudinary doesn't support wildcard context searches (context.key:*),
-// so we fetch all images with context and filter on the server.
+// Reads from local data/assignments.json so results are immediate (no Cloudinary indexing lag).
 export async function GET() {
   try {
-    const result = await cloudinary.search
-      .expression('resource_type:image')
-      .with_field('context')
-      .sort_by('created_at', 'desc')
-      .max_results(500)
-      .execute()
-
+    const store = await getAllAssignments()
     const assignments: Record<string, { publicId: string; url: string; thumbnailUrl: string }> = {}
 
-    for (const img of result.resources) {
-      const slotId = img.context?.custom?.portfolio_slot
-      if (!slotId) continue
+    for (const [slotId, data] of Object.entries(store)) {
       assignments[slotId] = {
-        publicId: img.public_id,
-        url: img.secure_url,
-        thumbnailUrl: cloudinary.url(img.public_id, {
-          width: 400,
-          height: 300,
-          crop: 'fill',
-          quality: 'auto',
-          fetch_format: 'auto',
-        }),
+        publicId:     data.publicId,
+        url:          data.url,
+        thumbnailUrl: thumbUrl(data.publicId),
       }
     }
 

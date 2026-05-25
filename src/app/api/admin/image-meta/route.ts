@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
+import { updateCopyByPublicId } from '@/lib/assignmentsStore'
 
 // Standardized copy fields stored in Cloudinary context:
 //   ks_title    — main subject/title
@@ -43,6 +44,15 @@ export async function PATCH(req: Request) {
       type: 'upload',
       context: contextParts.join('|'),
     })
+
+    // Keep Cloudinary store in sync so gallery/landing pages see updated copy immediately
+    await updateCopyByPublicId(publicId, {
+      ...(title    !== undefined && { title }),
+      ...(location !== undefined && { location }),
+      ...(year     !== undefined && { year }),
+      ...(camera   !== undefined && { camera }),
+    })
+
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('image-meta PATCH error:', err)
