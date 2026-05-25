@@ -110,7 +110,7 @@ button, input, textarea, select { font: inherit; }
   bottom: 50%;
   transform: translate(-50%, 50%);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(236, 232, 224, 0.32);
@@ -188,7 +188,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-top-nav a {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -228,7 +228,7 @@ button, input, textarea, select { font: inherit; }
 
 .ks-cat-n {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-align: right;
 }
@@ -262,7 +262,7 @@ button, input, textarea, select { font: inherit; }
   justify-content: center;
   color: rgba(236, 232, 224, 0.35);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 16px;
   z-index: 6;
   cursor: pointer;
   user-select: none;
@@ -281,7 +281,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-eyebrow {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -341,7 +341,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   gap: 36px;
   color: var(--paper-dim);
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .ks-subline-col { max-width: 260px; }
@@ -353,7 +353,7 @@ button, input, textarea, select { font: inherit; }
 .ks-slate {
   font-family: var(--font-mono);
   color: var(--mute);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -399,7 +399,7 @@ button, input, textarea, select { font: inherit; }
   bottom: 32px;
   z-index: 6;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -477,9 +477,9 @@ button, input, textarea, select { font: inherit; }
     justify-content: center;
     text-align: center;
   }
-  .ks-cat-n { min-width: 0; text-align: center; font-size: 9px; }
+  .ks-cat-n { min-width: 0; text-align: center; font-size: 11px; }
   .ks-cat-name {
-    font-size: 11px;
+    font-size: 13px;
     min-width: 0;
     font-family: var(--font-mono);
     letter-spacing: 0.18em;
@@ -545,7 +545,7 @@ button, input, textarea, select { font: inherit; }
     position: static;
     text-align: left;
     margin-top: 10px;
-    font-size: 9.5px;
+    font-size: 11px;
     letter-spacing: 0.22em;
     line-height: 1.6;
   }
@@ -556,7 +556,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-menu-btn {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -595,7 +595,7 @@ button, input, textarea, select { font: inherit; }
   right: 56px;
   padding: 32px 0 32px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--paper);
@@ -617,7 +617,7 @@ button, input, textarea, select { font: inherit; }
 
 .ks-menu-eyebrow {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--mute);
@@ -645,7 +645,7 @@ button, input, textarea, select { font: inherit; }
 
 .ks-menu-cat-n {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   color: var(--mute);
   min-width: 28px;
@@ -668,7 +668,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-menu-link {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -680,7 +680,7 @@ button, input, textarea, select { font: inherit; }
 
 .ks-menu-footer {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -731,7 +731,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-tb-left, .cat-tb-right { display: flex; align-items: center; gap: 18px; }
 .cat-topbar a, .cat-topbar button {
-  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute); text-decoration: none;
   background: none; border: 0; padding: 0; cursor: pointer; line-height: 1;
   white-space: nowrap;
@@ -793,7 +793,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-hero-stats {
   margin-top: 36px; display: flex; flex-wrap: wrap; gap: 32px;
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--mute);
 }
 .cat-hero-stats strong { color: var(--paper); font-weight: 500; }
@@ -803,7 +803,7 @@ button, input, textarea, select { font: inherit; }
   text-align: right;
 }
 .cat-scroll-hint-label {
-  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute);
 }
 .cat-scroll-hint-arrow {
@@ -858,7 +858,7 @@ button, input, textarea, select { font: inherit; }
 .cat-photo-ctr {
   position: absolute; inset: 0; z-index: 1;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: rgba(236, 232, 224, 0.28);
   text-align: center; padding: 16px;
 }
@@ -874,13 +874,13 @@ button, input, textarea, select { font: inherit; }
   margin-top: 14px;
   display: flex; justify-content: space-between; align-items: baseline;
   gap: 16px;
-  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute);
 }
 .cat-cap > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .cat-cap-subj { color: var(--paper-dim); flex: 1; }
 @media (max-width: 767px) {
-  .cat-cap { margin-top: 12px; font-size: 9.5px; letter-spacing: 0.18em; }
+  .cat-cap { margin-top: 12px; font-size: 11px; letter-spacing: 0.18em; }
 }
 
 /* Full-bleed row */
@@ -906,7 +906,7 @@ button, input, textarea, select { font: inherit; }
   display: grid; grid-template-columns: 1fr 480px 1fr; gap: 40px; align-items: end;
 }
 .cat-row-ct-side {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute); line-height: 1.7;
 }
 .cat-row-ct-num {
@@ -962,7 +962,7 @@ button, input, textarea, select { font: inherit; }
   color: var(--paper); display: block; margin: 0;
 }
 .cat-pull-quote-attr {
-  margin-top: 28px; font-family: var(--font-mono); font-size: 10.5px;
+  margin-top: 28px; font-family: var(--font-mono); font-size: 12px;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute);
 }
 
@@ -982,7 +982,7 @@ button, input, textarea, select { font: inherit; }
   margin: 0; color: var(--paper);
 }
 .cat-projects-note {
-  font-size: 14px; line-height: 1.55; color: var(--paper-dim); max-width: 360px; margin: 0;
+  font-size: 16px; line-height: 1.55; color: var(--paper-dim); max-width: 360px; margin: 0;
 }
 .cat-projects-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 64px 40px;
@@ -1012,12 +1012,12 @@ button, input, textarea, select { font: inherit; }
 .cat-project-title em { color: var(--paper-dim); }
 .cat-project:hover .cat-project-title em { color: var(--paper); }
 .cat-project-meta {
-  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute); text-align: right; line-height: 1.7;
 }
 .cat-project-yr { display: block; color: var(--paper); }
 .cat-project-desc {
-  margin-top: 14px; font-size: 13px; line-height: 1.55;
+  margin-top: 14px; font-size: 15px; line-height: 1.55;
   color: var(--paper-dim); max-width: 460px;
 }
 
@@ -1027,7 +1027,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-projects-more {
   display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em;
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.2em;
   text-transform: uppercase; color: var(--paper-dim);
   background: transparent; border: 1px solid var(--rule);
   padding: 14px 32px; cursor: pointer;
@@ -1035,7 +1035,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-projects-more:hover { color: var(--paper); border-color: var(--paper-dim); }
 .cat-projects-more-count {
-  font-size: 9px; letter-spacing: 0.1em;
+  font-size: 11px; letter-spacing: 0.1em;
   color: var(--mute); background: #1e1e1e;
   padding: 2px 7px; border-radius: 100px;
 }
@@ -1046,7 +1046,7 @@ button, input, textarea, select { font: inherit; }
   margin-bottom: 48px;
 }
 .cat-tag-btn {
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em;
   text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
   border: 1px solid var(--rule); background: transparent;
   color: var(--mute); cursor: pointer;
@@ -1064,7 +1064,7 @@ button, input, textarea, select { font: inherit; }
   display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
 }
 .cat-project-tag {
-  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.12em;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
   text-transform: uppercase; padding: 3px 9px; border-radius: 100px;
   background: var(--tag-color, #555); color: #fff; white-space: nowrap;
 }
@@ -1074,7 +1074,7 @@ button, input, textarea, select { font: inherit; }
   border-top: 1px solid var(--rule);
   padding: 36px var(--cat-pad);
   display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; gap: 24px;
-  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute);
 }
 .cat-footer-center { text-align: center; }
@@ -1104,7 +1104,7 @@ button, input, textarea, select { font: inherit; }
   border-bottom: 1px solid var(--rule);
   background: var(--ink);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1201,7 +1201,7 @@ button, input, textarea, select { font: inherit; }
 }
 .contact-inquiry-heading em { font-style: italic; color: var(--paper-dim); }
 .contact-inquiry-note {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--mute);
   margin: 0;
@@ -1225,7 +1225,7 @@ button, input, textarea, select { font: inherit; }
 }
 .contact-field-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1261,7 +1261,7 @@ button, input, textarea, select { font: inherit; }
 }
 .contact-chip {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1290,7 +1290,7 @@ button, input, textarea, select { font: inherit; }
 }
 .contact-privacy {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1299,7 +1299,7 @@ button, input, textarea, select { font: inherit; }
 }
 .contact-submit-v2 {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink);
@@ -1316,7 +1316,7 @@ button, input, textarea, select { font: inherit; }
 .contact-submit-v2:disabled { opacity: 0.4; cursor: not-allowed; }
 .contact-error-v2 {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #c0392b;
@@ -1338,7 +1338,7 @@ button, input, textarea, select { font: inherit; }
 .contact-sent-v2 p { font-size: 16px; line-height: 1.6; color: var(--paper-dim); max-width: 360px; }
 .contact-sent-reset {
   background: none; border: 0; padding: 0;
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute); cursor: pointer; text-align: left;
   transition: color 200ms ease;
 }
@@ -1529,7 +1529,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .contact-col-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1541,7 +1541,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .contact-field { display: flex; flex-direction: column; gap: 10px; }
 .contact-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1552,7 +1552,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
   border-bottom: 1px solid var(--rule-2);
   color: var(--paper);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   padding: 10px 0;
   outline: none;
@@ -1570,13 +1570,13 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .contact-select option { background: #1a1a1c; color: var(--paper); }
 .contact-textarea { resize: none; line-height: 1.6; }
 .contact-error {
-  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.18em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em;
   text-transform: uppercase; color: #c0392b;
 }
 .contact-submit {
   align-self: flex-start;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink);
@@ -1607,7 +1607,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .contact-sent-reset {
   background: none; border: 0; padding: 0;
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute);
   cursor: pointer; text-align: left;
   transition: color 200ms ease;
@@ -1630,7 +1630,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .contact-direct-link:hover { color: var(--paper); }
 .contact-direct-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1646,7 +1646,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .contact-direct-arrow {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 16px;
   color: var(--mute);
   flex-shrink: 0;
   transition: color 300ms ease;
@@ -1655,7 +1655,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 
 .contact-note {
   margin-top: 32px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.65;
   color: var(--mute);
 }
@@ -1676,7 +1676,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .contact-studio-item:last-child { border-right: 0; }
 .contact-studio-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1716,7 +1716,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .info-tb-link {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1727,7 +1727,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .info-tb-link--active { color: var(--paper); }
 .info-tb-menu {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--paper);
@@ -1777,7 +1777,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .info-photo-slot-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1791,7 +1791,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .info-photo-slot-hint {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(236,232,224,0.25);
@@ -1893,7 +1893,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .info-quad-n {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   color: var(--mute);
   flex-shrink: 0;
@@ -1940,7 +1940,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .info-practice-frames {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--mute);
@@ -1948,7 +1948,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .info-practice-note {
   margin-top: 20px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   line-height: 1.7;
   color: var(--mute);
@@ -1992,7 +1992,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 .info-client-year {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.15em;
   color: var(--mute);
   flex-shrink: 0;
@@ -2039,7 +2039,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .info-touch-col:last-child { border-right: 0; padding-left: 40px; padding-right: 0; }
 .info-touch-col-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--mute);
@@ -2057,7 +2057,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 a.info-touch-val:hover { color: var(--paper); }
 .info-touch-sub {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--mute);
