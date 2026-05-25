@@ -1,4 +1,4 @@
-import { cloudinaryRead, cloudinaryWrite } from '@/lib/cloudinaryStore'
+import { cloudinaryRead, cloudinaryReadFresh, cloudinaryWrite } from '@/lib/cloudinaryStore'
 
 const PUBLIC_ID = 'ks-assignments'
 
@@ -48,7 +48,7 @@ export async function swapAssignments(slotA: string, slotB: string): Promise<voi
 }
 
 export async function updateFocalPoint(slotId: string, focalX: number, focalY: number): Promise<void> {
-  const store = await cloudinaryRead<Store>(PUBLIC_ID, {})
+  const store = await cloudinaryReadFresh<Store>(PUBLIC_ID, {})
   console.log('[updateFocalPoint] store keys:', Object.keys(store).length, 'slot exists:', !!store[slotId])
   if (store[slotId]) {
     store[slotId] = { ...store[slotId], focalX, focalY }
