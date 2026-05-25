@@ -145,19 +145,12 @@ button, input, textarea, select { font: inherit; }
 .ks-letterbox {
   position: absolute;
   left: 0; right: 0;
-  z-index: 4;
-  pointer-events: none;
-}
-.ks-letterbox--top {
-  top: 0;
-  height: 200px;
-  background: linear-gradient(to bottom, var(--ink) 0px, var(--ink) 72px, rgba(11,11,12,0.55) 45%, transparent 100%);
-}
-.ks-letterbox--bottom {
-  bottom: 0;
   height: 56px;
   background: var(--ink);
+  z-index: 4;
 }
+.ks-letterbox--top    { top: 0; }
+.ks-letterbox--bottom { bottom: 0; }
 
 /* ─────────────────────────────────────────────
    Top bar
@@ -211,37 +204,34 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-cat-rail {
   position: absolute;
-  right: 40px; top: 0; bottom: 0;
+  right: 56px; top: 0; bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
+  gap: 22px;
   z-index: 6;
-  padding: 28px 20px;
-  background: rgba(0,0,0,0.22);
-  backdrop-filter: blur(14px) saturate(0.6);
-  -webkit-backdrop-filter: blur(14px) saturate(0.6);
 }
 
 .ks-cat {
   display: grid;
-  grid-template-columns: 28px 140px 32px;
+  grid-template-columns: 24px 140px 32px;
   align-items: center;
-  gap: 12px;
-  color: rgba(236, 232, 224, 0.55);
+  gap: 14px;
+  color: rgba(236, 232, 224, 0.45);
   cursor: pointer;
   transition: color 240ms ease, transform 240ms ease;
   background: none;
   border: 0;
-  padding: 8px 0;
+  padding: 4px 0;
   font: inherit;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.6);
 }
 .ks-cat:hover { color: var(--paper-dim); }
 
 .ks-cat-n {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
   text-align: right;
 }
 .ks-cat-name {
@@ -258,7 +248,7 @@ button, input, textarea, select { font: inherit; }
   transition: width 320ms ease, background 240ms ease;
   justify-self: end;
 }
-.ks-cat.active             { color: var(--paper); }
+.ks-cat.active              { color: var(--paper); text-shadow: 0 1px 12px rgba(0,0,0,0.9), 0 0 32px rgba(0,0,0,0.7); }
 .ks-cat.active .ks-cat-tick { width: 32px; background: var(--paper); }
 
 /* ─────────────────────────────────────────────
@@ -423,34 +413,36 @@ button, input, textarea, select { font: inherit; }
 /* ─────────────────────────────────────────────
    Dynamic text — light background images
    ───────────────────────────────────────────── */
-.ks-name,
-.ks-name-last,
-.ks-subline,
-.ks-slate,
-.ks-slate-subj,
-.ks-eyebrow,
-.ks-open-cat,
-.ks-footer-l,
-.ks-footer-r,
-.ks-dot,
-.ks-scrubber,
-.ks-scrubber-fill {
-  transition: color 700ms ease, background 700ms ease, background-color 700ms ease;
+.ks-name, .ks-name-last, .ks-subline, .ks-slate, .ks-slate-subj,
+.ks-eyebrow, .ks-open-cat, .ks-footer-l, .ks-footer-r,
+.ks-wordmark-ks, .ks-top-nav a, .ks-cat, .ks-counter,
+.ks-step-hint, .ks-meta-above {
+  transition: color 700ms ease, text-shadow 700ms ease;
+}
+.ks-dot, .ks-scrubber, .ks-scrubber-fill {
+  transition: background 700ms ease, background-color 700ms ease;
 }
 
+/* All UI switches to dark charcoal on bright images */
 .ks-stage[data-bg="light"] .ks-name,
-.ks-stage[data-bg="light"] .ks-name-last    { color: #191919; }
-.ks-stage[data-bg="light"] .ks-subline      { color: #2e2e2e; }
+.ks-stage[data-bg="light"] .ks-name-last       { color: #191919; }
+.ks-stage[data-bg="light"] .ks-subline         { color: #2e2e2e; }
 .ks-stage[data-bg="light"] .ks-subline-col strong { color: #0e0e0e; }
-.ks-stage[data-bg="light"] .ks-eyebrow      { color: #3a3a3a; }
-.ks-stage[data-bg="light"] .ks-open-cat     { color: #191919; }
-.ks-stage[data-bg="light"] .ks-slate        { color: #3a3a3a; }
-.ks-stage[data-bg="light"] .ks-slate-subj   { color: #191919; }
+.ks-stage[data-bg="light"] .ks-eyebrow         { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-open-cat        { color: #191919; }
+.ks-stage[data-bg="light"] .ks-slate           { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-slate-subj      { color: #191919; }
 .ks-stage[data-bg="light"] .ks-footer-l,
-.ks-stage[data-bg="light"] .ks-footer-r     { color: #3a3a3a; }
-.ks-stage[data-bg="light"] .ks-dot          { background: #191919; }
-.ks-stage[data-bg="light"] .ks-scrubber     { background: rgba(0,0,0,0.18); }
-.ks-stage[data-bg="light"] .ks-scrubber-fill { background: #191919; }
+.ks-stage[data-bg="light"] .ks-footer-r        { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-wordmark-ks     { color: #191919; }
+.ks-stage[data-bg="light"] .ks-top-nav a       { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-cat             { color: rgba(20,20,20,0.45); text-shadow: 0 1px 6px rgba(255,255,255,0.5); }
+.ks-stage[data-bg="light"] .ks-cat.active      { color: #191919; text-shadow: 0 1px 8px rgba(255,255,255,0.6); }
+.ks-stage[data-bg="light"] .ks-counter         { color: rgba(20,20,20,0.035); }
+.ks-stage[data-bg="light"] .ks-step-hint       { color: rgba(20,20,20,0.4); }
+.ks-stage[data-bg="light"] .ks-dot             { background: #191919; }
+.ks-stage[data-bg="light"] .ks-scrubber        { background: rgba(0,0,0,0.15); }
+.ks-stage[data-bg="light"] .ks-scrubber-fill   { background: #191919; }
 
 /* ─────────────────────────────────────────────
    Mobile — ≤767px
