@@ -233,7 +233,6 @@ export function CategoryLanding() {
       <div className="ks-top-bar">
         <div className="ks-wordmark">
           <span className="ks-wordmark-ks">KS</span>
-          <span className="ks-eyebrow">Photography &amp; Films</span>
         </div>
         <nav className="ks-top-nav">
           <button className="ks-menu-btn" onClick={() => setMenuOpen(true)}>
