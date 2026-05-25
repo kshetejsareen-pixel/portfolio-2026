@@ -208,7 +208,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-cat-rail {
   position: absolute;
-  right: 15px; top: 0; bottom: 0;
+  right: 10px; top: 0; bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
