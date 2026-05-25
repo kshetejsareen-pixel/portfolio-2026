@@ -258,14 +258,6 @@ export function CategoryLanding() {
         ))}
       </div>
 
-      {/* Mobile-only: number column fixed on right, mirrors desktop position */}
-      <div className="ks-num-rail" aria-hidden="true">
-        {activeCategories.map((c, i) => (
-          <span key={c.id} className={`ks-num-item${i === catIdx ? ' active' : ''}`}>
-            {c.n}
-          </span>
-        ))}
-      </div>
 
       {/* Step hints — desktop only */}
       {totalFrames > 1 && (

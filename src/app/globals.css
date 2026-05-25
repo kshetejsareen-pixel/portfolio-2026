@@ -203,9 +203,6 @@ button, input, textarea, select { font: inherit; }
 .ks-top-nav a:hover  { color: var(--paper); }
 .ks-top-nav a.active { color: var(--paper); }
 
-/* Mobile-only number column — hidden on desktop */
-.ks-num-rail { display: none; }
-
 /* ─────────────────────────────────────────────
    Category rail (desktop right) / strip (mobile bottom)
    ───────────────────────────────────────────── */
@@ -446,93 +443,21 @@ button, input, textarea, select { font: inherit; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
-  /* Category strip: flush to bottom, padding clears home indicator / Android nav */
-  .ks-cat-rail {
-    right: 0; left: 0;
-    top: auto; bottom: 0;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0;
-    padding-left: 22px;
-    padding-right: 22px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
-    /* semi-opaque backing so strip reads cleanly over the photo */
-    background: rgba(11, 11, 12, 0.92);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  .ks-cat {
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: none;
-    gap: 4px;
-    min-width: 0;
-    min-height: 64px;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  .ks-cat-n { display: none; }
-
-  /* Number column: right side, vertically centred in photo area — same position as desktop */
-  .ks-num-rail {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
-    position: absolute;
-    right: 22px;
-    top: 0;
-    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
-    z-index: 6;
-    pointer-events: none;
-  }
-  .ks-num-item {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    color: rgba(236, 232, 224, 0.45);
-    text-align: right;
-    transition: color 240ms ease;
-  }
-  .ks-num-item.active { color: var(--paper); }
-
-  .ks-cat-name {
-    font-size: 13px;
-    min-width: 0;
-    font-family: var(--font-mono);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
+  /* Category rail: same right-side column as desktop, just adjusted for mobile margins */
+  .ks-cat-rail { right: 16px; }
+  .ks-cat { grid-template-columns: 20px 100px; }
+  .ks-cat-name { font-size: 16px; }
   .ks-cat-tick { display: none; }
-  .ks-cat.active::after {
-    content: '';
-    display: block;
-    height: 1px;
-    width: 22px;
-    background: var(--paper);
-    margin: 4px auto 0;
-  }
 
-  /*
-   * Bottom stack (from bottom up):
-   *   0 – 64px   cat strip (min-height 64px)
-   *   64 – 84px  breathing room (20px)
-   *   84px       scrubber line (1px)
-   *   85 – 110px breathing room (25px)
-   *   110px+     meta block
-   * All offset by env(safe-area-inset-bottom) so home indicator / Android nav
-   * never overlaps content.
-   */
   .ks-scrubber {
     left: 22px; right: 22px;
-    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(48px + env(safe-area-inset-bottom, 0px));
   }
 
   .ks-meta {
-    left: 22px; right: 22px;
-    bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+    left: 22px;
+    right: 140px;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
   .ks-meta-above { margin-bottom: 10px; }
