@@ -122,14 +122,14 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-counter {
   position: absolute;
-  right: 56px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 220px;
+  font-size: 300px;
   line-height: 1;
-  color: rgba(236, 232, 224, 0.045);
+  color: rgba(236, 232, 224, 0.08);
   z-index: 5;
   pointer-events: none;
   user-select: none;
@@ -218,7 +218,7 @@ button, input, textarea, select { font: inherit; }
 
 .ks-cat {
   display: grid;
-  grid-template-columns: 24px 140px 32px;
+  grid-template-columns: 24px 160px 32px;
   align-items: center;
   gap: 14px;
   color: var(--paper-dim);
@@ -239,7 +239,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-cat-name {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: 28px;
   letter-spacing: 0.01em;
   text-align: left;
   transition: font-size 300ms ease;
@@ -253,7 +253,7 @@ button, input, textarea, select { font: inherit; }
   justify-self: end;
 }
 .ks-cat.active              { color: var(--paper); }
-.ks-cat.active .ks-cat-name { font-size: 32px; }
+.ks-cat.active .ks-cat-name { font-size: 44px; }
 .ks-cat.active .ks-cat-tick { width: 32px; background: var(--paper); }
 
 /* ─────────────────────────────────────────────
@@ -469,8 +469,8 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     flex-direction: unset;
   }
-  .ks-cat-name { font-size: 15px; }
-  .ks-cat.active .ks-cat-name { font-size: 20px; }
+  .ks-cat-name { font-size: 18px; }
+  .ks-cat.active .ks-cat-name { font-size: 26px; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -488,10 +488,10 @@ button, input, textarea, select { font: inherit; }
 
   /* Background numeral: bigger + offset right on mobile */
   .ks-counter {
-    font-size: clamp(180px, 50vw, 280px);
-    right: -20px;
-    top: 22%;
-    transform: none;
+    font-size: clamp(200px, 55vw, 320px);
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
     color: rgba(236, 232, 224, 0.08);
     letter-spacing: -0.05em;
   }
