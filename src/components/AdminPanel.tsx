@@ -541,34 +541,58 @@ export function AdminPanel() {
               </div>
             ))}
           </div>
-        ) : (
-          <div className="adm-slots-grid adm-slots-grid--padded">
-            {pageSlots.map((slot, i) => (
-              <SlotCard
-                key={slot.id}
-                slot={slot}
-                assignment={assignments[slot.id]}
-                selected={selectedSlot?.id === slot.id}
-                assigningThis={assigningSlotId === slot.id}
-                onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
-                onClear={() => unassignSlot(slot)}
-                onEditCopy={() => openCopyEditor(slot)}
-                onSetFocus={() => {
-                  const asgn = assignments[slot.id]
-                  if (!asgn) return
-                  setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
-                  setSelectedSlot(null)
-                }}
-                onTransform={(action) => handleTransform(slot, action)}
-                onViewLink={assignments[slot.id]
-                  ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
-                  : undefined}
-                onMoveUp={!slot.id.endsWith('-hero') && i > 0 && !pageSlots[i - 1].id.endsWith('-hero') ? () => swapSlots(slot.id, pageSlots[i - 1].id) : undefined}
-                onMoveDown={!slot.id.endsWith('-hero') && i < pageSlots.length - 1 ? () => swapSlots(slot.id, pageSlots[i + 1].id) : undefined}
-              />
-            ))}
-          </div>
-        )}
+        ) : (() => {
+          const heroSlots    = pageSlots.filter((s) => s.id.endsWith('-hero'))
+          const gallerySlots = pageSlots.filter((s) => !s.id.endsWith('-hero'))
+          const renderCard = (slot: Slot, galleryIdx?: number) => (
+            <SlotCard
+              key={slot.id}
+              slot={slot}
+              assignment={assignments[slot.id]}
+              selected={selectedSlot?.id === slot.id}
+              assigningThis={assigningSlotId === slot.id}
+              onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
+              onClear={() => unassignSlot(slot)}
+              onEditCopy={() => openCopyEditor(slot)}
+              onSetFocus={() => {
+                const asgn = assignments[slot.id]
+                if (!asgn) return
+                setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
+                setSelectedSlot(null)
+              }}
+              onTransform={(action) => handleTransform(slot, action)}
+              onViewLink={assignments[slot.id]
+                ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
+                : undefined}
+              onMoveUp={galleryIdx != null && galleryIdx > 0 ? () => swapSlots(slot.id, gallerySlots[galleryIdx - 1].id) : undefined}
+              onMoveDown={galleryIdx != null && galleryIdx < gallerySlots.length - 1 ? () => swapSlots(slot.id, gallerySlots[galleryIdx + 1].id) : undefined}
+            />
+          )
+          return (
+            <div className="adm-slots-scroll adm-slots-scroll--cat">
+              {heroSlots.length > 0 && (
+                <div className="adm-cat-section">
+                  <div className="adm-cat-section-head">
+                    <span className="adm-cat-section-title">Hero Banner</span>
+                    <span className="adm-cat-section-desc">Full-bleed background behind the category title</span>
+                  </div>
+                  <div className="adm-slots-grid">
+                    {heroSlots.map((slot) => renderCard(slot))}
+                  </div>
+                </div>
+              )}
+              <div className="adm-cat-section">
+                <div className="adm-cat-section-head">
+                  <span className="adm-cat-section-title">Gallery Frames</span>
+                  <span className="adm-cat-section-desc">{gallerySlots.filter((s) => assignments[s.id]).length} / {gallerySlots.length} assigned</span>
+                </div>
+                <div className="adm-slots-grid">
+                  {gallerySlots.map((slot, i) => renderCard(slot, i))}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
       </main>
 
       {/* ── Right panel ───────────────────────────────────────────────────── */}
@@ -723,21 +747,26 @@ function SlotCard({
       <div className="adm-slot-meta">
         <div className="adm-slot-label">{slot.label}</div>
         <div className="adm-slot-hint">{!assignment && !assigningThis ? 'Click to select, then pick from library' : slot.hint}</div>
+        {/* Row 1: primary action + clear */}
         <div className="adm-slot-actions">
           <button className="adm-slot-assign-btn" onClick={onSelect} disabled={assigningThis}>
             {selected ? 'Cancel' : assignment ? 'Replace' : 'Assign'}
           </button>
           {assignment && !assigningThis && (
-            <>
-              {onViewLink && (
-                <button className="adm-slot-link-btn" onClick={onViewLink} title="Open in Cloudinary">↗</button>
-              )}
-              <button className="adm-slot-copy-btn" onClick={onEditCopy} title="Edit copy">✏</button>
-              <button className="adm-slot-focus-btn" onClick={onSetFocus} title="Set focal point">⊙</button>
-              <button className="adm-slot-clear-btn" onClick={onClear}>Clear</button>
-            </>
+            <button className="adm-slot-clear-btn" onClick={onClear}>Clear</button>
           )}
         </div>
+        {/* Row 2: icon utilities */}
+        {assignment && !assigningThis && (
+          <div className="adm-slot-icons">
+            {onViewLink && (
+              <button className="adm-slot-link-btn" onClick={onViewLink} title="Open in Cloudinary">↗</button>
+            )}
+            <button className="adm-slot-copy-btn" onClick={onEditCopy} title="Edit copy">✏</button>
+            <button className="adm-slot-focus-btn" onClick={onSetFocus} title="Set focal point">⊙</button>
+          </div>
+        )}
+        {/* Row 3: transform */}
         {assignment && !assigningThis && (
           <div className="adm-slot-transform">
             <button className="adm-slot-xfm-btn" onClick={() => onTransform('ccw')} title="Rotate 90° CCW">↺</button>
@@ -746,6 +775,7 @@ function SlotCard({
             <button className="adm-slot-xfm-btn" onClick={() => onTransform('flipV')} title="Flip vertical">↕</button>
           </div>
         )}
+        {/* Row 4: order */}
         {(onMoveUp !== undefined || onMoveDown !== undefined) && (
           <div className="adm-slot-order">
             <button className="adm-slot-order-btn" onClick={onMoveUp} disabled={!onMoveUp} title="Move up">↑</button>
