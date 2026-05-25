@@ -214,7 +214,7 @@ button, input, textarea, select { font: inherit; }
   grid-template-columns: 24px 140px 32px;
   align-items: center;
   gap: 14px;
-  color: rgba(236, 232, 224, 0.72);
+  color: var(--paper-dim);
   cursor: pointer;
   transition: color 240ms ease, transform 240ms ease;
   background: none;

@@ -65,7 +65,6 @@ export function CategoryLanding() {
   const cycleRef      = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
-  const stageRef      = useRef<HTMLDivElement>(null)
 
   // Fetch config + assignments — polls every 3s while tab is visible for live admin preview
   const fetchLanding = useCallback(() => {
@@ -94,36 +93,6 @@ export function CategoryLanding() {
   const frame = cat.frames[frameIdx] ?? cat.frames[0]
   const totalFrames = cat.frames.length
 
-  // Detect image brightness → set data-bg="light"|"dark" on stage for dynamic text colour
-  useEffect(() => {
-    const activeFrame = activeCategories[catIdx]?.frames[frameIdx]
-    const stage = stageRef.current
-    if (!activeFrame?.image || !stage) { stage?.removeAttribute('data-bg'); return }
-
-    const thumbUrl = activeFrame.image.replace(/\/upload\/[^/]*/, '/upload/w_80,h_80,c_fill,q_60,f_jpg')
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    const sample = () => {
-      try {
-        const canvas = document.createElement('canvas')
-        canvas.width = 80; canvas.height = 80
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-        ctx.drawImage(img, 0, 0, 80, 80)
-        const { data } = ctx.getImageData(0, 0, 80, 80)
-        let lum = 0
-        for (let i = 0; i < data.length; i += 4) {
-          lum += (data[i] * 299 + data[i + 1] * 587 + data[i + 2] * 114) / 1000
-        }
-        lum /= data.length / 4
-        stage.setAttribute('data-bg', lum > 145 ? 'light' : 'dark')
-      } catch { stage.removeAttribute('data-bg') }
-    }
-    img.addEventListener('load', sample, { once: true })
-    img.addEventListener('error', () => stage.removeAttribute('data-bg'), { once: true })
-    img.src = thumbUrl
-    if (img.complete) sample()
-  }, [catIdx, frameIdx, activeCategories])
 
   // Reset frame index whenever the active category changes
   useEffect(() => { setFrameIdx(0) }, [catIdx])
@@ -215,7 +184,6 @@ export function CategoryLanding() {
 
   return (
     <div
-      ref={stageRef}
       className="ks-stage"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
