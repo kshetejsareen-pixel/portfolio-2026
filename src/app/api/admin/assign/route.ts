@@ -9,7 +9,7 @@ function desktopUrl(publicId: string) {
 }
 
 function mobileUrl(publicId: string) {
-  return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_900,ar_9:16,c_fill,g_auto/${publicId}`
+  return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_900/${publicId}`
 }
 
 export async function POST(req: Request) {
