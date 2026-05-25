@@ -214,7 +214,7 @@ button, input, textarea, select { font: inherit; }
   grid-template-columns: 24px 140px 32px;
   align-items: center;
   gap: 14px;
-  color: rgba(236, 232, 224, 0.45);
+  color: rgba(236, 232, 224, 0.72);
   cursor: pointer;
   transition: color 240ms ease, transform 240ms ease;
   background: none;
@@ -406,20 +406,7 @@ button, input, textarea, select { font: inherit; }
 .ks-footer-l { left: 56px; }
 .ks-footer-r { right: 56px; }
 
-/* ─────────────────────────────────────────────
-   Dynamic text — light background images
-   ───────────────────────────────────────────── */
-.ks-cat, .ks-cat-tick, .ks-counter, .ks-step-hint {
-  transition: color 700ms ease;
-}
-
-/* Category rail adapts to bright images — everything else stays white (protected by gradient overlay) */
-.ks-stage[data-bg="light"] .ks-cat             { color: rgba(20,20,20,0.5); }
-.ks-stage[data-bg="light"] .ks-cat.active      { color: #191919; }
-.ks-stage[data-bg="light"] .ks-cat-tick        { background: rgba(20,20,20,0.4); }
-.ks-stage[data-bg="light"] .ks-cat.active .ks-cat-tick { background: #191919; }
-.ks-stage[data-bg="light"] .ks-counter         { color: rgba(20,20,20,0.035); }
-.ks-stage[data-bg="light"] .ks-step-hint       { color: rgba(20,20,20,0.4); }
+/* Gradient overlay is reliably dark — category rail stays white on all images */
 
 /* ─────────────────────────────────────────────
    Mobile — ≤767px
