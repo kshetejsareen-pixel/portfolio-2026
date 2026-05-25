@@ -128,12 +128,9 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    await cloudinary.uploader.explicit(publicId, {
-      type: 'upload',
-      context: 'portfolio_slot=',
-    })
+    // Best-effort tag clear on Cloudinary (non-fatal)
+    cloudinary.uploader.explicit(publicId, { type: 'upload', context: 'portfolio_slot=' }).catch(() => {})
 
-    // Remove from Cloudinary store
     await removeAssignmentByPublicId(publicId)
 
     return NextResponse.json({ ok: true })
