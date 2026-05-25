@@ -6,7 +6,7 @@ const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
 
 // Re-derive mobile URL from publicId — width-only resize so CSS object-position works.
 function mobileUrl(publicId: string) {
-  return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_900/${publicId}`
+  return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_1600/${publicId}`
 }
 
 // Public endpoint — returns frame config + image assignments for the landing page.
