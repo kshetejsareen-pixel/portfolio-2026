@@ -328,6 +328,12 @@ export function AdminPanel() {
     return parts.join('/')
   }
 
+  function buildDisplayUrl(asgn: Assignment): string {
+    const t = buildTransformStr(asgn.angle, asgn.flipH, asgn.flipV)
+    const mid = t ? `${t}/` : ''
+    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${mid}f_auto,q_auto,w_2400/${asgn.publicId}`
+  }
+
   const handleTransform = async (slot: Slot, action: 'cw' | 'ccw' | 'flipH' | 'flipV') => {
     const asgn = assignments[slot.id]
     if (!asgn) return
@@ -529,7 +535,7 @@ export function AdminPanel() {
                       onSetFocus={() => {
                         const asgn = assignments[slot.id]
                         if (!asgn) return
-                        setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
+                        setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: buildDisplayUrl(asgn), focalX: asgn.focalX, focalY: asgn.focalY })
                         setSelectedSlot(null)
                       }}
                       onTransform={(action) => handleTransform(slot, action)}
@@ -557,7 +563,7 @@ export function AdminPanel() {
               onSetFocus={() => {
                 const asgn = assignments[slot.id]
                 if (!asgn) return
-                setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
+                setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: buildDisplayUrl(asgn), focalX: asgn.focalX, focalY: asgn.focalY })
                 setSelectedSlot(null)
               }}
               onTransform={(action) => handleTransform(slot, action)}
