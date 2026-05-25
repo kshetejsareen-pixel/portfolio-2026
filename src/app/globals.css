@@ -90,8 +90,9 @@ button, input, textarea, select { font: inherit; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.35) 30%, transparent 55%),
-    linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 22%),
+    linear-gradient(to top,   rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.40) 30%, transparent 58%),
+    linear-gradient(to bottom, rgba(0,0,0,0.60) 0%, transparent 22%),
+    linear-gradient(to left,   rgba(0,0,0,0.65) 0%, transparent 32%),
     radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
 }
 
@@ -144,12 +145,19 @@ button, input, textarea, select { font: inherit; }
 .ks-letterbox {
   position: absolute;
   left: 0; right: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.ks-letterbox--top {
+  top: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, var(--ink) 0px, var(--ink) 72px, rgba(11,11,12,0.55) 45%, transparent 100%);
+}
+.ks-letterbox--bottom {
+  bottom: 0;
   height: 56px;
   background: var(--ink);
-  z-index: 4;
 }
-.ks-letterbox--top    { top: 0; }
-.ks-letterbox--bottom { bottom: 0; }
 
 /* ─────────────────────────────────────────────
    Top bar
@@ -203,38 +211,42 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-cat-rail {
   position: absolute;
-  right: 56px; top: 0; bottom: 0;
+  right: 40px; top: 0; bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 22px;
+  gap: 4px;
   z-index: 6;
+  padding: 28px 20px;
+  background: rgba(0,0,0,0.22);
+  backdrop-filter: blur(14px) saturate(0.6);
+  -webkit-backdrop-filter: blur(14px) saturate(0.6);
 }
 
 .ks-cat {
   display: grid;
-  grid-template-columns: 24px 120px 32px;
+  grid-template-columns: 28px 140px 32px;
   align-items: center;
-  gap: 14px;
-  color: rgba(236, 232, 224, 0.4);
+  gap: 12px;
+  color: rgba(236, 232, 224, 0.55);
   cursor: pointer;
   transition: color 240ms ease, transform 240ms ease;
   background: none;
   border: 0;
-  padding: 4px 0;
+  padding: 8px 0;
   font: inherit;
 }
 .ks-cat:hover { color: var(--paper-dim); }
 
 .ks-cat-n {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-align: right;
 }
 .ks-cat-name {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.01em;
   text-align: left;
 }
@@ -328,10 +340,12 @@ button, input, textarea, select { font: inherit; }
   letter-spacing: -0.035em;
   margin: 0;
   color: var(--paper);
+  transition: color 700ms ease;
 }
 .ks-name-last {
   font-style: normal;
   color: var(--paper);
+  transition: color 700ms ease;
 }
 
 .ks-subline {
@@ -405,6 +419,38 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-footer-l { left: 56px; }
 .ks-footer-r { right: 56px; }
+
+/* ─────────────────────────────────────────────
+   Dynamic text — light background images
+   ───────────────────────────────────────────── */
+.ks-name,
+.ks-name-last,
+.ks-subline,
+.ks-slate,
+.ks-slate-subj,
+.ks-eyebrow,
+.ks-open-cat,
+.ks-footer-l,
+.ks-footer-r,
+.ks-dot,
+.ks-scrubber,
+.ks-scrubber-fill {
+  transition: color 700ms ease, background 700ms ease, background-color 700ms ease;
+}
+
+.ks-stage[data-bg="light"] .ks-name,
+.ks-stage[data-bg="light"] .ks-name-last    { color: #191919; }
+.ks-stage[data-bg="light"] .ks-subline      { color: #2e2e2e; }
+.ks-stage[data-bg="light"] .ks-subline-col strong { color: #0e0e0e; }
+.ks-stage[data-bg="light"] .ks-eyebrow      { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-open-cat     { color: #191919; }
+.ks-stage[data-bg="light"] .ks-slate        { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-slate-subj   { color: #191919; }
+.ks-stage[data-bg="light"] .ks-footer-l,
+.ks-stage[data-bg="light"] .ks-footer-r     { color: #3a3a3a; }
+.ks-stage[data-bg="light"] .ks-dot          { background: #191919; }
+.ks-stage[data-bg="light"] .ks-scrubber     { background: rgba(0,0,0,0.18); }
+.ks-stage[data-bg="light"] .ks-scrubber-fill { background: #191919; }
 
 /* ─────────────────────────────────────────────
    Mobile — ≤767px
