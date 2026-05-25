@@ -516,7 +516,7 @@ export function AdminPanel() {
                   </span>
                 </div>
                 <div className="adm-slots-grid">
-                  {g.slots.map((slot) => (
+                  {g.slots.map((slot, i) => (
                     <SlotCard
                       key={slot.id}
                       slot={slot}
@@ -533,6 +533,8 @@ export function AdminPanel() {
                         setSelectedSlot(null)
                       }}
                       onTransform={(action) => handleTransform(slot, action)}
+                      onMoveUp={i > 0 ? () => swapSlots(slot.id, g.slots[i - 1].id) : undefined}
+                      onMoveDown={i < g.slots.length - 1 ? () => swapSlots(slot.id, g.slots[i + 1].id) : undefined}
                     />
                   ))}
                 </div>
