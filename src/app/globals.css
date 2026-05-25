@@ -218,7 +218,7 @@ button, input, textarea, select { font: inherit; }
 
 .ks-cat {
   display: grid;
-  grid-template-columns: 24px 160px 32px;
+  grid-template-columns: 24px 180px 32px;
   align-items: center;
   gap: 14px;
   color: var(--paper-dim);
@@ -239,7 +239,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-cat-name {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: 30px;
   letter-spacing: 0.01em;
   text-align: left;
   transition: font-size 300ms ease;
@@ -253,7 +253,7 @@ button, input, textarea, select { font: inherit; }
   justify-self: end;
 }
 .ks-cat.active              { color: var(--paper); }
-.ks-cat.active .ks-cat-name { font-size: 32px; }
+.ks-cat.active .ks-cat-name { font-size: 33px; }
 .ks-cat.active .ks-cat-tick { width: 32px; background: var(--paper); }
 
 /* ─────────────────────────────────────────────
