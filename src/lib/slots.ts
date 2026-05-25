@@ -73,8 +73,17 @@ const INFO_SLOTS: Slot[] = [
   { id: 'info-portrait', page: 'Info', label: 'Info · Portrait photo (4:5)', hint: '4:5 portrait · 800×1000px min' },
 ]
 
+const HERO_SLOTS: Slot[] = [
+  { id: 'culinary-hero',  page: 'Culinary',  label: 'Culinary · Hero banner',  hint: 'Full-bleed banner behind the category title' },
+  { id: 'spaces-hero',    page: 'Spaces',    label: 'Spaces · Hero banner',    hint: 'Full-bleed banner behind the category title' },
+  { id: 'portraits-hero', page: 'Portraits', label: 'Portraits · Hero banner', hint: 'Full-bleed banner behind the category title' },
+  { id: 'objects-hero',   page: 'Objects',   label: 'Objects · Hero banner',   hint: 'Full-bleed banner behind the category title' },
+  { id: 'motion-hero',    page: 'Motion',    label: 'Motion · Hero banner',    hint: 'Full-bleed banner behind the category title' },
+]
+
 // Static non-landing slots (used for gallery pages etc.)
 export const GALLERY_SLOTS: Slot[] = [
+  ...HERO_SLOTS,
   ...CULINARY_SLOTS,
   ...SPACES_SLOTS,
   ...PORTRAITS_SLOTS,

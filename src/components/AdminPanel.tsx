@@ -563,8 +563,8 @@ export function AdminPanel() {
                 onViewLink={assignments[slot.id]
                   ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
                   : undefined}
-                onMoveUp={i > 0 ? () => swapSlots(slot.id, pageSlots[i - 1].id) : undefined}
-                onMoveDown={i < pageSlots.length - 1 ? () => swapSlots(slot.id, pageSlots[i + 1].id) : undefined}
+                onMoveUp={!slot.id.endsWith('-hero') && i > 0 && !pageSlots[i - 1].id.endsWith('-hero') ? () => swapSlots(slot.id, pageSlots[i - 1].id) : undefined}
+                onMoveDown={!slot.id.endsWith('-hero') && i < pageSlots.length - 1 ? () => swapSlots(slot.id, pageSlots[i + 1].id) : undefined}
               />
             ))}
           </div>

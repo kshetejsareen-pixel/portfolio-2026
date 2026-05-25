@@ -327,6 +327,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [showAllProjects, setShowAllProjects] = useState(false)
   const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>({})
+  const [heroAssignment, setHeroAssignment] = useState<{ url: string; focalX?: number; focalY?: number } | null>(null)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
 
   useEffect(() => {
@@ -370,7 +371,10 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   const fetchGallery = useCallback(() => {
     fetch(`/api/gallery?catId=${catId}`)
       .then((r) => r.json())
-      .then((d) => { if (d.assignments) setGalleryAssignments(d.assignments) })
+      .then((d) => {
+        if (d.assignments) setGalleryAssignments(d.assignments)
+        setHeroAssignment(d.hero ?? null)
+      })
       .catch(() => {})
   }, [catId])
 
@@ -435,6 +439,17 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       </header>
 
       <section className="cat-hero" style={{ backgroundColor: heroTint }}>
+        {heroAssignment && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroAssignment.url}
+            alt=""
+            className="cat-hero-photo"
+            style={heroAssignment.focalX != null && heroAssignment.focalY != null
+              ? { objectPosition: `${heroAssignment.focalX}% ${heroAssignment.focalY}%` }
+              : undefined}
+          />
+        )}
         <div className="cat-hero-bg" />
         <div className="cat-hero-meta">
           <div className="cat-hero-eyebrow">

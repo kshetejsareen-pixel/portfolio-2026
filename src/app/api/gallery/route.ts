@@ -36,7 +36,17 @@ export async function GET(req: Request) {
     focalY?: number
   }> = {}
 
+  let hero: { url: string; focalX?: number; focalY?: number } | null = null
+
   for (const [slotId, data] of Object.entries(store)) {
+    if (slotId === `${catId}-hero`) {
+      hero = {
+        url:    buildUrl(data.publicId, data.angle, data.flipH, data.flipV),
+        focalX: data.focalX,
+        focalY: data.focalY,
+      }
+      continue
+    }
     const m = slotId.match(pattern)
     if (!m) continue
     assignments[m[1]] = {
@@ -50,7 +60,7 @@ export async function GET(req: Request) {
     }
   }
 
-  return NextResponse.json({ assignments }, {
+  return NextResponse.json({ assignments, hero }, {
     headers: { 'Cache-Control': 'no-store' },
   })
 }
