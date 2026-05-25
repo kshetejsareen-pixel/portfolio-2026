@@ -83,6 +83,14 @@ export function CategoryLanding() {
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
+  // Refs so the interval callback always reads current values without stale closures
+  const activeCatsRef = useRef(activeCategories)
+  const catIdxRef     = useRef(0)
+  const frameIdxRef   = useRef(0)
+  useEffect(() => { activeCatsRef.current = activeCategories }, [activeCategories])
+  useEffect(() => { catIdxRef.current   = catIdx   }, [catIdx])
+  useEffect(() => { frameIdxRef.current = frameIdx }, [frameIdx])
+
   // Fetch config + assignments — polls every 3s while tab is visible for live admin preview
   const fetchLanding = useCallback(() => {
     fetch('/api/landing')
@@ -124,10 +132,27 @@ export function CategoryLanding() {
     stopCycle()
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
-        setCatIdx((c) => (c + 1) % activeCategories.length)
+        const cats       = activeCatsRef.current
+        const ci         = catIdxRef.current
+        const fi         = frameIdxRef.current
+        const totalFrames = cats[ci]?.frames.length ?? 1
+
+        if (fi < totalFrames - 1) {
+          // More frames in this category — advance frame
+          const next = fi + 1
+          frameIdxRef.current = next
+          setFrameIdx(next)
+        } else {
+          // All frames shown — move to next category
+          const nextCat = (ci + 1) % cats.length
+          catIdxRef.current   = nextCat
+          frameIdxRef.current = 0
+          setCatIdx(nextCat)
+          setFrameIdx(0)
+        }
       }, CYCLE_INTERVAL)
     }, IDLE_DELAY)
-  }, [stopCycle, activeCategories.length])
+  }, [stopCycle])
 
   // Start the countdown on mount; clean up on unmount
   useEffect(() => {
