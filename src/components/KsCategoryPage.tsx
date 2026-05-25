@@ -34,6 +34,8 @@ interface GalleryAssignment {
   location: string
   year: string
   camera: string
+  focalX?: number
+  focalY?: number
 }
 
 // Walks the flow in render order and overlays Cloudinary assignments onto each photo.
@@ -54,6 +56,8 @@ function applyGalleryAssignments(
       location: a.location || photo.location,
       year:     a.year     || photo.year,
       camera:   a.camera   || photo.camera,
+      focalX:   a.focalX   ?? photo.focalX,
+      focalY:   a.focalY   ?? photo.focalY,
     }
   }
 
@@ -132,7 +136,14 @@ function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?
   return (
     <div className={`cat-photo ${aspect}`} style={{ backgroundColor: photo.tint }}>
       {photo.image
-        ? <img src={photo.image} alt={photo.title} className="cat-photo-img" />
+        ? <img
+            src={photo.image}
+            alt={photo.title}
+            className="cat-photo-img"
+            style={photo.focalX != null && photo.focalY != null
+              ? { objectPosition: `${photo.focalX}% ${photo.focalY}%` }
+              : undefined}
+          />
         : <div className="cat-photo-ctr">{photo.title.toUpperCase()}</div>
       }
     </div>

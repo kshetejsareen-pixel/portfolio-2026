@@ -18,6 +18,8 @@ export async function GET(req: Request) {
     location: string
     year: string
     camera: string
+    focalX?: number
+    focalY?: number
   }> = {}
 
   for (const [slotId, data] of Object.entries(store)) {
@@ -29,6 +31,8 @@ export async function GET(req: Request) {
       location: data.location,
       year:     data.year,
       camera:   data.camera,
+      focalX:   data.focalX,
+      focalY:   data.focalY,
     }
   }
 

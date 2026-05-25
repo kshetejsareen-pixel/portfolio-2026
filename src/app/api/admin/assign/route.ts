@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
-import { setAssignment, removeAssignmentByPublicId, swapAssignments, getAllAssignments } from '@/lib/assignmentsStore'
+import { setAssignment, removeAssignmentByPublicId, swapAssignments, getAllAssignments, updateFocalPoint } from '@/lib/assignmentsStore'
 
 const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
 
@@ -94,6 +94,20 @@ export async function PATCH(req: Request) {
   } catch (err) {
     console.error('Swap error:', err)
     return NextResponse.json({ error: 'Failed to swap' }, { status: 500 })
+  }
+}
+
+export async function PUT(req: Request) {
+  const { slotId, focalX, focalY } = await req.json()
+  if (!slotId || focalX == null || focalY == null) {
+    return NextResponse.json({ error: 'slotId, focalX, focalY required' }, { status: 400 })
+  }
+  try {
+    await updateFocalPoint(slotId, focalX, focalY)
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error('Focal point error:', err)
+    return NextResponse.json({ error: 'Failed to save focal point' }, { status: 500 })
   }
 }
 

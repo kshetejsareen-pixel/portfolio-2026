@@ -5,6 +5,8 @@ export interface Frame {
   camera: string
   image?: string
   mobileImage?: string  // portrait crop for mobile viewports
+  focalX?: number       // object-position X (0–100)
+  focalY?: number       // object-position Y (0–100)
 }
 
 export interface Category {

@@ -12,13 +12,15 @@ function thumbUrl(publicId: string) {
 export async function GET() {
   try {
     const store = await getAllAssignments()
-    const assignments: Record<string, { publicId: string; url: string; thumbnailUrl: string }> = {}
+    const assignments: Record<string, { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number }> = {}
 
     for (const [slotId, data] of Object.entries(store)) {
       assignments[slotId] = {
         publicId:     data.publicId,
         url:          data.url,
         thumbnailUrl: thumbUrl(data.publicId),
+        focalX:       data.focalX,
+        focalY:       data.focalY,
       }
     }
 

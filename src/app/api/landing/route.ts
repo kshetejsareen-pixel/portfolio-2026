@@ -17,17 +17,21 @@ export async function GET() {
     location: string
     year: string
     camera: string
+    focalX?: number
+    focalY?: number
   }> = {}
 
   for (const [slotId, data] of Object.entries(store)) {
     if (!slotId.startsWith('landing-')) continue
     assignments[slotId] = {
-      url:      data.url,
+      url:       data.url,
       mobileUrl: data.mobileUrl,
-      title:    data.title,
-      location: data.location,
-      year:     data.year,
-      camera:   data.camera,
+      title:     data.title,
+      location:  data.location,
+      year:      data.year,
+      camera:    data.camera,
+      focalX:    data.focalX,
+      focalY:    data.focalY,
     }
   }
 

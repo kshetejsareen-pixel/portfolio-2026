@@ -27,6 +27,8 @@ interface LandingAssignment {
   location: string
   year: string
   camera: string
+  focalX?: number
+  focalY?: number
 }
 
 // Build the active categories list from config + Cloudinary assignments.
@@ -48,6 +50,8 @@ function buildCategories(
         camera:      asgn?.camera   || base?.camera   || '',
         image:       asgn?.url      ?? base?.image,
         mobileImage: asgn?.mobileUrl,
+        focalX:      asgn?.focalX   ?? base?.focalX,
+        focalY:      asgn?.focalY   ?? base?.focalY,
       }
     })
     return { ...cat, frames }
@@ -207,7 +211,14 @@ export function CategoryLanding() {
                         <source media="(max-width: 768px)" srcSet={f.mobileImage} />
                       )}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={f.image} alt={f.title} className="ks-frame-img" />
+                      <img
+                        src={f.image}
+                        alt={f.title}
+                        className="ks-frame-img"
+                        style={f.focalX != null && f.focalY != null
+                          ? { objectPosition: `${f.focalX}% ${f.focalY}%` }
+                          : undefined}
+                      />
                     </picture>
                   )
                   : active && (

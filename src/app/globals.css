@@ -3301,3 +3301,109 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-folder-form-title strong { color: #aaa; font-weight: 400; }
 .adm-folder-form-count { color: #333; margin-left: 4px; }
+
+/* ── Focal point editor ─────────────────────────────────────────────────────── */
+
+.adm-focal-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.adm-focal-subtitle {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #555;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+.adm-focal-canvas {
+  position: relative;
+  width: 100%;
+  cursor: crosshair;
+  user-select: none;
+  flex-shrink: 0;
+  background: #111;
+}
+
+.adm-focal-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  draggable: false;
+}
+
+/* Overlay container — fills the canvas absolutely */
+.adm-focal-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Dimmed strips outside the crop rect */
+.adm-focal-dim {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.52);
+}
+
+/* Crop rectangle border */
+.adm-focal-crop-border {
+  position: absolute;
+  border: 1.5px solid;
+  box-sizing: border-box;
+}
+
+/* Crop label badge */
+.adm-focal-crop-label {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* Draggable focal point dot */
+.adm-focal-dot {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.6);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.adm-focal-coords {
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 0.06em;
+  border-top: 1px solid #1e1e1e;
+}
+
+/* Focus button in slot card */
+.adm-slot-focus-btn {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #666;
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 150ms, color 150ms;
+}
+.adm-slot-focus-btn:hover { border-color: #444; color: #aaa; }

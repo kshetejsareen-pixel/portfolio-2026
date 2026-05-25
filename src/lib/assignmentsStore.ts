@@ -10,6 +10,8 @@ export interface StoredAssignment {
   location: string
   year: string
   camera: string
+  focalX?: number
+  focalY?: number
 }
 
 type Store = Record<string, StoredAssignment>
@@ -43,6 +45,14 @@ export async function swapAssignments(slotA: string, slotB: string): Promise<voi
   if (a) store[slotB] = a; else delete store[slotB]
   if (b) store[slotA] = b; else delete store[slotA]
   await cloudinaryWrite(PUBLIC_ID, store)
+}
+
+export async function updateFocalPoint(slotId: string, focalX: number, focalY: number): Promise<void> {
+  const store = await cloudinaryRead<Store>(PUBLIC_ID, {})
+  if (store[slotId]) {
+    store[slotId] = { ...store[slotId], focalX, focalY }
+    await cloudinaryWrite(PUBLIC_ID, store)
+  }
 }
 
 export async function updateCopyByPublicId(

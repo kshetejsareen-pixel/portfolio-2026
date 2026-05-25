@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { getLandingSlots, GALLERY_SLOTS, PAGES, type Slot } from '@/lib/slots'
 import { categories } from '@/lib/categories'
 import { PROJECT_TAGS } from '@/lib/tags'
+import { FocalPointEditor } from '@/components/FocalPointEditor'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,6 +20,8 @@ interface Assignment {
   publicId: string
   url: string
   thumbnailUrl: string
+  focalX?: number
+  focalY?: number
 }
 
 interface ImageCopy {
@@ -63,6 +66,7 @@ interface CategoryCopy {
 type RightPanel =
   | { mode: 'library' }
   | { mode: 'copy-editor'; slotId: string; publicId: string; initial: ImageCopy }
+  | { mode: 'focal-point'; slotId: string; imageUrl: string; focalX?: number; focalY?: number }
   | { mode: 'folder-browser'; categoryId: string }
   | { mode: 'page-copy'; categoryId: string }
   | { mode: 'project-images'; categoryId: string; project: AdminProject }
@@ -143,7 +147,13 @@ export function AdminPanel() {
   // ── Fetch assignments ──────────────────────────────────────────────────────
   const fetchAssignments = useCallback(async () => {
     const data = await fetch('/api/admin/assignments').then((r) => r.json())
-    setAssignments(data.assignments ?? {})
+    // Map to Assignment shape — focalX/focalY pass through if present
+    const mapped: Record<string, Assignment> = {}
+    for (const [id, asgn] of Object.entries(data.assignments ?? {})) {
+      const a = asgn as { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number }
+      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY }
+    }
+    setAssignments(mapped)
   }, [])
 
   // ── Fetch landing config ───────────────────────────────────────────────────
@@ -461,6 +471,12 @@ export function AdminPanel() {
                       onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
                       onClear={() => unassignSlot(slot)}
                       onEditCopy={() => openCopyEditor(slot)}
+                      onSetFocus={() => {
+                        const asgn = assignments[slot.id]
+                        if (!asgn) return
+                        setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
+                        setSelectedSlot(null)
+                      }}
                     />
                   ))}
                 </div>
@@ -479,6 +495,12 @@ export function AdminPanel() {
                 onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
                 onClear={() => unassignSlot(slot)}
                 onEditCopy={() => openCopyEditor(slot)}
+                onSetFocus={() => {
+                  const asgn = assignments[slot.id]
+                  if (!asgn) return
+                  setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
+                  setSelectedSlot(null)
+                }}
                 onViewLink={assignments[slot.id]
                   ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
                   : undefined}
@@ -491,7 +513,30 @@ export function AdminPanel() {
       </main>
 
       {/* ── Right panel ───────────────────────────────────────────────────── */}
-      {rightPanel.mode === 'copy-editor' ? (
+      {rightPanel.mode === 'focal-point' ? (
+        <FocalPointEditor
+          key={rightPanel.slotId}
+          slotId={rightPanel.slotId}
+          imageUrl={rightPanel.imageUrl}
+          initialX={rightPanel.focalX}
+          initialY={rightPanel.focalY}
+          onSave={async (focalX, focalY) => {
+            await fetch('/api/admin/assign', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slotId: rightPanel.slotId, focalX, focalY }),
+            })
+            setAssignments((prev) => {
+              const asgn = prev[rightPanel.slotId]
+              if (!asgn) return prev
+              return { ...prev, [rightPanel.slotId]: { ...asgn, focalX, focalY } }
+            })
+            showToast('Focal point saved')
+            setRightPanel({ mode: 'library' })
+          }}
+          onCancel={() => setRightPanel({ mode: 'library' })}
+        />
+      ) : rightPanel.mode === 'copy-editor' ? (
         <CopyEditorPanel
           key={rightPanel.slotId}
           publicId={rightPanel.publicId}
@@ -582,7 +627,7 @@ export function AdminPanel() {
 // ─── SlotCard ─────────────────────────────────────────────────────────────────
 
 function SlotCard({
-  slot, assignment, selected, assigningThis, onSelect, onClear, onEditCopy, onViewLink, onMoveUp, onMoveDown,
+  slot, assignment, selected, assigningThis, onSelect, onClear, onEditCopy, onSetFocus, onViewLink, onMoveUp, onMoveDown,
 }: {
   slot: Slot
   assignment?: Assignment
@@ -591,6 +636,7 @@ function SlotCard({
   onSelect: () => void
   onClear: () => void
   onEditCopy: () => void
+  onSetFocus: () => void
   onViewLink?: () => void
   onMoveUp?: () => void
   onMoveDown?: () => void
@@ -623,6 +669,7 @@ function SlotCard({
                 <button className="adm-slot-link-btn" onClick={onViewLink} title="Open in Cloudinary">↗</button>
               )}
               <button className="adm-slot-copy-btn" onClick={onEditCopy} title="Edit copy">✏</button>
+              <button className="adm-slot-focus-btn" onClick={onSetFocus} title="Set focal point">⊙</button>
               <button className="adm-slot-clear-btn" onClick={onClear}>Clear</button>
             </>
           )}

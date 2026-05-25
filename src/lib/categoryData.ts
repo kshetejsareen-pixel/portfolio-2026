@@ -6,6 +6,8 @@ export type FlowPhoto = {
   year: string
   camera?: string
   image?: string
+  focalX?: number
+  focalY?: number
 }
 
 export type FlowRow =
