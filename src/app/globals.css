@@ -2609,6 +2609,72 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-load-more:hover { color: #aaa; border-color: #444; }
 
+/* ── Library folder breadcrumb ── */
+.adm-lib-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 16px 4px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #222;
+}
+.adm-lib-crumb {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #666;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.adm-lib-crumb:hover { color: #aaa; }
+.adm-lib-crumb.active { color: #ddd; cursor: default; }
+.adm-lib-crumb-sep { color: #444; font-size: 10px; padding: 0 1px; }
+
+/* ── Library folder tiles ── */
+.adm-lib-folder-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #222;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.adm-lib-folder-loading { font-size: 11px; color: #555; padding: 4px 0; }
+.adm-lib-folder-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 5px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.adm-lib-folder-btn:hover { background: #1e1e1e; }
+.adm-lib-folder-icon { font-size: 9px; color: #555; flex-shrink: 0; }
+.adm-lib-folder-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #bbb;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adm-lib-folder-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #555;
+  flex-shrink: 0;
+}
+
 /* Toast */
 .adm-toast {
   position: fixed;

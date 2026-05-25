@@ -103,6 +103,7 @@ export function AdminPanel() {
   const [nextCursor, setNextCursor]     = useState<string | null>(null)
   const [loadingImages, setLoadingImages] = useState(false)
   const [searchQ, setSearchQ]           = useState('')
+  const [libraryFolder, setLibraryFolder] = useState('')
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Assignments + config
@@ -133,10 +134,11 @@ export function AdminPanel() {
   const activeCatId   = activePage.toLowerCase()
 
   // ── Fetch library ──────────────────────────────────────────────────────────
-  const fetchImages = useCallback(async (q: string, cursor?: string) => {
+  const fetchImages = useCallback(async (q: string, cursor?: string, folder = '') => {
     setLoadingImages(true)
     const params = new URLSearchParams()
     if (q)      params.set('q', q)
+    if (folder) params.set('folder', folder)
     if (cursor) params.set('cursor', cursor)
     const data = await fetch(`/api/admin/images?${params}`).then((r) => r.json())
     setImages((prev) => cursor ? [...prev, ...data.images] : data.images)
@@ -189,9 +191,18 @@ export function AdminPanel() {
     searchTimer.current = setTimeout(() => {
       setImages([])
       setNextCursor(null)
-      fetchImages(q)
+      fetchImages(q, undefined, q ? '' : libraryFolder)
     }, 400)
   }
+
+  // ── Folder navigation ──────────────────────────────────────────────────────
+  const handleFolderChange = useCallback((folder: string) => {
+    setLibraryFolder(folder)
+    setSearchQ('')
+    setImages([])
+    setNextCursor(null)
+    fetchImages('', undefined, folder)
+  }, [fetchImages])
 
   // ── Frame count controls ───────────────────────────────────────────────────
   const updateCount = async (catId: string, delta: number) => {
@@ -612,10 +623,12 @@ export function AdminPanel() {
           searchQ={searchQ}
           selectedSlot={selectedSlot}
           assigning={assigningSlotId !== null}
+          currentFolder={libraryFolder}
           onSearch={handleSearch}
+          onFolderChange={handleFolderChange}
           onSelectImage={assignImage}
           onAssignUrl={assignByPublicId}
-          onLoadMore={() => fetchImages(searchQ, nextCursor ?? undefined)}
+          onLoadMore={() => fetchImages(searchQ, nextCursor ?? undefined, libraryFolder)}
         />
       )}
 
@@ -1262,7 +1275,7 @@ function ProjectImagesPanel({
 
 function LibraryPanel({
   images, nextCursor, loadingImages, searchQ, selectedSlot, assigning,
-  onSearch, onSelectImage, onAssignUrl, onLoadMore,
+  currentFolder, onSearch, onFolderChange, onSelectImage, onAssignUrl, onLoadMore,
 }: {
   images: CloudinaryImage[]
   nextCursor: string | null
@@ -1270,12 +1283,28 @@ function LibraryPanel({
   searchQ: string
   selectedSlot: Slot | null
   assigning: boolean
+  currentFolder: string
   onSearch: (q: string) => void
+  onFolderChange: (folder: string) => void
   onSelectImage: (img: CloudinaryImage) => void
   onAssignUrl: (url: string) => Promise<void>
   onLoadMore: () => void
 }) {
   const [urlInput, setUrlInput] = useState('')
+  const [folders, setFolders] = useState<{ name: string; path: string; imageCount: number }[]>([])
+  const [loadingFolders, setLoadingFolders] = useState(false)
+
+  useEffect(() => {
+    if (searchQ) { setFolders([]); return }
+    setLoadingFolders(true)
+    fetch(`/api/admin/folders?path=${encodeURIComponent(currentFolder)}`)
+      .then((r) => r.json())
+      .then((d) => setFolders(d.folders ?? []))
+      .catch(() => setFolders([]))
+      .finally(() => setLoadingFolders(false))
+  }, [currentFolder, searchQ])
+
+  const segments = currentFolder ? currentFolder.split('/') : []
 
   return (
     <aside className="adm-library">
@@ -1284,11 +1313,45 @@ function LibraryPanel({
         <input
           className="adm-library-search"
           type="search"
-          placeholder="Search…"
+          placeholder="Search all…"
           value={searchQ}
           onChange={(e) => onSearch(e.target.value)}
         />
       </div>
+
+      {/* Breadcrumb */}
+      <div className="adm-lib-breadcrumb">
+        <button
+          className={`adm-lib-crumb${!currentFolder ? ' active' : ''}`}
+          onClick={() => onFolderChange('')}
+        >All</button>
+        {segments.map((seg, i) => {
+          const path = segments.slice(0, i + 1).join('/')
+          return (
+            <span key={path}>
+              <span className="adm-lib-crumb-sep">/</span>
+              <button
+                className={`adm-lib-crumb${i === segments.length - 1 ? ' active' : ''}`}
+                onClick={() => onFolderChange(path)}
+              >{seg}</button>
+            </span>
+          )
+        })}
+      </div>
+
+      {/* Folder tiles */}
+      {!searchQ && (
+        <div className="adm-lib-folder-row">
+          {loadingFolders && <span className="adm-lib-folder-loading">Loading…</span>}
+          {folders.map((f) => (
+            <button key={f.path} className="adm-lib-folder-btn" onClick={() => onFolderChange(f.path)}>
+              <span className="adm-lib-folder-icon">▶</span>
+              <span className="adm-lib-folder-name">{f.name}</span>
+              <span className="adm-lib-folder-count">{f.imageCount}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="adm-url-assign">
         <input
@@ -1339,6 +1402,9 @@ function LibraryPanel({
             )}
           </button>
         ))}
+        {!loadingImages && images.length === 0 && !loadingFolders && (
+          <div className="adm-library-loading">No images here.</div>
+        )}
       </div>
 
       {loadingImages && <div className="adm-library-loading">Loading…</div>}
