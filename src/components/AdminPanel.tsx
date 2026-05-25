@@ -992,6 +992,7 @@ function FolderBrowserPanel({
   const [folders, setFolders]         = useState<CloudinaryFolder[]>([])
   const [loading, setLoading]         = useState(false)
   const [selectedFolder, setSelectedFolder] = useState<CloudinaryFolder | null>(null)
+  const [enteredFolder, setEnteredFolder] = useState<CloudinaryFolder | null>(null)
   const [form, setForm]               = useState({ title: '', it: '', year: '', location: '', desc: '' })
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [saving, setSaving]           = useState(false)
@@ -1008,15 +1009,21 @@ function FolderBrowserPanel({
 
   useEffect(() => { loadFolders('') }, [loadFolders])
 
-  const navigateTo = (p: string) => {
+  const navigateTo = (p: string, folderInfo?: CloudinaryFolder) => {
     setPath(p)
     setSelectedFolder(null)
+    setEnteredFolder(folderInfo ?? null)
     loadFolders(p)
   }
 
   const selectFolder = (f: CloudinaryFolder) => {
     setSelectedFolder(f)
     setForm((prev) => ({ ...prev, title: f.name.replace(/[-_]/g, ' ') }))
+  }
+
+  const selectCurrentFolder = () => {
+    if (!enteredFolder) return
+    selectFolder(enteredFolder)
   }
 
   const breadcrumbs = path ? ['root', ...path.split('/')].filter(Boolean) : ['root']
@@ -1061,23 +1068,31 @@ function FolderBrowserPanel({
         ))}
       </div>
 
+      {/* Use current folder shortcut */}
+      {enteredFolder && !selectedFolder && (
+        <button className="adm-folder-use-current" onClick={selectCurrentFolder}>
+          Use &ldquo;{enteredFolder.name}&rdquo; as project
+          {enteredFolder.imageCount > 0 && <span className="adm-folder-use-count">{enteredFolder.imageCount} images</span>}
+        </button>
+      )}
+
       {/* Folder list */}
       <div className="adm-folder-list">
         {loading && <div className="adm-library-loading">Loading folders…</div>}
         {!loading && folders.length === 0 && (
-          <div className="adm-library-loading">No subfolders here.</div>
+          <div className="adm-library-loading">No subfolders — use the button above to select this folder.</div>
         )}
         {folders.map((f) => (
           <button
             key={f.path}
             className={`adm-folder-item${selectedFolder?.path === f.path ? ' selected' : ''}`}
             onClick={() => selectFolder(f)}
-            onDoubleClick={() => navigateTo(f.path)}
+            onDoubleClick={() => navigateTo(f.path, f)}
           >
             <span className="adm-folder-icon">📁</span>
             <span className="adm-folder-name">{f.name}</span>
             <span className="adm-folder-count">{f.imageCount} img</span>
-            <span className="adm-folder-nav" onClick={(e) => { e.stopPropagation(); navigateTo(f.path) }}>→</span>
+            <span className="adm-folder-nav" onClick={(e) => { e.stopPropagation(); navigateTo(f.path, f) }}>→</span>
           </button>
         ))}
       </div>

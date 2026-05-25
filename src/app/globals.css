@@ -3291,6 +3291,7 @@ a.info-touch-val:hover { color: var(--paper); }
   display: flex;
   flex-direction: column;
   background: #0f0f0f;
+  overflow-y: auto;
 }
 
 .adm-folder-cancel {
@@ -3338,10 +3339,36 @@ a.info-touch-val:hover { color: var(--paper); }
   padding: 0 2px;
 }
 
+.adm-folder-use-current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: #161410;
+  border: none;
+  border-bottom: 1px solid #2a2010;
+  color: #c8a84a;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+.adm-folder-use-current:hover { background: #1e1a0c; }
+.adm-folder-use-count {
+  margin-left: auto;
+  color: #6a5820;
+  font-size: 9px;
+}
+
 .adm-folder-list {
-  flex: 1;
+  flex-shrink: 0;
   overflow-y: auto;
-  max-height: 200px;
+  max-height: 220px;
   border-bottom: 1px solid #1e1e1e;
 }
 
@@ -3393,8 +3420,7 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-folder-nav:hover { color: #888; }
 
 .adm-folder-form {
-  flex: 1;
-  overflow-y: auto;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
