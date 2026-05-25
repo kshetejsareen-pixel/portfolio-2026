@@ -714,11 +714,13 @@ function SlotCard({
           <img src={assignment.thumbnailUrl} alt={slot.label} className="adm-slot-img" />
         </div>
       ) : (
-        <div className="adm-slot-empty"><span className="adm-slot-empty-icon">+</span></div>
+        <div className="adm-slot-empty" onClick={onSelect} style={{ cursor: 'pointer' }}>
+          <span className="adm-slot-empty-icon">{selected ? '×' : '+'}</span>
+        </div>
       )}
       <div className="adm-slot-meta">
         <div className="adm-slot-label">{slot.label}</div>
-        <div className="adm-slot-hint">{slot.hint}</div>
+        <div className="adm-slot-hint">{!assignment && !assigningThis ? 'Click to select, then pick from library' : slot.hint}</div>
         <div className="adm-slot-actions">
           <button className="adm-slot-assign-btn" onClick={onSelect} disabled={assigningThis}>
             {selected ? 'Cancel' : assignment ? 'Replace' : 'Assign'}

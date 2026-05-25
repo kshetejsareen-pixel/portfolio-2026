@@ -2398,7 +2398,6 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-slot {
   border: 1px solid #1e1e1e;
   background: #111;
-  overflow: hidden;
   transition: border-color 200ms;
 }
 .adm-slot.selecting { border-color: #e8e8e0; }
