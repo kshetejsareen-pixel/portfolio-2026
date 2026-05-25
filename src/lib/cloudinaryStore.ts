@@ -1,13 +1,14 @@
 import cloudinary from '@/lib/cloudinary'
 
-// Generic helper for storing JSON blobs as Cloudinary raw files.
-// Read uses the Admin API to get the versioned URL (always fresh, bypasses CDN cache).
-// Write overwrites the raw file in place.
+const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
 
+// Read: fetch the public CDN URL directly — no admin credentials needed.
+// A timestamp query param bypasses CDN caching so reads are always fresh.
+// Write: upload via the SDK (requires credentials — only called from the local admin).
 export async function cloudinaryRead<T>(publicId: string, fallback: T): Promise<T> {
   try {
-    const meta = await cloudinary.api.resource(publicId, { resource_type: 'raw' })
-    const res  = await fetch(meta.secure_url, { cache: 'no-store' })
+    const url = `https://res.cloudinary.com/${CLOUD}/raw/upload/${publicId}?_t=${Date.now()}`
+    const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) return fallback
     return await res.json() as T
   } catch {
@@ -21,5 +22,6 @@ export async function cloudinaryWrite<T>(publicId: string, data: T): Promise<voi
     public_id:     publicId,
     resource_type: 'raw',
     overwrite:     true,
+    invalidate:    true,
   })
 }
