@@ -443,10 +443,31 @@ button, input, textarea, select { font: inherit; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
-  /* Category rail: same right-side column as desktop, just adjusted for mobile margins */
-  .ks-cat-rail { right: 16px; }
-  .ks-cat { grid-template-columns: 20px 100px; }
-  .ks-cat-name { font-size: 16px; }
+  /* Category rail: right-side column, same as desktop */
+  .ks-cat-rail {
+    right: 16px;
+    left: auto;
+    top: 0;
+    bottom: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 0;
+    gap: 18px;
+  }
+  .ks-cat {
+    display: grid;
+    grid-template-columns: 20px 100px;
+    gap: 10px;
+    min-height: auto;
+    text-align: left;
+    align-items: center;
+    flex-direction: unset;
+  }
+  .ks-cat-name { font-size: 15px; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
