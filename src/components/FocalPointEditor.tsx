@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 interface CropRect {
   left: number   // 0–1 fraction of image width
@@ -67,6 +67,12 @@ export function FocalPointEditor({ imageUrl, slotId, initialX = 50, initialY = 5
   const [saving, setSaving] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const dragging = useRef(false)
+  const bcRef = useRef<BroadcastChannel | null>(null)
+
+  useEffect(() => {
+    bcRef.current = new BroadcastChannel('ks-focal-preview')
+    return () => { bcRef.current?.close(); bcRef.current = null }
+  }, [])
 
   const updateFromClient = useCallback((clientX: number, clientY: number) => {
     if (!containerRef.current) return
@@ -74,7 +80,8 @@ export function FocalPointEditor({ imageUrl, slotId, initialX = 50, initialY = 5
     const x = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100))
     const y = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100))
     setFocal({ x, y })
-  }, [])
+    bcRef.current?.postMessage({ type: 'preview', slotId, focalX: Math.round(x), focalY: Math.round(y) })
+  }, [slotId])
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -164,7 +171,10 @@ export function FocalPointEditor({ imageUrl, slotId, initialX = 50, initialY = 5
       </div>
 
       <div className="adm-copy-actions">
-        <button className="adm-copy-cancel" onClick={onCancel}>Cancel</button>
+        <button className="adm-copy-cancel" onClick={() => {
+          bcRef.current?.postMessage({ type: 'cancel', slotId })
+          onCancel()
+        }}>Cancel</button>
         <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save focal point →'}
         </button>

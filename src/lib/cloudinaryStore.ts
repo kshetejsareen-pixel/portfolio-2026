@@ -1,17 +1,18 @@
 import cloudinary from '@/lib/cloudinary'
 
-const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
-
-// Read: fetch the public CDN URL directly — no admin credentials needed.
-// A timestamp query param bypasses CDN caching so reads are always fresh.
+// Read: use the admin API to get the current versioned URL, then fetch content.
+// The admin API bypasses CDN entirely so we always get the latest version number.
+// The versioned CDN URL (e.g. /v1748123456/ks-assignments) is a cache miss after
+// any write because cloudinaryWrite changes the version on each upload.
 // Write: upload via the SDK (requires credentials — only called from the local admin).
 export async function cloudinaryRead<T>(publicId: string, fallback: T): Promise<T> {
   try {
-    const url = `https://res.cloudinary.com/${CLOUD}/raw/upload/${publicId}?_t=${Date.now()}`
-    const res = await fetch(url, { cache: 'no-store' })
+    const resource = await cloudinary.api.resource(publicId, { resource_type: 'raw' })
+    const res = await fetch(resource.secure_url, { cache: 'no-store' })
     if (!res.ok) return fallback
     return await res.json() as T
-  } catch {
+  } catch (err) {
+    console.error('[cloudinaryRead] failed for', publicId, err)
     return fallback
   }
 }

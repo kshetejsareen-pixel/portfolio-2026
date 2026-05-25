@@ -80,6 +80,32 @@ function applyGalleryAssignments(
   })
 }
 
+// Applies live focal-point overrides (from BroadcastChannel preview) keyed by slot index string.
+function applyFocalOverrides(
+  flow: FlowRow[],
+  overrides: Record<string, { focalX: number; focalY: number }>,
+): FlowRow[] {
+  if (Object.keys(overrides).length === 0) return flow
+  let idx = 0
+  function override(photo: FlowPhoto): FlowPhoto {
+    const o = overrides[String(idx++)]
+    return o ? { ...photo, focalX: o.focalX, focalY: o.focalY } : photo
+  }
+  return flow.map((row) => {
+    switch (row.kind) {
+      case 'pull-quote': return row
+      case 'full-bleed':
+      case 'full-bleed-pano':
+      case 'centered-tall':
+      case 'offset': return { ...row, photo: override(row.photo) }
+      case 'asym': return { ...row, large: override(row.large), smalls: row.smalls.map(override) }
+      case 'three-up':
+      case 'diptych':
+      case 'duo': return { ...row, photos: row.photos.map(override) }
+    }
+  })
+}
+
 function photoHasImage(p: FlowPhoto) { return !!p.image }
 
 // A row is "visible" if at least one photo in it has an assigned image.
@@ -301,6 +327,22 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [showAllProjects, setShowAllProjects] = useState(false)
   const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>({})
+  const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
+
+  useEffect(() => {
+    const bc = new BroadcastChannel('ks-focal-preview')
+    const prefix = `${catId}-`
+    bc.onmessage = (e) => {
+      if (!String(e.data.slotId).startsWith(prefix)) return
+      const idx = String(e.data.slotId).slice(prefix.length)
+      if (e.data.type === 'preview') {
+        setFocalOverrides((prev) => ({ ...prev, [idx]: { focalX: e.data.focalX, focalY: e.data.focalY } }))
+      } else if (e.data.type === 'cancel') {
+        setFocalOverrides((prev) => { const n = { ...prev }; delete n[idx]; return n })
+      }
+    }
+    return () => bc.close()
+  }, [catId])
 
   const PROJECTS_INITIAL = 4
 
@@ -353,7 +395,10 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
     ? (activeTag ? adminProjects.filter((p) => p.tags?.includes(activeTag)) : adminProjects)
     : null
 
-  const enrichedFlow = applyGalleryAssignments(data.flow, galleryAssignments)
+  const enrichedFlow = applyFocalOverrides(
+    applyGalleryAssignments(data.flow, galleryAssignments),
+    focalOverrides,
+  )
 
   // Only show rows where at least one photo is assigned; pull-quotes only when there's content
   const assignedCount = countAssigned(enrichedFlow)

@@ -63,6 +63,19 @@ export function CategoryLanding() {
   const [catIdx, setCatIdx]   = useState(0)
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
+
+  useEffect(() => {
+    const bc = new BroadcastChannel('ks-focal-preview')
+    bc.onmessage = (e) => {
+      if (e.data.type === 'preview') {
+        setFocalOverrides((prev) => ({ ...prev, [e.data.slotId]: { focalX: e.data.focalX, focalY: e.data.focalY } }))
+      } else if (e.data.type === 'cancel') {
+        setFocalOverrides((prev) => { const n = { ...prev }; delete n[e.data.slotId]; return n })
+      }
+    }
+    return () => bc.close()
+  }, [])
 
   // Dynamic data from the admin panel
   const [activeCategories, setActiveCategories] = useState<Category[]>(categories)
@@ -197,6 +210,10 @@ export function CategoryLanding() {
         {activeCategories.map((c, ci) =>
           c.frames.map((f, fi) => {
             const active = ci === catIdx && fi === frameIdx
+            const slotId = `landing-${c.id}-${fi}`
+            const override = focalOverrides[slotId]
+            const focalX = override?.focalX ?? f.focalX
+            const focalY = override?.focalY ?? f.focalY
             return (
               <div
                 key={`${c.id}-${fi}`}
@@ -215,8 +232,8 @@ export function CategoryLanding() {
                         src={f.image}
                         alt={f.title}
                         className="ks-frame-img"
-                        style={f.focalX != null && f.focalY != null
-                          ? { objectPosition: `${f.focalX}% ${f.focalY}%` }
+                        style={focalX != null && focalY != null
+                          ? { objectPosition: `${focalX}% ${focalY}%` }
                           : undefined}
                       />
                     </picture>

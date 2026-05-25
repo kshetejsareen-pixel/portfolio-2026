@@ -49,9 +49,13 @@ export async function swapAssignments(slotA: string, slotB: string): Promise<voi
 
 export async function updateFocalPoint(slotId: string, focalX: number, focalY: number): Promise<void> {
   const store = await cloudinaryRead<Store>(PUBLIC_ID, {})
+  console.log('[updateFocalPoint] store keys:', Object.keys(store).length, 'slot exists:', !!store[slotId])
   if (store[slotId]) {
     store[slotId] = { ...store[slotId], focalX, focalY }
     await cloudinaryWrite(PUBLIC_ID, store)
+    console.log('[updateFocalPoint] saved', slotId, focalX, focalY)
+  } else {
+    console.warn('[updateFocalPoint] slot not found:', slotId)
   }
 }
 
