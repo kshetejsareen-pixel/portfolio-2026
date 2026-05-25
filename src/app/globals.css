@@ -143,11 +143,17 @@ button, input, textarea, select { font: inherit; }
 .ks-letterbox {
   position: absolute;
   left: 0; right: 0;
-  background: var(--ink);
   z-index: 4;
 }
-.ks-letterbox--top    { top: 0;    height: 96px; }
-.ks-letterbox--bottom { bottom: 0; height: 56px; }
+.ks-letterbox--top {
+  top: 0;
+  height: 96px;
+  background: rgba(11, 11, 12, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom: 1px solid rgba(236, 232, 224, 0.06);
+}
+.ks-letterbox--bottom { bottom: 0; height: 56px; background: var(--ink); }
 
 /* ─────────────────────────────────────────────
    Top bar
