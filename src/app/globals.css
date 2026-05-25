@@ -203,6 +203,9 @@ button, input, textarea, select { font: inherit; }
 .ks-top-nav a:hover  { color: var(--paper); }
 .ks-top-nav a.active { color: var(--paper); }
 
+/* Mobile-only number column — hidden on desktop */
+.ks-num-rail { display: none; }
+
 /* ─────────────────────────────────────────────
    Category rail (desktop right) / strip (mobile bottom)
    ───────────────────────────────────────────── */
@@ -470,7 +473,31 @@ button, input, textarea, select { font: inherit; }
     justify-content: center;
     text-align: center;
   }
-  .ks-cat-n { min-width: 0; text-align: center; font-size: 11px; }
+  .ks-cat-n { display: none; }
+
+  /* Number column: right side, vertically centred in photo area — same position as desktop */
+  .ks-num-rail {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    position: absolute;
+    right: 22px;
+    top: 0;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    z-index: 6;
+    pointer-events: none;
+  }
+  .ks-num-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: rgba(236, 232, 224, 0.45);
+    text-align: right;
+    transition: color 240ms ease;
+  }
+  .ks-num-item.active { color: var(--paper); }
+
   .ks-cat-name {
     font-size: 13px;
     min-width: 0;
