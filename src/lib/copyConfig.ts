@@ -1,4 +1,4 @@
-import { cloudinaryRead, cloudinaryWrite } from '@/lib/cloudinaryStore'
+import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
 
 export interface CategoryCopy {
   introLabel?: string
@@ -14,9 +14,9 @@ export type CopyConfig = Record<string, CategoryCopy>
 const PUBLIC_ID = 'ks-copy-config'
 
 export async function readCopyConfig(): Promise<CopyConfig> {
-  return cloudinaryRead<CopyConfig>(PUBLIC_ID, {})
+  return firestoreRead<CopyConfig>(PUBLIC_ID, {})
 }
 
 export async function writeCopyConfig(config: CopyConfig): Promise<void> {
-  await cloudinaryWrite(PUBLIC_ID, config)
+  await firestoreWrite(PUBLIC_ID, config)
 }

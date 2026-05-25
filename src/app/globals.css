@@ -3473,3 +3473,25 @@ a.info-touch-val:hover { color: var(--paper); }
   transition: border-color 150ms, color 150ms;
 }
 .adm-slot-focus-btn:hover { border-color: #444; color: #aaa; }
+
+.adm-slot-transform {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+}
+.adm-slot-xfm-btn {
+  background: none;
+  border: 1px solid #222;
+  color: #555;
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 150ms, color 150ms;
+  flex: 1;
+}
+.adm-slot-xfm-btn:hover { border-color: #444; color: #aaa; }

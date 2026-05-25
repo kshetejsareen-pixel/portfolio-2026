@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
-import { setAssignment, removeAssignmentByPublicId, swapAssignments, getAllAssignments, updateFocalPoint } from '@/lib/assignmentsStore'
+import { setAssignment, removeAssignmentByPublicId, swapAssignments, getAllAssignments, updateFocalPoint, updateTransform } from '@/lib/assignmentsStore'
 
 const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
 
@@ -20,30 +20,23 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Remove this slot from any image that currently holds it in Cloudinary
-    const existing = await cloudinary.search
+    // Sync portfolio_slot context tags on Cloudinary images (best-effort — store is authoritative)
+    cloudinary.search
       .expression(`resource_type:image AND context.portfolio_slot:${slotId}`)
       .with_field('context')
       .max_results(10)
       .execute()
-      .catch(() => ({ resources: [] }))
+      .then((existing) => {
+        for (const img of existing.resources) {
+          if (img.public_id !== publicId) {
+            cloudinary.uploader.explicit(img.public_id, { type: 'upload', context: 'portfolio_slot=' }).catch(() => {})
+          }
+        }
+        cloudinary.uploader.explicit(publicId, { type: 'upload', context: `portfolio_slot=${slotId}` }).catch(() => {})
+      })
+      .catch(() => {})
 
-    for (const img of existing.resources) {
-      if (img.public_id !== publicId) {
-        await cloudinary.uploader.explicit(img.public_id, {
-          type: 'upload',
-          context: 'portfolio_slot=',
-        })
-      }
-    }
-
-    // Assign the new image to this slot in Cloudinary
-    await cloudinary.uploader.explicit(publicId, {
-      type: 'upload',
-      context: `portfolio_slot=${slotId}`,
-    })
-
-    // Fetch existing metadata so the store is fully populated (don't rely on caller passing copy)
+    // Fetch existing metadata (best-effort — falls back to caller-supplied values)
     let resolvedTitle = title, resolvedLocation = location, resolvedYear = year, resolvedCamera = camera
     try {
       const meta = await cloudinary.api.resource(publicId, { image_metadata: false })
@@ -54,15 +47,15 @@ export async function POST(req: Request) {
       resolvedCamera   = ctx.ks_camera   ?? camera
     } catch { /* use defaults */ }
 
-    // Write to Cloudinary store so public APIs don't rely on search indexing lag
+    // Write to store — this is the authoritative assignment record
     await setAssignment(slotId, {
       publicId,
-      url:      desktopUrl(publicId),
+      url:       desktopUrl(publicId),
       mobileUrl: mobileUrl(publicId),
-      title:    resolvedTitle,
-      location: resolvedLocation,
-      year:     resolvedYear,
-      camera:   resolvedCamera,
+      title:     resolvedTitle,
+      location:  resolvedLocation,
+      year:      resolvedYear,
+      camera:    resolvedCamera,
     })
 
     return NextResponse.json({ ok: true })
@@ -98,16 +91,32 @@ export async function PATCH(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const { slotId, focalX, focalY } = await req.json()
-  if (!slotId || focalX == null || focalY == null) {
-    return NextResponse.json({ error: 'slotId, focalX, focalY required' }, { status: 400 })
+  const body = await req.json()
+  const { slotId } = body
+
+  if (!slotId) {
+    return NextResponse.json({ error: 'slotId required' }, { status: 400 })
   }
+
   try {
+    if (body.type === 'transform') {
+      const angle = (body.angle ?? 0) as 0 | 90 | 180 | 270
+      const flipH = body.flipH ?? false
+      const flipV = body.flipV ?? false
+      await updateTransform(slotId, angle, flipH, flipV)
+      return NextResponse.json({ ok: true })
+    }
+
+    // focal point
+    const { focalX, focalY } = body
+    if (focalX == null || focalY == null) {
+      return NextResponse.json({ error: 'focalX, focalY required' }, { status: 400 })
+    }
     await updateFocalPoint(slotId, focalX, focalY)
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error('Focal point error:', err)
-    return NextResponse.json({ error: 'Failed to save focal point' }, { status: 500 })
+    console.error('PUT error:', err)
+    return NextResponse.json({ error: 'Failed to save' }, { status: 500 })
   }
 }
 

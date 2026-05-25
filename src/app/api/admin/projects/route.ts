@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
-import { cloudinaryRead, cloudinaryWrite } from '@/lib/cloudinaryStore'
+import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
 
 const PUBLIC_ID = 'ks-projects-config'
 
@@ -21,11 +21,11 @@ export interface AdminProject {
 type ProjectsConfig = Record<string, AdminProject[]>
 
 async function readConfig(): Promise<ProjectsConfig> {
-  return cloudinaryRead<ProjectsConfig>(PUBLIC_ID, {})
+  return firestoreRead<ProjectsConfig>(PUBLIC_ID, {})
 }
 
 async function saveConfig(config: ProjectsConfig): Promise<void> {
-  await cloudinaryWrite(PUBLIC_ID, config)
+  await firestoreWrite(PUBLIC_ID, config)
 }
 
 export async function GET() {

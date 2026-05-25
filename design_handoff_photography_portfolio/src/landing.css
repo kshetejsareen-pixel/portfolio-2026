@@ -1,0 +1,324 @@
+/* ─────────────────────────────────────────────
+   Kshetej Sareen — Landing Page (V2 Cinematic)
+   Responsive: desktop ≥1024 / mobile <1024
+   ───────────────────────────────────────────── */
+:root {
+  --ink: #0b0b0c;
+  --paper: #ece8e0;
+  --paper-dim: #c8c4ba;
+  --mute: #8a857d;
+  --rule: rgba(236, 232, 224, 0.16);
+  --rule-2: rgba(236, 232, 224, 0.32);
+
+  --serif: "Bodoni Moda", "Bodoni 72", "Didot", "Times New Roman", serif;
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+}
+
+/* Palette variants */
+.theme-ink    { --ink: #0b0b0c; --paper: #ece8e0; }
+.theme-black  { --ink: #000000; --paper: #f4f1ea; }
+.theme-sepia  { --ink: #14110d; --paper: #e8dfc9; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--ink); color: var(--paper); }
+body {
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+.serif { font-family: var(--serif); font-weight: 400; letter-spacing: -0.02em; }
+.mono  { font-family: var(--mono); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* Stage */
+.stage {
+  position: fixed; inset: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+/* The photo layer */
+.photo-layer { position: absolute; inset: 0; }
+.frame {
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity 600ms ease;
+  background-color: var(--bg, #1a1a1c);
+  background-image:
+    radial-gradient(70% 55% at 50% 38%, rgba(255,255,255,0.05), transparent 70%),
+    linear-gradient(135deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 14px);
+}
+.frame.active { opacity: 1; }
+.frame::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.35) 30%, transparent 55%),
+    linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 22%),
+    radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
+}
+.frame .slot-tag {
+  position: absolute; left: 50%; bottom: 50%;
+  transform: translate(-50%, 50%);
+  font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(236, 232, 224, 0.32);
+  white-space: nowrap;
+}
+
+/* Letterbox */
+.letterbox { position: absolute; left: 0; right: 0; height: 56px; background: var(--ink); z-index: 4; }
+.letterbox.top { top: 0; }
+.letterbox.bottom { bottom: 0; }
+.no-letterbox .letterbox { display: none; }
+
+/* Top chrome */
+.top-bar {
+  position: absolute; top: 56px; left: 0; right: 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 32px 56px;
+  z-index: 6;
+}
+.wordmark {
+  display: flex; flex-direction: column; gap: 6px; line-height: 1;
+}
+.wordmark .ks { font-family: var(--serif); font-style: italic; font-size: 28px; }
+.top-nav {
+  display: flex; gap: 32px; align-items: center;
+}
+.top-nav a {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--mute); text-decoration: none;
+  position: relative; cursor: pointer; white-space: nowrap;
+}
+.top-nav a.menu-only { display: none; }
+.top-nav a:hover { color: var(--paper); }
+.top-nav a.active { color: var(--paper); }
+
+/* Right vertical category rail */
+.cat-rail {
+  position: absolute; right: 56px; top: 0; bottom: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 22px;
+  z-index: 6;
+}
+.cat-rail .cat {
+  display: grid; grid-template-columns: 24px 120px 32px;
+  align-items: center; gap: 14px;
+  color: rgba(236, 232, 224, 0.4);
+  cursor: pointer;
+  transition: color 240ms ease, transform 240ms ease;
+  background: none; border: 0; padding: 4px 0;
+  font: inherit;
+}
+.cat-rail .cat:hover { color: var(--paper-dim); }
+.cat-rail .cat .n { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em; text-align: right; }
+.cat-rail .cat .name { font-family: var(--serif); font-size: 18px; letter-spacing: 0.01em; text-align: left; }
+.cat-rail .cat .tick {
+  display: inline-block; width: 8px; height: 1px;
+  background: rgba(236, 232, 224, 0.35);
+  transition: width 320ms ease, background 240ms ease;
+  justify-self: end;
+}
+.cat-rail .cat.active { color: var(--paper); }
+.cat-rail .cat.active .tick { width: 32px; background: var(--paper); }
+
+/* Bottom-left meta */
+.meta {
+  position: absolute; left: 56px; bottom: 96px; max-width: 720px; z-index: 6;
+}
+.meta .above {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+  white-space: nowrap;
+}
+.meta .above .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--paper); animation: pulse 2.2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.6); }
+}
+
+.name {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(48px, 9.5vw, 124px);
+  line-height: 0.94; letter-spacing: -0.035em; margin: 0;
+}
+.name .last { font-style: italic; color: var(--paper-dim); }
+
+.subline {
+  margin-top: 22px; display: flex; gap: 36px; color: var(--paper-dim);
+  font-size: 13px; line-height: 1.5;
+}
+.subline .col { max-width: 260px; }
+.subline .col strong { color: var(--paper); font-weight: 500; }
+
+/* Bottom-right slate */
+.slate {
+  position: absolute; right: 56px; bottom: 96px; z-index: 6; text-align: right;
+  font-family: var(--mono); color: var(--mute);
+  font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  line-height: 1.7;
+}
+.slate .subj { color: var(--paper); }
+
+/* Scrubber + frame counter */
+.scrubber {
+  position: absolute; left: 56px; right: 56px; bottom: 72px;
+  height: 1px; background: rgba(236, 232, 224, 0.18); z-index: 6;
+}
+.scrubber .fill { height: 1px; background: var(--paper); transition: width 600ms cubic-bezier(.22,.61,.36,1); }
+
+.counter {
+  position: absolute; right: 56px; top: 50%; transform: translateY(-50%);
+  font-family: var(--serif); font-style: italic;
+  font-size: 220px; line-height: 1;
+  color: rgba(236, 232, 224, 0.045);
+  z-index: 5; pointer-events: none; user-select: none;
+  letter-spacing: -0.04em;
+}
+
+/* Side step hints */
+.step-hint {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 56px; height: 64px; display: flex; align-items: center; justify-content: center;
+  color: rgba(236, 232, 224, 0.35);
+  font-family: var(--mono); font-size: 14px;
+  z-index: 6; cursor: pointer; user-select: none;
+  transition: color 200ms ease, transform 200ms ease, opacity 200ms ease;
+  background: none; border: 0;
+  opacity: 0;
+}
+.stage:hover .step-hint { opacity: 1; }
+.step-hint:hover { color: var(--paper); transform: translateY(-50%) scale(1.1); }
+.step-hint.prev { left: 12px; }
+.step-hint.next { right: 240px; }
+
+/* Footer corner — index + cv link */
+.footer-l {
+  position: absolute; left: 56px; bottom: 32px; z-index: 6;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--mute);
+}
+.footer-r {
+  position: absolute; right: 56px; bottom: 32px; z-index: 6;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--mute);
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────
+   Mobile — <768px
+   Strategy: photo is the screen. Text floats over
+   it at the bottom in a compact stack. Drop the
+   subline (about-page copy), shrink the name, and
+   let the empty area read as photo, not dead space.
+   ───────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .top-bar { padding: 22px; top: 0; }
+  .wordmark .ks { font-size: 24px; }
+  .wordmark .eyebrow { font-size: 9.5px; letter-spacing: 0.26em; }
+  .top-nav { gap: 16px; }
+  .top-nav a:not(.menu-only) { display: none; }
+  .top-nav a.menu-only { display: inline; }
+
+  /* Letterbox: slim status-bar-sized bars to keep the cinematic feel */
+  .letterbox { height: 32px; }
+
+  /* Brighten the photo placeholder noticeably on mobile so it doesn't
+     read as dead space when no real photo is dropped in yet. */
+  .frame {
+    background-image:
+      radial-gradient(80% 60% at 50% 38%, rgba(255,255,255,0.10), transparent 70%),
+      linear-gradient(135deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 18px);
+  }
+  .frame::after {
+    background:
+      linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.55) 24%, transparent 50%),
+      linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 22%);
+  }
+  /* Bigger, more present frame numeral as the focal element */
+  .counter {
+    font-size: clamp(180px, 50vw, 280px);
+    right: -20px; top: 22%;
+    color: rgba(236, 232, 224, 0.08);
+    letter-spacing: -0.05em;
+  }
+
+  /* Category strip: pull it tight to the bottom (above safe-area) */
+  .cat-rail {
+    position: absolute; right: 0; left: 0; top: auto; bottom: 56px;
+    flex-direction: row; justify-content: space-between;
+    padding: 0 22px; gap: 0;
+  }
+  .cat-rail .cat {
+    display: flex;
+    flex-direction: column; gap: 4px; min-width: 0;
+    align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .cat-rail .cat .n { min-width: 0; text-align: center; font-size: 9px; color: var(--mute); }
+  .cat-rail .cat .name { font-size: 10.5px; min-width: 0; font-family: var(--mono); letter-spacing: 0.18em; text-transform: uppercase; }
+  .cat-rail .cat .tick { display: none; }
+  .cat-rail .cat.active::after {
+    content: ""; display: block; height: 1px; width: 22px; background: var(--paper); margin: 5px auto 0;
+  }
+
+  /* Meta: compact stack just above the scrubber, no subline */
+  .meta {
+    left: 22px; right: 22px; bottom: 122px;
+    max-width: none; display: flex; flex-direction: column;
+  }
+  .meta .above { margin-bottom: 12px; }
+  .meta .above .eyebrow,
+  .meta .above .open-cat {
+    font-size: 9.5px; letter-spacing: 0.22em;
+  }
+  /* Drop the about-page copy on mobile — it belongs on /info */
+  .subline { display: none; }
+
+  /* Name: smaller, inline on a single line */
+  .name {
+    font-size: clamp(32px, 9.5vw, 44px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  /* Force single-line layout even when JSX renders <br/> for stacked */
+  .name br { display: none; }
+  .name .last { display: inline; }
+  /* Add a space before the italic last name when collapsed inline */
+  .name .last::before { content: " "; }
+
+  /* Slate: one compact line, no gear, sits inline with the meta stack */
+  .slate {
+    position: static;
+    text-align: left; margin-top: 12px;
+    font-size: 9.5px; letter-spacing: 0.22em;
+    line-height: 1.6;
+  }
+  .slate .subj { color: var(--paper); }
+
+  /* Scrubber: just above the cat-rail */
+  .scrubber { left: 22px; right: 22px; bottom: 108px; }
+
+  .footer-l, .footer-r { display: none; }
+  .step-hint { display: none; }
+}
+
+/* Loading shield to avoid flash before fonts load */
+.boot { position: fixed; inset: 0; background: var(--ink); z-index: 9999; transition: opacity 320ms ease; }
+.boot.hide { opacity: 0; pointer-events: none; }
+
+/* Tweaks panel tweaks */
+.twk-host { font-family: var(--sans) !important; }

@@ -22,6 +22,9 @@ interface Assignment {
   thumbnailUrl: string
   focalX?: number
   focalY?: number
+  angle?: 0 | 90 | 180 | 270
+  flipH?: boolean
+  flipV?: boolean
 }
 
 interface ImageCopy {
@@ -141,7 +144,7 @@ export function AdminPanel() {
     if (folder) params.set('folder', folder)
     if (cursor) params.set('cursor', cursor)
     const data = await fetch(`/api/admin/images?${params}`).then((r) => r.json())
-    setImages((prev) => cursor ? [...prev, ...data.images] : data.images)
+    setImages((prev) => cursor ? [...prev, ...(data.images ?? [])] : (data.images ?? []))
     setNextCursor(data.next_cursor ?? null)
     setLoadingImages(false)
   }, [])
@@ -152,8 +155,8 @@ export function AdminPanel() {
     // Map to Assignment shape — focalX/focalY pass through if present
     const mapped: Record<string, Assignment> = {}
     for (const [id, asgn] of Object.entries(data.assignments ?? {})) {
-      const a = asgn as { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number }
-      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY }
+      const a = asgn as { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number; angle?: 0 | 90 | 180 | 270; flipH?: boolean; flipV?: boolean }
+      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY, angle: a.angle, flipH: a.flipH, flipV: a.flipV }
     }
     setAssignments(mapped)
   }, [])
@@ -312,6 +315,47 @@ export function AdminPanel() {
     })
     setAssigningSlotId(null)
     showToast('Slot cleared')
+  }
+
+  // ── Transform (rotate / flip) ──────────────────────────────────────────────
+  const CLOUD_NAME = 'dsouvrzlr'
+
+  function buildTransformStr(angle?: number, flipH?: boolean, flipV?: boolean): string {
+    const parts: string[] = []
+    if (flipH) parts.push('a_hflip')
+    if (flipV) parts.push('a_vflip')
+    if (angle && angle !== 0) parts.push(`a_${angle}`)
+    return parts.join('/')
+  }
+
+  const handleTransform = async (slot: Slot, action: 'cw' | 'ccw' | 'flipH' | 'flipV') => {
+    const asgn = assignments[slot.id]
+    if (!asgn) return
+
+    let angle  = (asgn.angle  ?? 0) as 0 | 90 | 180 | 270
+    let flipH  = asgn.flipH ?? false
+    let flipV  = asgn.flipV ?? false
+
+    if (action === 'cw')    angle  = ((angle + 90)  % 360) as 0 | 90 | 180 | 270
+    if (action === 'ccw')   angle  = ((angle + 270) % 360) as 0 | 90 | 180 | 270
+    if (action === 'flipH') flipH  = !flipH
+    if (action === 'flipV') flipV  = !flipV
+
+    const t    = buildTransformStr(angle, flipH, flipV)
+    const mid  = t ? `${t}/` : ''
+    const newThumb = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${mid}w_400,h_300,c_fill,q_auto,f_auto/${asgn.publicId}`
+
+    setAssignments((prev) => ({
+      ...prev,
+      [slot.id]: { ...asgn, angle, flipH, flipV, thumbnailUrl: newThumb },
+    }))
+
+    await fetch('/api/admin/assign', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slotId: slot.id, angle, flipH, flipV, type: 'transform' }),
+    })
+    showToast('Transform saved')
   }
 
   // ── Open copy editor ───────────────────────────────────────────────────────
@@ -488,6 +532,7 @@ export function AdminPanel() {
                         setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
                         setSelectedSlot(null)
                       }}
+                      onTransform={(action) => handleTransform(slot, action)}
                     />
                   ))}
                 </div>
@@ -512,6 +557,7 @@ export function AdminPanel() {
                   setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: asgn.url, focalX: asgn.focalX, focalY: asgn.focalY })
                   setSelectedSlot(null)
                 }}
+                onTransform={(action) => handleTransform(slot, action)}
                 onViewLink={assignments[slot.id]
                   ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
                   : undefined}
@@ -640,7 +686,7 @@ export function AdminPanel() {
 // ─── SlotCard ─────────────────────────────────────────────────────────────────
 
 function SlotCard({
-  slot, assignment, selected, assigningThis, onSelect, onClear, onEditCopy, onSetFocus, onViewLink, onMoveUp, onMoveDown,
+  slot, assignment, selected, assigningThis, onSelect, onClear, onEditCopy, onSetFocus, onTransform, onViewLink, onMoveUp, onMoveDown,
 }: {
   slot: Slot
   assignment?: Assignment
@@ -650,6 +696,7 @@ function SlotCard({
   onClear: () => void
   onEditCopy: () => void
   onSetFocus: () => void
+  onTransform: (action: 'cw' | 'ccw' | 'flipH' | 'flipV') => void
   onViewLink?: () => void
   onMoveUp?: () => void
   onMoveDown?: () => void
@@ -687,6 +734,14 @@ function SlotCard({
             </>
           )}
         </div>
+        {assignment && !assigningThis && (
+          <div className="adm-slot-transform">
+            <button className="adm-slot-xfm-btn" onClick={() => onTransform('ccw')} title="Rotate 90° CCW">↺</button>
+            <button className="adm-slot-xfm-btn" onClick={() => onTransform('cw')}  title="Rotate 90° CW">↻</button>
+            <button className="adm-slot-xfm-btn" onClick={() => onTransform('flipH')} title="Flip horizontal">↔</button>
+            <button className="adm-slot-xfm-btn" onClick={() => onTransform('flipV')} title="Flip vertical">↕</button>
+          </div>
+        )}
         {(onMoveUp !== undefined || onMoveDown !== undefined) && (
           <div className="adm-slot-order">
             <button className="adm-slot-order-btn" onClick={onMoveUp} disabled={!onMoveUp} title="Move up">↑</button>

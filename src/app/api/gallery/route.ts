@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAllAssignments } from '@/lib/assignmentsStore'
+import { getAllAssignmentsPublic } from '@/lib/assignmentsStore'
 
 // Public endpoint — returns gallery slot assignments for a given category page.
 // Reads from local data/assignments.json so results are immediate (no Cloudinary indexing lag).
@@ -9,7 +9,7 @@ export async function GET(req: Request) {
 
   if (!catId) return NextResponse.json({ error: 'catId required' }, { status: 400 })
 
-  const store = await getAllAssignments()
+  const store = await getAllAssignmentsPublic()
   const pattern = new RegExp(`^${catId}-(\\d+)$`)
 
   const assignments: Record<string, {

@@ -1,4 +1,4 @@
-import { cloudinaryRead, cloudinaryWrite } from '@/lib/cloudinaryStore'
+import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
 
 export const CATEGORY_IDS = ['culinary', 'spaces', 'portraits', 'objects', 'motion'] as const
 export type CategoryId = typeof CATEGORY_IDS[number]
@@ -17,10 +17,10 @@ const DEFAULT_CONFIG: LandingConfig = {
 }
 
 export async function readLandingConfig(): Promise<LandingConfig> {
-  const stored = await cloudinaryRead<LandingConfig>(PUBLIC_ID, {})
+  const stored = await firestoreRead<LandingConfig>(PUBLIC_ID, {})
   return { ...DEFAULT_CONFIG, ...stored }
 }
 
 export async function writeLandingConfig(config: LandingConfig): Promise<void> {
-  await cloudinaryWrite(PUBLIC_ID, config)
+  await firestoreWrite(PUBLIC_ID, config)
 }
