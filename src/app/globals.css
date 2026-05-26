@@ -82,10 +82,37 @@ button, input, textarea, select { font: inherit; }
   75%  { transform: translate(2px, -1px); }
   100% { transform: translate(0px,  0px); }
 }
-/* Effect 2 — active category label scale breathes */
+/* Effect 2 — active category label: slow, intense glow pulse */
 @keyframes ks-cat-breathe {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.03); }
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+  50% {
+    transform: scale(1.045);
+    text-shadow:
+      0 0 18px rgba(236, 232, 224, 0.85),
+      0 0 40px rgba(236, 232, 224, 0.45),
+      0 0 80px rgba(236, 232, 224, 0.18);
+  }
+}
+
+/* Effect 4 — Ken Burns: slow pan + zoom on landing images */
+@keyframes ks-ken-0 {
+  from { transform: scale(1.06) translate(0%,    0%);   }
+  to   { transform: scale(1.13) translate(-2.5%, -2%);  }
+}
+@keyframes ks-ken-1 {
+  from { transform: scale(1.10) translate(1.5%,  0.5%); }
+  to   { transform: scale(1.05) translate(-1%,  -1.5%); }
+}
+@keyframes ks-ken-2 {
+  from { transform: scale(1.08) translate(-1%,   1%);   }
+  to   { transform: scale(1.14) translate(1.5%, -1.5%); }
+}
+@keyframes ks-ken-3 {
+  from { transform: scale(1.12) translate(-1.5%, -0.5%); }
+  to   { transform: scale(1.07) translate(1%,    1.5%);  }
 }
 
 /* ── Scroll reveal ────────────────────────────────────────────────────────── */
@@ -163,7 +190,16 @@ button, input, textarea, select { font: inherit; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  will-change: transform;
 }
+
+/* Ken Burns — 4 patterns rotate through all frames via nth-child.
+   Animations run continuously (even when hidden) so movement is
+   already in progress when each frame fades in. */
+.ks-photo-layer .ks-frame:nth-child(4n+1) .ks-frame-img { animation: ks-ken-0 38s ease-in-out infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+2) .ks-frame-img { animation: ks-ken-1 44s ease-in-out infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+3) .ks-frame-img { animation: ks-ken-2 41s ease-in-out infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+4) .ks-frame-img { animation: ks-ken-3 35s ease-in-out infinite alternate; }
 
 .ks-slot-tag {
   position: absolute;
@@ -313,8 +349,8 @@ button, input, textarea, select { font: inherit; }
 .ks-cat.active              { color: var(--paper); opacity: 1; }
 .ks-cat.active .ks-cat-name {
   font-size: 26px;
-  animation: ks-cat-breathe 4s ease-in-out infinite;
-  animation-delay: 1.2s;
+  animation: ks-cat-breathe 12s ease-in-out infinite;
+  animation-delay: 0.8s;
   transform-origin: right center;
 }
 .ks-cat.active .ks-cat-tick { width: 32px; background: var(--paper); }
