@@ -947,13 +947,14 @@ button, input, textarea, select { font: inherit; }
   margin-top: 14px;
   display: flex; justify-content: space-between; align-items: baseline;
   gap: 16px;
-  font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--mute);
 }
 .cat-cap > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .cat-cap-subj { color: var(--paper-dim); flex: 1; }
+.cat-cap-dot { letter-spacing: 0; padding: 0 0.2em; }
 @media (max-width: 767px) {
-  .cat-cap { margin-top: 12px; font-size: 13px; letter-spacing: 0.18em; }
+  .cat-cap { margin-top: 12px; font-size: 12px; letter-spacing: 0.10em; }
 }
 
 /* Full-bleed row */
@@ -970,7 +971,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-small-stack {
   display: flex; flex-direction: column; gap: var(--cat-gap);
-  justify-content: space-between; height: 100%;
+  justify-content: space-between;
 }
 @media (max-width: 767px) { .cat-row-asym-grid { grid-template-columns: 1fr; } }
 
@@ -993,15 +994,15 @@ button, input, textarea, select { font: inherit; }
 }
 
 /* Three-up */
-.cat-row-3up-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--cat-gap); }
+.cat-row-3up-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--cat-gap); align-items: end; }
 @media (max-width: 767px) { .cat-row-3up-grid { grid-template-columns: 1fr; } }
 
 /* Diptych */
-.cat-row-diptych-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); }
+.cat-row-diptych-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); align-items: end; }
 @media (max-width: 767px) { .cat-row-diptych-grid { grid-template-columns: 1fr; } }
 
 /* Duo */
-.cat-row-duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); }
+.cat-row-duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); align-items: end; }
 @media (max-width: 767px) { .cat-row-duo-grid { grid-template-columns: 1fr; } }
 
 /* Offset row */

@@ -182,7 +182,7 @@ function CatCap({ photo, idx }: { photo: FlowPhoto; idx: number }) {
   const meta = [photo.location, photo.year].filter(Boolean).join(' · ')
   return (
     <div className="cat-cap">
-      <span className="cat-cap-subj">{pad2(idx)} · {photo.title}</span>
+      <span className="cat-cap-subj">{pad2(idx)}<span className="cat-cap-dot">·</span>{photo.title}</span>
       {meta && <span>{meta}</span>}
     </div>
   )
