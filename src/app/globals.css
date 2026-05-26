@@ -543,13 +543,13 @@ button, input, textarea, select { font: inherit; }
     padding-bottom: 14px;
     align-items: center;
   }
-  .ks-wordmark-ks { font-size: 35px; }
+  .ks-wordmark-ks { font-size: 22px; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
   /* Category rail: right-side column, same as desktop */
   .ks-cat-rail {
-    right: 22px;
+    right: 16px;
     left: auto;
     top: 0;
     bottom: 0;
@@ -560,7 +560,7 @@ button, input, textarea, select { font: inherit; }
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     padding: 0;
-    gap: 22px;
+    gap: 18px;
   }
   .ks-cat {
     display: flex;
@@ -569,8 +569,8 @@ button, input, textarea, select { font: inherit; }
     min-height: auto;
     align-items: center;
   }
-  .ks-cat-name { font-size: 30px; }
-  .ks-cat.active .ks-cat-name { transform: scale(1); }
+  .ks-cat-name { font-size: 22px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 26px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -597,7 +597,7 @@ button, input, textarea, select { font: inherit; }
   }
 
   /* Compact name — collapse to a single line on mobile */
-  .ks-name { font-size: clamp(44px, 9.5vw, 60px); line-height: 1; letter-spacing: -0.025em; }
+  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; }
   .ks-name br { display: none; }
   .ks-name-last { display: inline; }
   .ks-name-last::before { content: " "; }
