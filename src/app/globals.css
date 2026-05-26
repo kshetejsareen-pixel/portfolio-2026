@@ -3677,15 +3677,18 @@ a.info-touch-val:hover { color: var(--paper); }
   padding: 48px 0 96px;
 }
 .proj-gallery-grid {
-  columns: 2;
-  column-gap: 12px;
+  display: flex;
+  gap: 12px;
   padding: 0 var(--cat-pad);
   max-width: 1400px;
   margin: 0 auto;
+  align-items: flex-start;
 }
-.proj-gallery-item {
-  break-inside: avoid;
-  margin-bottom: 12px;
+.proj-gallery-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 .proj-gallery-img {
   width: 100%;
@@ -3700,7 +3703,8 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 @media (max-width: 640px) {
   .proj-hero { height: 55vh; min-height: 280px; }
-  .proj-gallery-grid { columns: 1; }
+  .proj-gallery-grid { flex-direction: column; }
+  .proj-gallery-col { flex: none; width: 100%; }
   .proj-hero-title { font-size: clamp(28px, 8vw, 48px); }
 }
 

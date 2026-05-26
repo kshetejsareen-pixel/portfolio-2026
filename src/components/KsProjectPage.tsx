@@ -156,15 +156,18 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
           <div className="proj-gallery-loading">No images in this project.</div>
         ) : (
           <div className="proj-gallery-grid">
-            {images.map((img, i) => (
-              <div key={img.public_id} className="proj-gallery-item">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={galleryUrl(img)}
-                  alt={`${project?.title ?? ''} ${i + 1}`}
-                  className="proj-gallery-img"
-                  loading={i < 4 ? 'eager' : 'lazy'}
-                />
+            {([images.filter((_, i) => i % 2 === 0), images.filter((_, i) => i % 2 === 1)] as const).map((col, c) => (
+              <div key={c} className="proj-gallery-col">
+                {col.map((img, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={img.public_id}
+                    src={galleryUrl(img)}
+                    alt={`${project?.title ?? ''} ${c === 0 ? i * 2 + 1 : i * 2 + 2}`}
+                    className="proj-gallery-img"
+                    loading={i < 2 && c < 2 ? 'eager' : 'lazy'}
+                  />
+                ))}
               </div>
             ))}
           </div>
