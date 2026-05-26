@@ -173,12 +173,10 @@ export function CategoryLanding() {
   }, [fetchLanding])
 
   const cat = activeCategories[catIdx] ?? activeCategories[0]
-  const frame = cat.frames[frameIdx] ?? cat.frames[0]
   const totalFrames = cat.frames.length
-
-
-  // Reset frame index whenever the active category changes
-  useEffect(() => { setFrameIdx(0) }, [catIdx])
+  // frameIdx is a round counter; derive actual frame position with modulo
+  const frameForDisplay = frameIdx % (totalFrames || 1)
+  const frame = cat.frames[frameForDisplay] ?? cat.frames[0]
 
   // ── Idle-cycle helpers ───────────────────────────────────────────────────
   const stopCycle = useCallback(() => {
@@ -190,24 +188,17 @@ export function CategoryLanding() {
     stopCycle()
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
-        const cats       = activeCatsRef.current
-        const ci         = catIdxRef.current
-        const fi         = frameIdxRef.current
-        const totalFrames = cats[ci]?.frames.length ?? 1
-
-        if (fi < totalFrames - 1) {
-          // More frames in this category — advance frame
-          const next = fi + 1
-          frameIdxRef.current = next
-          setFrameIdx(next)
-        } else {
-          // All frames shown — move to next category
-          const nextCat = (ci + 1) % cats.length
-          catIdxRef.current   = nextCat
-          frameIdxRef.current = 0
-          setCatIdx(nextCat)
-          setFrameIdx(0)
-        }
+        const cats    = activeCatsRef.current
+        const ci      = catIdxRef.current
+        const fi      = frameIdxRef.current
+        // Round-robin: always advance to the next category
+        const nextCat = (ci + 1) % cats.length
+        // Increment the round counter each time we complete a full lap
+        const nextFrame = nextCat === 0 ? fi + 1 : fi
+        catIdxRef.current   = nextCat
+        frameIdxRef.current = nextFrame
+        setCatIdx(nextCat)
+        setFrameIdx(nextFrame)
       }, CYCLE_INTERVAL)
     }, IDLE_DELAY)
   }, [stopCycle])
@@ -228,10 +219,10 @@ export function CategoryLanding() {
       if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
       e.preventDefault()
       stopCycle()
-      if (e.key === 'ArrowRight') setFrameIdx((f) => (f + 1) % total)
-      else if (e.key === 'ArrowLeft') setFrameIdx((f) => ((f - 1) + total) % total)
-      else if (e.key === 'ArrowDown') setCatIdx((c) => (c + 1) % catLen)
-      else if (e.key === 'ArrowUp')   setCatIdx((c) => ((c - 1) + catLen) % catLen)
+      if (e.key === 'ArrowRight') setFrameIdx((f) => f + 1)
+      else if (e.key === 'ArrowLeft') setFrameIdx((f) => Math.max(0, f - 1))
+      else if (e.key === 'ArrowDown') { setCatIdx((c) => (c + 1) % catLen); setFrameIdx(0) }
+      else if (e.key === 'ArrowUp')   { setCatIdx((c) => ((c - 1) + catLen) % catLen); setFrameIdx(0) }
       startIdleCountdown()
     }
     window.addEventListener('keydown', onKey)
@@ -247,6 +238,7 @@ export function CategoryLanding() {
     }
     stopCycle()
     setCatIdx(i)
+    setFrameIdx(0)
     startIdleCountdown()
   }
 
@@ -268,13 +260,13 @@ export function CategoryLanding() {
 
     if (Math.max(absDx, absDy) >= 30) {
       if (absDx > absDy) {
-        // Horizontal → step through frames
-        if (dx < 0) setFrameIdx((f) => (f + 1) % totalFrames)
-        else        setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)
+        // Horizontal → step through frames of current category
+        if (dx < 0) setFrameIdx((f) => f + 1)
+        else        setFrameIdx((f) => Math.max(0, f - 1))
       } else {
-        // Vertical → change category
-        if (dy < 0) setCatIdx((c) => (c + 1) % activeCategories.length)
-        else        setCatIdx((c) => ((c - 1) + activeCategories.length) % activeCategories.length)
+        // Vertical → change category, reset frame
+        if (dy < 0) { setCatIdx((c) => (c + 1) % activeCategories.length); setFrameIdx(0) }
+        else        { setCatIdx((c) => ((c - 1) + activeCategories.length) % activeCategories.length); setFrameIdx(0) }
       }
     }
 
@@ -295,7 +287,7 @@ export function CategoryLanding() {
       <div className="ks-photo-layer">
         {activeCategories.map((c, ci) =>
           c.frames.map((f, fi) => {
-            const active = ci === catIdx && fi === frameIdx
+            const active = ci === catIdx && fi === frameForDisplay
             const slotId = `landing-${c.id}-${fi}`
             const override = focalOverrides[slotId]
             const focalX = override?.focalX ?? f.focalX
@@ -394,7 +386,7 @@ export function CategoryLanding() {
         <div className="ks-meta-above">
           <span className="ks-dot" />
           <span className="ks-eyebrow">
-            Featured — {cat.label} · {pad2(frameIdx + 1)} / {pad2(totalFrames)}
+            Featured — {cat.label} · {pad2(frameForDisplay + 1)} / {pad2(totalFrames)}
           </span>
           <a href={`/${cat.id}`} className="ks-eyebrow ks-open-cat">Open ↗</a>
         </div>
@@ -427,7 +419,7 @@ export function CategoryLanding() {
       <div className="ks-scrubber" aria-hidden="true">
         <div
           className="ks-scrubber-fill"
-          style={{ width: `${((frameIdx + 1) / totalFrames) * 100}%` }}
+          style={{ width: `${((frameForDisplay + 1) / totalFrames) * 100}%` }}
         />
       </div>
 
