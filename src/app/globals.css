@@ -58,12 +58,33 @@ button, input, textarea, select { font: inherit; }
   50%       { opacity: 0.4; transform: scale(0.6); }
 }
 @keyframes ks-page-enter {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(14px); }
+  to   { transform: translateY(0); }
 }
 .ks-page-root {
-  animation: ks-page-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ks-page-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* ── Scroll reveal ────────────────────────────────────────────────────────── */
+.cat-row,
+.cat-project,
+.proj-gallery-col,
+[data-sr] {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity  0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cat-row.sr-visible,
+.cat-project.sr-visible,
+.proj-gallery-col.sr-visible,
+[data-sr].sr-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Stagger project cards */
+.cat-project:nth-child(even) { transition-delay: 0.12s; }
 
 /* ─────────────────────────────────────────────
    Stage
@@ -74,7 +95,7 @@ button, input, textarea, select { font: inherit; }
   overflow: hidden;
   background: var(--ink);
   color: var(--paper);
-  animation: ks-page-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ks-page-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ─────────────────────────────────────────────
@@ -3225,6 +3246,20 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-project-order-btn:hover:not(:disabled) { color: #bbb; border-color: #444; }
 .adm-project-order-btn:disabled { opacity: 0.25; cursor: default; }
+.adm-project-edit-btn {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #555;
+  font-size: 13px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 150ms, color 150ms;
+  flex-shrink: 0;
+}
+.adm-project-edit-btn:hover { color: #bbb; border-color: #444; }
 .adm-project-focal-btn {
   background: none;
   border: 1px solid #2a2a2a;

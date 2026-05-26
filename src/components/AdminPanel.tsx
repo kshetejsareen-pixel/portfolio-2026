@@ -76,6 +76,7 @@ type RightPanel =
   | { mode: 'page-copy'; categoryId: string }
   | { mode: 'project-images'; categoryId: string; project: AdminProject }
   | { mode: 'project-cover-focal'; categoryId: string; project: AdminProject }
+  | { mode: 'project-edit'; categoryId: string; project: AdminProject }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -538,6 +539,7 @@ export function AdminPanel() {
             }
             onMoveUp={(projectId) => moveProject(activeCatId, projectId, 'up')}
             onMoveDown={(projectId) => moveProject(activeCatId, projectId, 'down')}
+            onEdit={(project) => setRightPanel({ mode: 'project-edit', categoryId: activeCatId, project })}
           />
         )}
 
@@ -703,6 +705,22 @@ export function AdminPanel() {
             showToast('Page copy saved')
           }}
           onClose={() => setRightPanel({ mode: 'library' })}
+        />
+      ) : rightPanel.mode === 'project-edit' ? (
+        <ProjectEditPanel
+          key={rightPanel.project.id}
+          project={rightPanel.project}
+          onSave={async (updates) => {
+            await fetch('/api/admin/projects', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ categoryId: rightPanel.categoryId, projectId: rightPanel.project.id, updates }),
+            })
+            await fetchProjects()
+            showToast('Project updated')
+            setRightPanel({ mode: 'library' })
+          }}
+          onCancel={() => setRightPanel({ mode: 'library' })}
         />
       ) : rightPanel.mode === 'project-cover-focal' ? (
         <FocalPointEditor
@@ -935,7 +953,7 @@ function CopyEditorPanel({
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
 
 function ProjectsSection({
-  categoryId, projects, onAdd, onRemove, onManageImages, onSetCoverFocal, onMoveUp, onMoveDown,
+  categoryId, projects, onAdd, onRemove, onManageImages, onSetCoverFocal, onMoveUp, onMoveDown, onEdit,
 }: {
   categoryId: string
   projects: AdminProject[]
@@ -945,6 +963,7 @@ function ProjectsSection({
   onSetCoverFocal: (project: AdminProject) => void
   onMoveUp: (id: string) => void
   onMoveDown: (id: string) => void
+  onEdit: (project: AdminProject) => void
 }) {
   const [filterTag, setFilterTag] = useState<string | null>(null)
 
@@ -1035,6 +1054,7 @@ function ProjectsSection({
                     <button className="adm-project-order-btn" onClick={() => onMoveUp(p.id)} disabled={isFirst} title="Move up">↑</button>
                     <button className="adm-project-order-btn" onClick={() => onMoveDown(p.id)} disabled={isLast}  title="Move down">↓</button>
                   </div>
+                  <button className="adm-project-edit-btn" onClick={() => onEdit(p)} title="Edit project details">✏</button>
                   {p.coverId && (
                     <button className="adm-project-focal-btn" onClick={() => onSetCoverFocal(p)} title="Set cover focal point">⊙</button>
                   )}
@@ -1466,6 +1486,115 @@ function ProjectImagesPanel({
         <button className="adm-copy-cancel" onClick={onCancel}>Cancel</button>
         <button className="adm-copy-save" onClick={handleSave} disabled={saving || loading}>
           {saving ? 'Saving…' : 'Save →'}
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+// ─── ProjectEditPanel ─────────────────────────────────────────────────────────
+
+function ProjectEditPanel({
+  project, onSave, onCancel,
+}: {
+  project: AdminProject
+  onSave: (updates: Partial<AdminProject>) => Promise<void>
+  onCancel: () => void
+}) {
+  const [form, setForm] = useState({
+    title:    project.title    ?? '',
+    it:       project.it       ?? '',
+    year:     project.year     ?? '',
+    location: project.location ?? '',
+    desc:     project.desc     ?? '',
+  })
+  const [selectedTags, setSelectedTags] = useState<string[]>(project.tags ?? [])
+  const [saving, setSaving] = useState(false)
+
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((prev) => ({ ...prev, [k]: e.target.value }))
+
+  const toggleTag = (id: string) =>
+    setSelectedTags((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id])
+
+  const handleSave = async () => {
+    if (!form.title) return
+    setSaving(true)
+    await onSave({
+      title:    form.title,
+      it:       form.it       || undefined,
+      year:     form.year,
+      location: form.location,
+      desc:     form.desc     || undefined,
+      tags:     selectedTags.length > 0 ? selectedTags : undefined,
+    })
+    setSaving(false)
+  }
+
+  return (
+    <aside className="adm-library adm-copy-editor">
+      <div className="adm-library-head">
+        <div className="adm-library-title">Edit project</div>
+        <button className="adm-folder-cancel" onClick={onCancel}>← Back</button>
+      </div>
+
+      <div className="adm-copy-fields">
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Project title <span className="adm-copy-required">*</span>
+          </label>
+          <input className="adm-copy-input" value={form.title} onChange={set('title')} placeholder="e.g. The Fruit Table, vol. i" />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Subtitle <span className="adm-copy-hint">optional</span>
+          </label>
+          <input className="adm-copy-input" value={form.it} onChange={set('it')} placeholder="e.g. studies in natural light" />
+        </div>
+        <div className="adm-copy-row-2">
+          <div className="adm-copy-field">
+            <label className="adm-copy-label">Year</label>
+            <input className="adm-copy-input" value={form.year} onChange={set('year')} placeholder="2025" maxLength={4} />
+          </div>
+          <div className="adm-copy-field">
+            <label className="adm-copy-label">Location</label>
+            <input className="adm-copy-input" value={form.location} onChange={set('location')} placeholder="City or venue" />
+          </div>
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Description <span className="adm-copy-hint">optional</span>
+          </label>
+          <input className="adm-copy-input" value={form.desc} onChange={set('desc')} placeholder="One-line summary of the shoot" />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Tags <span className="adm-copy-hint">optional</span>
+          </label>
+          <div className="adm-tag-picker">
+            {PROJECT_TAGS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`adm-tag-pill adm-tag-pick-btn${selectedTags.includes(t.id) ? ' selected' : ''}`}
+                style={{ '--tag-color': t.color } as React.CSSProperties}
+                onClick={() => toggleTag(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Folder</label>
+          <div className="adm-copy-input" style={{ color: '#555', cursor: 'default' }}>{project.folder}</div>
+        </div>
+      </div>
+
+      <div className="adm-copy-actions">
+        <button className="adm-copy-cancel" onClick={onCancel}>Cancel</button>
+        <button className="adm-copy-save" onClick={handleSave} disabled={!form.title || saving}>
+          {saving ? 'Saving…' : 'Save changes →'}
         </button>
       </div>
     </aside>

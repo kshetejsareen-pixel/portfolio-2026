@@ -471,7 +471,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </div>
       </section>
 
-      <section className="cat-intro">
+      <section className="cat-intro" data-sr>
         <div className="cat-intro-label ks-eyebrow">{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body">
           {copy.introBody
@@ -521,7 +521,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </section>
       )}
 
-      <section className="cat-projects">
+      <section className="cat-projects" data-sr>
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
             {copy.projectsSectionTitle

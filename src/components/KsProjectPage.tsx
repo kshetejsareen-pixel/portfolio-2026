@@ -144,12 +144,12 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
       </section>
 
       {project?.desc && (
-        <section className="proj-intro">
+        <section className="proj-intro" data-sr>
           <p className="proj-intro-body">{project.desc}</p>
         </section>
       )}
 
-      <section className="proj-gallery">
+      <section className="proj-gallery" data-sr>
         {loading ? (
           <div className="proj-gallery-loading">Loading…</div>
         ) : images.length === 0 ? (

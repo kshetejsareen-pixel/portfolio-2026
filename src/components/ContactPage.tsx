@@ -133,7 +133,7 @@ export function ContactPage() {
   }
 
   return (
-    <>
+    <div className="ks-page-root">
       {/* Topbar */}
       <header className={`cat-topbar${scrolled ? ' scrolled' : ''}`}>
         <div className="cat-tb-left">
@@ -183,7 +183,7 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Form ── */}
-        <section className="contact-inquiry">
+        <section className="contact-inquiry" data-sr>
           <div className="contact-inquiry-left">
             <div className="contact-inquiry-label ks-eyebrow">01 · Project inquiry</div>
             <h2 className="contact-inquiry-heading">
@@ -353,7 +353,7 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Working notes ── */}
-        <section className="contact-notes">
+        <section className="contact-notes" data-sr>
           <div className="contact-notes-label ks-eyebrow">02 · Working notes</div>
           <div className="contact-notes-table">
             {NOTES.map((row, i) => (
@@ -380,6 +380,6 @@ export function ContactPage() {
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </>
+    </div>
   )
 }

@@ -50,7 +50,7 @@ export function InfoPage() {
   }, [])
 
   return (
-    <>
+    <div className="ks-page-root">
       <header className={`cat-topbar${scrolled ? ' scrolled' : ''}`}>
         <div className="cat-tb-left">
           <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
@@ -99,7 +99,7 @@ export function InfoPage() {
         </section>
 
         {/* ── Biography ── */}
-        <section className="info-bio">
+        <section className="info-bio" data-sr>
           <div className="info-bio-label ks-eyebrow">Biography</div>
           <div className="info-bio-body">
             <p className="info-bio-para">
@@ -118,7 +118,7 @@ export function InfoPage() {
         </section>
 
         {/* ── Four sections ── */}
-        <section className="info-sections">
+        <section className="info-sections" data-sr>
           <div className="info-sections-rule" />
 
           <div className="info-quad">
@@ -204,7 +204,7 @@ export function InfoPage() {
         </section>
 
         {/* ── Get in touch ── */}
-        <section className="info-touch">
+        <section className="info-touch" data-sr>
           <div className="info-touch-rule" />
           <h2 className="info-touch-heading">
             Get in touch<span className="info-touch-period">.</span>
@@ -246,6 +246,6 @@ export function InfoPage() {
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </>
+    </div>
   )
 }
