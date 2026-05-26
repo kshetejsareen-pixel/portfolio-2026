@@ -116,6 +116,9 @@ button, input, textarea, select { font: inherit; }
 }
 
 /* ── Scroll reveal ────────────────────────────────────────────────────────── */
+/* Hidden / post-exit state.
+   Exit transition: opacity fades over 1.6s, then transform snaps back
+   to 64px after the fade finishes — the snap is invisible. */
 .cat-row,
 .cat-project,
 .proj-gallery-col,
@@ -123,16 +126,22 @@ button, input, textarea, select { font: inherit; }
   opacity: 0;
   transform: translateY(64px);
   transition:
-    opacity  2s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 2s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity   1.6s ease,
+    transform 0s   1.6s;
 }
+
+/* Visible state — entry transition: slow rise + fade in */
 .cat-row.sr-visible,
 .cat-project.sr-visible,
 .proj-gallery-col.sr-visible,
 [data-sr].sr-visible {
   opacity: 1;
   transform: translateY(0);
+  transition:
+    opacity   2.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 2.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 /* Stagger project cards so odd/even don't land at the same time */
 .cat-project:nth-child(even) { transition-delay: 0.28s; }
 
