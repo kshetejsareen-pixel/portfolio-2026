@@ -2635,6 +2635,15 @@ a.info-touch-val:hover { color: var(--paper); }
   color: #444;
   flex-shrink: 0;
 }
+.adm-library-error {
+  padding: 12px 14px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #c44;
+  background: #1a0c0c;
+  border: 1px solid #3a1c1c;
+  margin: 8px;
+}
 
 .adm-load-more {
   margin: 8px 14px 14px;

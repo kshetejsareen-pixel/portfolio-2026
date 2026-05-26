@@ -137,16 +137,25 @@ export function AdminPanel() {
   const activeCatId   = activePage.toLowerCase()
 
   // ── Fetch library ──────────────────────────────────────────────────────────
+  const [libraryError, setLibraryError] = useState('')
+
   const fetchImages = useCallback(async (q: string, cursor?: string, folder = '') => {
     setLoadingImages(true)
-    const params = new URLSearchParams()
-    if (q)      params.set('q', q)
-    if (folder) params.set('folder', folder)
-    if (cursor) params.set('cursor', cursor)
-    const data = await fetch(`/api/admin/images?${params}`).then((r) => r.json())
-    setImages((prev) => cursor ? [...prev, ...(data.images ?? [])] : (data.images ?? []))
-    setNextCursor(data.next_cursor ?? null)
-    setLoadingImages(false)
+    setLibraryError('')
+    try {
+      const params = new URLSearchParams()
+      if (q)      params.set('q', q)
+      if (folder) params.set('folder', folder)
+      if (cursor) params.set('cursor', cursor)
+      const data = await fetch(`/api/admin/images?${params}`).then((r) => r.json())
+      if (data.error) { setLibraryError(data.error); setLoadingImages(false); return }
+      setImages((prev) => cursor ? [...prev, ...(data.images ?? [])] : (data.images ?? []))
+      setNextCursor(data.next_cursor ?? null)
+    } catch {
+      setLibraryError('Network error — could not reach Cloudinary')
+    } finally {
+      setLoadingImages(false)
+    }
   }, [])
 
   // ── Fetch assignments ──────────────────────────────────────────────────────
@@ -698,6 +707,7 @@ export function AdminPanel() {
           images={images}
           nextCursor={nextCursor}
           loadingImages={loadingImages}
+          error={libraryError}
           searchQ={searchQ}
           selectedSlot={selectedSlot}
           assigning={assigningSlotId !== null}
@@ -1072,7 +1082,6 @@ function FolderBrowserPanel({
       {enteredFolder && !selectedFolder && (
         <button className="adm-folder-use-current" onClick={selectCurrentFolder}>
           Use &ldquo;{enteredFolder.name}&rdquo; as project
-          {enteredFolder.imageCount > 0 && <span className="adm-folder-use-count">{enteredFolder.imageCount} images</span>}
         </button>
       )}
 
@@ -1091,7 +1100,7 @@ function FolderBrowserPanel({
           >
             <span className="adm-folder-icon">📁</span>
             <span className="adm-folder-name">{f.name}</span>
-            <span className="adm-folder-count">{f.imageCount} img</span>
+            {f.imageCount > 0 && <span className="adm-folder-count">{f.imageCount} img</span>}
             <span className="adm-folder-nav" onClick={(e) => { e.stopPropagation(); navigateTo(f.path, f) }}>→</span>
           </button>
         ))}
@@ -1102,7 +1111,7 @@ function FolderBrowserPanel({
         <div className="adm-folder-form">
           <div className="adm-folder-form-title">
             Adding: <strong>{selectedFolder.path}</strong>
-            <span className="adm-folder-form-count">({selectedFolder.imageCount} images)</span>
+            {selectedFolder.imageCount > 0 && <span className="adm-folder-form-count">({selectedFolder.imageCount} images)</span>}
           </div>
 
           <div className="adm-copy-fields">
@@ -1384,12 +1393,13 @@ function ProjectImagesPanel({
 // ─── LibraryPanel ─────────────────────────────────────────────────────────────
 
 function LibraryPanel({
-  images, nextCursor, loadingImages, searchQ, selectedSlot, assigning,
+  images, nextCursor, loadingImages, error, searchQ, selectedSlot, assigning,
   currentFolder, onSearch, onFolderChange, onSelectImage, onAssignUrl, onLoadMore,
 }: {
   images: CloudinaryImage[]
   nextCursor: string | null
   loadingImages: boolean
+  error: string
   searchQ: string
   selectedSlot: Slot | null
   assigning: boolean
@@ -1457,7 +1467,7 @@ function LibraryPanel({
             <button key={f.path} className="adm-lib-folder-btn" onClick={() => onFolderChange(f.path)}>
               <span className="adm-lib-folder-icon">▶</span>
               <span className="adm-lib-folder-name">{f.name}</span>
-              <span className="adm-lib-folder-count">{f.imageCount}</span>
+              {f.imageCount > 0 && <span className="adm-lib-folder-count">{f.imageCount}</span>}
             </button>
           ))}
         </div>
@@ -1512,7 +1522,10 @@ function LibraryPanel({
             )}
           </button>
         ))}
-        {!loadingImages && images.length === 0 && !loadingFolders && (
+        {error && (
+          <div className="adm-library-error">{error}</div>
+        )}
+        {!loadingImages && !error && images.length === 0 && !loadingFolders && (
           <div className="adm-library-loading">No images here.</div>
         )}
       </div>

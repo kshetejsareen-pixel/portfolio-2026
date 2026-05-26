@@ -11,18 +11,11 @@ export async function GET(req: Request) {
       ? await cloudinary.api.sub_folders(path)
       : await cloudinary.api.root_folders()
 
-    // Also get image count for each folder
-    const folders = await Promise.all(
-      result.folders.map(async (f: { name: string; path: string }) => {
-        const count = await cloudinary.search
-          .expression(`folder="${f.path}" AND resource_type:image`)
-          .max_results(1)
-          .execute()
-          .then((r) => r.total_count)
-          .catch(() => 0)
-        return { name: f.name, path: f.path, imageCount: count }
-      })
-    )
+    const folders = result.folders.map((f: { name: string; path: string }) => ({
+      name: f.name,
+      path: f.path,
+      imageCount: 0,
+    }))
 
     return NextResponse.json({ folders })
   } catch (err) {
