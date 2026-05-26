@@ -343,19 +343,13 @@ button, input, textarea, select { font: inherit; }
   transition: transform 500ms ease;
 }
 .ks-cat-tick {
-  display: inline-block;
-  width: 8px;
-  height: 1px;
-  background: rgba(236, 232, 224, 0.35);
-  transition: width 320ms ease, background 240ms ease;
-  justify-self: end;
+  display: none;
 }
 .ks-cat:not(.active)        { opacity: 0.55; }
 .ks-cat.active              { color: var(--paper); opacity: 1; }
 .ks-cat.active .ks-cat-name {
   transform: scale(1);
 }
-.ks-cat.active .ks-cat-tick { width: 32px; background: var(--paper); }
 
 /* ─────────────────────────────────────────────
    Step hints (desktop, show on stage hover)
