@@ -597,7 +597,7 @@ button, input, textarea, select { font: inherit; }
   }
 
   /* Compact name — collapse to a single line on mobile */
-  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; }
+  .ks-name { font-size: clamp(26px, 8.5vw, 36px); line-height: 1; letter-spacing: -0.025em; }
   .ks-name br { display: none; }
   .ks-name-last { display: inline; }
   .ks-name-last::before { content: " "; }
