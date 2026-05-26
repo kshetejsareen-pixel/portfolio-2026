@@ -349,7 +349,7 @@ button, input, textarea, select { font: inherit; }
 .ks-cat.active              { color: var(--paper); opacity: 1; }
 .ks-cat.active .ks-cat-name {
   font-size: 26px;
-  animation: ks-cat-breathe 12s ease-in-out infinite;
+  animation: ks-cat-breathe 12s ease-in-out 1;
   animation-delay: 0.8s;
   transform-origin: right center;
 }
