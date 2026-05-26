@@ -58,11 +58,11 @@ button, input, textarea, select { font: inherit; }
   50%       { opacity: 0.4; transform: scale(0.6); }
 }
 @keyframes ks-page-enter {
-  from { transform: translateY(14px); }
+  from { transform: translateY(28px); }
   to   { transform: translateY(0); }
 }
 .ks-page-root {
-  animation: ks-page-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ks-page-enter 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ── Landing ambient motion ───────────────────────────────────────────────── */
@@ -121,10 +121,10 @@ button, input, textarea, select { font: inherit; }
 .proj-gallery-col,
 [data-sr] {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(64px);
   transition:
-    opacity  0.85s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity  2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cat-row.sr-visible,
 .cat-project.sr-visible,
@@ -133,8 +133,8 @@ button, input, textarea, select { font: inherit; }
   opacity: 1;
   transform: translateY(0);
 }
-/* Stagger project cards */
-.cat-project:nth-child(even) { transition-delay: 0.12s; }
+/* Stagger project cards so odd/even don't land at the same time */
+.cat-project:nth-child(even) { transition-delay: 0.28s; }
 
 /* ─────────────────────────────────────────────
    Stage
