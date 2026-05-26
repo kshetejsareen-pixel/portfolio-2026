@@ -64,6 +64,64 @@ export function CategoryLanding() {
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const COUNT = 55
+    const particles = Array.from({ length: COUNT }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      r: 0.8 + Math.random() * 1.4,
+      speed: 0.00008 + Math.random() * 0.00012,
+      angle: Math.random() * Math.PI * 2,
+      drift: (Math.random() - 0.5) * 0.0003,
+      opacity: 0.04 + Math.random() * 0.06,
+    }))
+
+    let w = 0, h = 0, raf = 0
+
+    function resize() {
+      if (!canvas) return
+      canvas.width  = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      w = canvas.width
+      h = canvas.height
+    }
+    resize()
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(canvas)
+
+    function draw() {
+      if (!ctx) return
+      ctx.clearRect(0, 0, w, h)
+      for (const p of particles) {
+        p.angle += p.drift
+        p.x += Math.cos(p.angle) * p.speed
+        p.y += Math.sin(p.angle) * p.speed * 0.6
+        if (p.x < 0) p.x = 1
+        if (p.x > 1) p.x = 0
+        if (p.y < 0) p.y = 1
+        if (p.y > 1) p.y = 0
+        ctx.beginPath()
+        ctx.arc(p.x * w, p.y * h, p.r, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(236, 232, 224, ${p.opacity})`
+        ctx.fill()
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    draw()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [])
 
   useEffect(() => {
     const bc = new BroadcastChannel('ks-focal-preview')
@@ -230,6 +288,9 @@ export function CategoryLanding() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Effect 3 — ambient particles */}
+      <canvas ref={canvasRef} className="ks-particles" aria-hidden="true" />
+
       {/* Photo layers */}
       <div className="ks-photo-layer">
         {activeCategories.map((c, ci) =>
