@@ -584,7 +584,9 @@ button, input, textarea, select { font: inherit; }
     bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
-  .ks-meta-above { margin-bottom: 10px; }
+  .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+  .ks-meta .ks-eyebrow { font-size: 9px; letter-spacing: 0.12em; }
+  .ks-meta-above .ks-dot { width: 4px; height: 4px; }
 
   /* Background numeral: bigger + offset right on mobile */
   .ks-counter {
