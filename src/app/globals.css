@@ -127,7 +127,7 @@ button, input, textarea, select { font: inherit; }
   transform: translateY(64px);
   transition:
     opacity   2s linear,
-    transform 0s 2s;
+    transform 0s 1s;
 }
 
 /* Visible state — entry transition: slow rise + fade in */
@@ -138,8 +138,8 @@ button, input, textarea, select { font: inherit; }
   opacity: 1;
   transform: translateY(0);
   transition:
-    opacity   2s linear,
-    transform 2s linear;
+    opacity   1s linear,
+    transform 1s linear;
 }
 
 /* Stagger project cards so odd/even don't land at the same time */
