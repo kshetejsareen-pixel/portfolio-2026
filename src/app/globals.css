@@ -948,13 +948,13 @@ button, input, textarea, select { font: inherit; }
 /* Captions — one line, no wrapping */
 .cat-cap {
   margin-top: 14px;
-  display: flex; justify-content: space-between; align-items: baseline;
-  gap: 16px;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 3px;
   font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--mute);
 }
 .cat-cap > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.cat-cap-subj { color: var(--paper-dim); flex: 1; }
+.cat-cap-subj { color: var(--paper-dim); }
 .cat-cap-dot { letter-spacing: 0; padding: 0 0.2em; }
 @media (max-width: 767px) {
   .cat-cap { margin-top: 12px; font-size: 12px; letter-spacing: 0.10em; }
