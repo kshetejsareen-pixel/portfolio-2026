@@ -25,6 +25,8 @@ interface AdminProject {
   desc?: string
   imageCount?: number
   coverUrl?: string | null
+  coverFocalX?: number
+  coverFocalY?: number
   tags?: string[]
 }
 
@@ -563,11 +565,18 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
               <div className="cat-projects-grid">
                 {filteredProjects !== null
                   ? (visible as AdminProject[]).map((p) => (
-                      <a key={p.id} className="cat-project">
+                      <a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project">
                         <div className="cat-project-cover">
                           <div className="cat-photo" style={{ backgroundColor: '#1a1a1c', width: '100%', height: '100%' }}>
                             {p.coverUrl
-                              ? <img src={p.coverUrl} alt={p.title} className="cat-photo-img" />
+                              ? <img
+                                  src={p.coverUrl}
+                                  alt={p.title}
+                                  className="cat-photo-img"
+                                  style={p.coverFocalX != null && p.coverFocalY != null
+                                    ? { objectPosition: `${p.coverFocalX}% ${p.coverFocalY}%` }
+                                    : undefined}
+                                />
                               : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
                             }
                           </div>

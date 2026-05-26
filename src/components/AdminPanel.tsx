@@ -49,6 +49,8 @@ interface AdminProject {
   location: string
   desc?: string
   coverId?: string
+  coverFocalX?: number
+  coverFocalY?: number
   imageCount?: number
   coverUrl?: string | null
   tags?: string[]
@@ -73,6 +75,7 @@ type RightPanel =
   | { mode: 'folder-browser'; categoryId: string }
   | { mode: 'page-copy'; categoryId: string }
   | { mode: 'project-images'; categoryId: string; project: AdminProject }
+  | { mode: 'project-cover-focal'; categoryId: string; project: AdminProject }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -515,6 +518,9 @@ export function AdminPanel() {
             onManageImages={(project) =>
               setRightPanel({ mode: 'project-images', categoryId: activeCatId, project })
             }
+            onSetCoverFocal={(project) =>
+              setRightPanel({ mode: 'project-cover-focal', categoryId: activeCatId, project })
+            }
           />
         )}
 
@@ -681,19 +687,44 @@ export function AdminPanel() {
           }}
           onClose={() => setRightPanel({ mode: 'library' })}
         />
-      ) : rightPanel.mode === 'project-images' ? (
-        <ProjectImagesPanel
-          key={rightPanel.project.id}
-          project={rightPanel.project}
-          categoryId={rightPanel.categoryId}
-          onSave={async (hiddenImages) => {
+      ) : rightPanel.mode === 'project-cover-focal' ? (
+        <FocalPointEditor
+          key={`proj-cover-${rightPanel.project.id}`}
+          slotId={`proj-cover-${rightPanel.project.id}`}
+          imageUrl={rightPanel.project.coverId
+            ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto,w_2400/${rightPanel.project.coverId}`
+            : (rightPanel.project.coverUrl ?? '')}
+          initialX={rightPanel.project.coverFocalX}
+          initialY={rightPanel.project.coverFocalY}
+          onSave={async (coverFocalX, coverFocalY) => {
             await fetch('/api/admin/projects', {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 categoryId: rightPanel.categoryId,
                 projectId: rightPanel.project.id,
-                updates: { hiddenImages },
+                updates: { coverFocalX, coverFocalY },
+              }),
+            })
+            await fetchProjects()
+            showToast('Cover focal point saved')
+            setRightPanel({ mode: 'library' })
+          }}
+          onCancel={() => setRightPanel({ mode: 'library' })}
+        />
+      ) : rightPanel.mode === 'project-images' ? (
+        <ProjectImagesPanel
+          key={rightPanel.project.id}
+          project={rightPanel.project}
+          categoryId={rightPanel.categoryId}
+          onSave={async (hiddenImages, coverId) => {
+            await fetch('/api/admin/projects', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                categoryId: rightPanel.categoryId,
+                projectId: rightPanel.project.id,
+                updates: { hiddenImages, coverId },
               }),
             })
             await fetchProjects()
@@ -887,13 +918,14 @@ function CopyEditorPanel({
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
 
 function ProjectsSection({
-  categoryId, projects, onAdd, onRemove, onManageImages,
+  categoryId, projects, onAdd, onRemove, onManageImages, onSetCoverFocal,
 }: {
   categoryId: string
   projects: AdminProject[]
   onAdd: () => void
   onRemove: (id: string) => void
   onManageImages: (project: AdminProject) => void
+  onSetCoverFocal: (project: AdminProject) => void
 }) {
   const [filterTag, setFilterTag] = useState<string | null>(null)
 
@@ -976,6 +1008,9 @@ function ProjectsSection({
                 <div className="adm-project-folder">{p.folder}</div>
               </div>
               <div className="adm-project-actions">
+                {p.coverId && (
+                  <button className="adm-project-focal-btn" onClick={() => onSetCoverFocal(p)} title="Set cover focal point">⊙</button>
+                )}
                 <button className="adm-project-img-btn" onClick={() => onManageImages(p)} title="Manage visible images">
                   Images {p.hiddenImages?.length ? `· ${p.hiddenImages.length} hidden` : ''}
                 </button>
@@ -1309,12 +1344,13 @@ function ProjectImagesPanel({
 }: {
   project: AdminProject
   categoryId: string
-  onSave: (hiddenImages: string[]) => Promise<void>
+  onSave: (hiddenImages: string[], coverId?: string) => Promise<void>
   onCancel: () => void
 }) {
   const [images, setImages]   = useState<CloudinaryImage[]>([])
   const [loading, setLoading] = useState(true)
   const [hidden, setHidden]   = useState<Set<string>>(new Set(project.hiddenImages ?? []))
+  const [coverId, setCoverId] = useState<string | undefined>(project.coverId)
   const [saving, setSaving]   = useState(false)
 
   useEffect(() => {
@@ -1339,7 +1375,7 @@ function ProjectImagesPanel({
 
   const handleSave = async () => {
     setSaving(true)
-    await onSave([...hidden])
+    await onSave([...hidden], coverId)
     setSaving(false)
   }
 
@@ -1359,23 +1395,41 @@ function ProjectImagesPanel({
         {loading && <span>Loading…</span>}
       </div>
       <div className="adm-proj-images-hint">
-        Click an image to toggle its visibility. Hidden images won&apos;t appear in the project gallery.
+        Click to toggle visibility · Hover and click ★ to set as project cover
       </div>
 
       <div className="adm-proj-images-grid">
         {images.map((img) => {
-          const isHidden = hidden.has(img.public_id)
+          const isHidden  = hidden.has(img.public_id)
+          const isCover   = img.public_id === coverId
           return (
-            <button
+            <div
               key={img.public_id}
-              className={`adm-proj-img-item${isHidden ? ' hidden' : ''}`}
-              onClick={() => toggle(img.public_id)}
-              title={isHidden ? 'Click to show' : 'Click to hide'}
+              className={`adm-proj-img-item${isHidden ? ' hidden' : ''}${isCover ? ' is-cover' : ''}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={thumb(img.secure_url)} alt="" className="adm-proj-img-thumb" />
-              <div className="adm-proj-img-badge">{isHidden ? 'Hidden' : 'Visible'}</div>
-            </button>
+              <button
+                className="adm-proj-img-toggle"
+                onClick={() => toggle(img.public_id)}
+                title={isHidden ? 'Click to show' : 'Click to hide'}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={thumb(img.secure_url)} alt="" className="adm-proj-img-thumb" />
+              </button>
+              <div className="adm-proj-img-footer">
+                <span className="adm-proj-img-badge">
+                  {isCover ? '★ Cover' : isHidden ? 'Hidden' : 'Visible'}
+                </span>
+                {!isHidden && (
+                  <button
+                    className={`adm-proj-set-cover-btn${isCover ? ' active' : ''}`}
+                    onClick={() => setCoverId(isCover ? undefined : img.public_id)}
+                    title={isCover ? 'Remove cover' : 'Set as cover'}
+                  >
+                    {isCover ? '★' : '☆'}
+                  </button>
+                )}
+              </div>
+            </div>
           )
         })}
       </div>

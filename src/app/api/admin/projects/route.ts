@@ -13,6 +13,8 @@ export interface AdminProject {
   location: string
   desc?: string
   coverId?: string
+  coverFocalX?: number
+  coverFocalY?: number
   imageCount?: number
   tags?: string[]
   hiddenImages?: string[]   // Cloudinary public_ids excluded from display
@@ -43,7 +45,7 @@ export async function GET() {
           .catch(() => 0)
 
         const coverUrl = p.coverId
-          ? cloudinary.url(p.coverId, { width: 600, height: 400, crop: 'fill', quality: 'auto', fetch_format: 'auto' })
+          ? cloudinary.url(p.coverId, { width: 1200, quality: 'auto', fetch_format: 'auto' })
           : null
 
         return { ...p, imageCount: count, coverUrl }

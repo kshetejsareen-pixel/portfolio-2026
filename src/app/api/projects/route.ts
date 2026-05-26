@@ -13,6 +13,8 @@ interface StoredProject {
   location: string
   desc?: string
   coverId?: string
+  coverFocalX?: number
+  coverFocalY?: number
   imageCount?: number
   tags?: string[]
   hiddenImages?: string[]
@@ -20,7 +22,7 @@ interface StoredProject {
 
 function coverUrl(coverId: string | undefined) {
   if (!coverId) return null
-  return `https://res.cloudinary.com/${CLOUD}/image/upload/w_600,h_400,c_fill,q_auto,f_auto/${coverId}`
+  return `https://res.cloudinary.com/${CLOUD}/image/upload/w_1200,q_auto,f_auto/${coverId}`
 }
 
 function enrich(projects: StoredProject[]) {
