@@ -126,8 +126,8 @@ button, input, textarea, select { font: inherit; }
   opacity: 0;
   transform: translateY(64px);
   transition:
-    opacity   4s ease,
-    transform 0s 3s;
+    opacity   2s linear,
+    transform 0s 2s;
 }
 
 /* Visible state — entry transition: slow rise + fade in */
@@ -138,8 +138,8 @@ button, input, textarea, select { font: inherit; }
   opacity: 1;
   transform: translateY(0);
   transition:
-    opacity   3s linear,
-    transform 3s linear;
+    opacity   2s linear,
+    transform 2s linear;
 }
 
 /* Stagger project cards so odd/even don't land at the same time */
@@ -177,7 +177,7 @@ button, input, textarea, select { font: inherit; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 600ms ease;
+  transition: opacity 600ms linear;
   background-image:
     radial-gradient(70% 55% at 50% 38%, rgba(255,255,255,0.05), transparent 70%),
     linear-gradient(135deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 14px);
@@ -205,10 +205,10 @@ button, input, textarea, select { font: inherit; }
 /* Ken Burns — 4 patterns rotate through all frames via nth-child.
    Animations run continuously (even when hidden) so movement is
    already in progress when each frame fades in. */
-.ks-photo-layer .ks-frame:nth-child(4n+1) .ks-frame-img { animation: ks-ken-0 22s ease-in-out infinite alternate; }
-.ks-photo-layer .ks-frame:nth-child(4n+2) .ks-frame-img { animation: ks-ken-1 26s ease-in-out infinite alternate; }
-.ks-photo-layer .ks-frame:nth-child(4n+3) .ks-frame-img { animation: ks-ken-2 24s ease-in-out infinite alternate; }
-.ks-photo-layer .ks-frame:nth-child(4n+4) .ks-frame-img { animation: ks-ken-3 20s ease-in-out infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+1) .ks-frame-img { animation: ks-ken-0 22s linear infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+2) .ks-frame-img { animation: ks-ken-1 26s linear infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+3) .ks-frame-img { animation: ks-ken-2 24s linear infinite alternate; }
+.ks-photo-layer .ks-frame:nth-child(4n+4) .ks-frame-img { animation: ks-ken-3 20s linear infinite alternate; }
 
 .ks-slot-tag {
   position: absolute;
