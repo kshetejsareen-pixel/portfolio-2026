@@ -560,7 +560,7 @@ button, input, textarea, select { font: inherit; }
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     padding: 0;
-    gap: 18px;
+    gap: 10px;
   }
   .ks-cat {
     display: flex;
@@ -568,9 +568,10 @@ button, input, textarea, select { font: inherit; }
     gap: 8px;
     min-height: auto;
     align-items: center;
+    padding: 2px 0;
   }
-  .ks-cat-name { font-size: 22px; transform: none; }
-  .ks-cat.active .ks-cat-name { font-size: 26px; transform: none; }
+  .ks-cat-name { font-size: 19px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 22px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
