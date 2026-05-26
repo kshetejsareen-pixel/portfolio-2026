@@ -17,8 +17,8 @@ const CATEGORY_ROUTES: Record<string, string> = {
   motion:    '/motion',
 }
 
-const IDLE_DELAY    = 5000
-const CYCLE_INTERVAL = 5000
+const IDLE_DELAY    = 3000
+const CYCLE_INTERVAL = 4000
 
 interface LandingAssignment {
   url: string
