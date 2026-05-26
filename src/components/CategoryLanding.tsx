@@ -395,7 +395,7 @@ export function CategoryLanding() {
         </h1>
         <div className="ks-subline">
           <div className="ks-subline-col">
-            <strong>Independent photographer.</strong><br />New York · Bombay.
+            <strong>Independent photographer.</strong><br />Delhi · Bangalore.
           </div>
           <div className="ks-subline-col">
             Available for commission and prints.<br />Booking — info@kshetejsareen.com

@@ -453,7 +453,7 @@ button, input, textarea, select { font: inherit; }
   font-size: 18px;
   line-height: 1.5;
 }
-.ks-subline-col { max-width: 260px; }
+.ks-subline-col { max-width: 340px; }
 .ks-subline-col strong { color: var(--paper); font-weight: 500; }
 
 /* ─────────────────────────────────────────────
@@ -543,7 +543,7 @@ button, input, textarea, select { font: inherit; }
     padding-bottom: 14px;
     align-items: center;
   }
-  .ks-wordmark-ks { font-size: 22px; }
+  .ks-wordmark-ks { font-size: 15px; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
