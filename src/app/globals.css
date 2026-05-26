@@ -124,22 +124,16 @@ button, input, textarea, select { font: inherit; }
 .proj-gallery-col,
 [data-sr] {
   opacity: 0;
-  transform: translateY(64px);
-  transition:
-    opacity   2s linear,
-    transform 0s 1s;
+  transition: opacity 1s linear;
 }
 
-/* Visible state — entry transition: slow rise + fade in */
+/* Visible state — fade in only, no position change */
 .cat-row.sr-visible,
 .cat-project.sr-visible,
 .proj-gallery-col.sr-visible,
 [data-sr].sr-visible {
   opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity   1s linear,
-    transform 1s linear;
+  transition: opacity 1s linear;
 }
 
 /* Stagger project cards so odd/even don't land at the same time */
