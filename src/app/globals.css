@@ -274,7 +274,7 @@ button, input, textarea, select { font: inherit; }
   font-family: var(--font-serif);
   font-style: normal;
   font-weight: 400;
-  font-size: 28px;
+  font-size: 35px;
   letter-spacing: -0.02em;
   text-transform: none;
   line-height: 1;
@@ -290,7 +290,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-top-nav a {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 28px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -309,7 +309,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 22px;
+  gap: 40px;
   z-index: 6;
 }
 
@@ -330,13 +330,13 @@ button, input, textarea, select { font: inherit; }
 
 .ks-cat-n {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 25px;
   letter-spacing: 0.22em;
   text-align: right;
 }
 .ks-cat-name {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 35px;
   letter-spacing: 0.01em;
   transition: font-size 300ms ease;
 }
@@ -351,7 +351,7 @@ button, input, textarea, select { font: inherit; }
 .ks-cat:not(.active)        { opacity: 0.55; }
 .ks-cat.active              { color: var(--paper); opacity: 1; }
 .ks-cat.active .ks-cat-name {
-  font-size: 26px;
+  font-size: 30px;
   animation: ks-cat-breathe 12s ease-in-out 1;
   animation-delay: 0.8s;
   transform-origin: right center;
@@ -402,6 +402,11 @@ button, input, textarea, select { font: inherit; }
   cursor: pointer;
 }
 
+/* Landing-specific eyebrow override — does not affect other pages */
+.ks-meta .ks-eyebrow {
+  font-size: 35px;
+}
+
 /* ─────────────────────────────────────────────
    Meta block (bottom-left)
    ───────────────────────────────────────────── */
@@ -434,7 +439,7 @@ button, input, textarea, select { font: inherit; }
   font-family: var(--font-serif);
   font-weight: 400;
   font-style: normal;
-  font-size: clamp(48px, 9.5vw, 124px);
+  font-size: clamp(60px, 9.5vw, 124px);
   line-height: 0.94;
   letter-spacing: -0.035em;
   margin: 0;
@@ -452,7 +457,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   gap: 36px;
   color: var(--paper-dim);
-  font-size: 15px;
+  font-size: 30px;
   line-height: 1.5;
 }
 .ks-subline-col { max-width: 260px; }
@@ -464,7 +469,7 @@ button, input, textarea, select { font: inherit; }
 .ks-slate {
   font-family: var(--font-mono);
   color: var(--mute);
-  font-size: 12px;
+  font-size: 30px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -510,7 +515,7 @@ button, input, textarea, select { font: inherit; }
   bottom: 32px;
   z-index: 6;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 30px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -545,7 +550,7 @@ button, input, textarea, select { font: inherit; }
     padding-bottom: 14px;
     align-items: center;
   }
-  .ks-wordmark-ks { font-size: 22px; }
+  .ks-wordmark-ks { font-size: 28px; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
@@ -562,7 +567,7 @@ button, input, textarea, select { font: inherit; }
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     padding: 0;
-    gap: 18px;
+    gap: 32px;
   }
   .ks-cat {
     display: flex;
@@ -571,8 +576,8 @@ button, input, textarea, select { font: inherit; }
     min-height: auto;
     align-items: center;
   }
-  .ks-cat-name { font-size: 22px; }
-  .ks-cat.active .ks-cat-name { font-size: 26px; }
+  .ks-cat-name { font-size: 28px; }
+  .ks-cat.active .ks-cat-name { font-size: 24px; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -599,7 +604,7 @@ button, input, textarea, select { font: inherit; }
   }
 
   /* Compact name — collapse to a single line on mobile */
-  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; }
+  .ks-name { font-size: clamp(44px, 9.5vw, 60px); line-height: 1; letter-spacing: -0.025em; }
   .ks-name br { display: none; }
   .ks-name-last { display: inline; }
   .ks-name-last::before { content: " "; }
@@ -627,7 +632,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-menu-btn {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 28px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
