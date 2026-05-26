@@ -425,7 +425,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   })
 
   return (
-    <>
+    <div className="ks-page-root">
       <header className={`cat-topbar${scrolled ? ' scrolled' : ''}`}>
         <div className="cat-tb-left">
           <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
@@ -659,6 +659,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </>
+    </div>
   )
 }

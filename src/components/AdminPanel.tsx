@@ -185,6 +185,21 @@ export function AdminPanel() {
     if (data.projects) setProjects(data.projects)
   }, [])
 
+  // ── Reorder projects ───────────────────────────────────────────────────────
+  const moveProject = async (catId: string, projectId: string, dir: 'up' | 'down') => {
+    const arr = [...(projects[catId] ?? [])]
+    const idx = arr.findIndex((p) => p.id === projectId)
+    const swapIdx = dir === 'up' ? idx - 1 : idx + 1
+    if (idx === -1 || swapIdx < 0 || swapIdx >= arr.length) return
+    ;[arr[idx], arr[swapIdx]] = [arr[swapIdx], arr[idx]]
+    setProjects((prev) => ({ ...prev, [catId]: arr }))
+    await fetch('/api/admin/projects', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categoryId: catId, reorderedProjects: arr }),
+    })
+  }
+
   // ── Fetch page copy config ─────────────────────────────────────────────────
   const fetchCopyCfg = useCallback(async () => {
     const data = await fetch('/api/admin/copy').then((r) => r.json())
@@ -521,6 +536,8 @@ export function AdminPanel() {
             onSetCoverFocal={(project) =>
               setRightPanel({ mode: 'project-cover-focal', categoryId: activeCatId, project })
             }
+            onMoveUp={(projectId) => moveProject(activeCatId, projectId, 'up')}
+            onMoveDown={(projectId) => moveProject(activeCatId, projectId, 'down')}
           />
         )}
 
@@ -918,7 +935,7 @@ function CopyEditorPanel({
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
 
 function ProjectsSection({
-  categoryId, projects, onAdd, onRemove, onManageImages, onSetCoverFocal,
+  categoryId, projects, onAdd, onRemove, onManageImages, onSetCoverFocal, onMoveUp, onMoveDown,
 }: {
   categoryId: string
   projects: AdminProject[]
@@ -926,6 +943,8 @@ function ProjectsSection({
   onRemove: (id: string) => void
   onManageImages: (project: AdminProject) => void
   onSetCoverFocal: (project: AdminProject) => void
+  onMoveUp: (id: string) => void
+  onMoveDown: (id: string) => void
 }) {
   const [filterTag, setFilterTag] = useState<string | null>(null)
 
@@ -974,50 +993,59 @@ function ProjectsSection({
         </div>
       ) : (
         <div className="adm-projects-list">
-          {filtered.map((p) => (
-            <div key={p.id} className="adm-project-row">
-              {p.coverUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.coverUrl} alt={p.title} className="adm-project-thumb" />
-              )}
-              <div className="adm-project-info">
-                <div className="adm-project-title-row">
-                  <span className="adm-project-name">{p.title}</span>
-                  {p.it && <em className="adm-project-it">, {p.it}</em>}
-                </div>
-                <div className="adm-project-meta">
-                  {p.location}{p.year ? ` · ${p.year}` : ''}
-                  {p.imageCount != null ? ` · ${p.imageCount} images` : ''}
-                </div>
-                {p.tags && p.tags.length > 0 && (
-                  <div className="adm-project-tags">
-                    {p.tags.map((tid) => {
-                      const tag = PROJECT_TAGS.find((t) => t.id === tid)
-                      return tag ? (
-                        <span
-                          key={tid}
-                          className="adm-tag-pill"
-                          style={{ '--tag-color': tag.color } as React.CSSProperties}
-                        >
-                          {tag.label}
-                        </span>
-                      ) : null
-                    })}
+          {filtered.map((p) => {
+            const globalIdx = projects.findIndex((x) => x.id === p.id)
+            const isFirst = globalIdx === 0
+            const isLast  = globalIdx === projects.length - 1
+            return (
+              <div key={p.id} className="adm-project-row">
+                {p.coverUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.coverUrl} alt={p.title} className="adm-project-thumb" />
+                )}
+                <div className="adm-project-info">
+                  <div className="adm-project-title-row">
+                    <span className="adm-project-name">{p.title}</span>
+                    {p.it && <em className="adm-project-it">, {p.it}</em>}
                   </div>
-                )}
-                <div className="adm-project-folder">{p.folder}</div>
+                  <div className="adm-project-meta">
+                    {p.location}{p.year ? ` · ${p.year}` : ''}
+                    {p.imageCount != null ? ` · ${p.imageCount} images` : ''}
+                  </div>
+                  {p.tags && p.tags.length > 0 && (
+                    <div className="adm-project-tags">
+                      {p.tags.map((tid) => {
+                        const tag = PROJECT_TAGS.find((t) => t.id === tid)
+                        return tag ? (
+                          <span
+                            key={tid}
+                            className="adm-tag-pill"
+                            style={{ '--tag-color': tag.color } as React.CSSProperties}
+                          >
+                            {tag.label}
+                          </span>
+                        ) : null
+                      })}
+                    </div>
+                  )}
+                  <div className="adm-project-folder">{p.folder}</div>
+                </div>
+                <div className="adm-project-actions">
+                  <div className="adm-project-order-btns">
+                    <button className="adm-project-order-btn" onClick={() => onMoveUp(p.id)} disabled={isFirst} title="Move up">↑</button>
+                    <button className="adm-project-order-btn" onClick={() => onMoveDown(p.id)} disabled={isLast}  title="Move down">↓</button>
+                  </div>
+                  {p.coverId && (
+                    <button className="adm-project-focal-btn" onClick={() => onSetCoverFocal(p)} title="Set cover focal point">⊙</button>
+                  )}
+                  <button className="adm-project-img-btn" onClick={() => onManageImages(p)} title="Manage visible images">
+                    Images {p.hiddenImages?.length ? `· ${p.hiddenImages.length} hidden` : ''}
+                  </button>
+                  <button className="adm-project-remove" onClick={() => onRemove(p.id)} title="Remove project">×</button>
+                </div>
               </div>
-              <div className="adm-project-actions">
-                {p.coverId && (
-                  <button className="adm-project-focal-btn" onClick={() => onSetCoverFocal(p)} title="Set cover focal point">⊙</button>
-                )}
-                <button className="adm-project-img-btn" onClick={() => onManageImages(p)} title="Manage visible images">
-                  Images {p.hiddenImages?.length ? `· ${p.hiddenImages.length} hidden` : ''}
-                </button>
-                <button className="adm-project-remove" onClick={() => onRemove(p.id)} title="Remove project">×</button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

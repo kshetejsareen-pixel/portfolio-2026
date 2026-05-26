@@ -91,15 +91,18 @@ export async function DELETE(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  const { categoryId, projectId, updates } = await req.json()
+  const { categoryId, projectId, updates, reorderedProjects } = await req.json()
 
   const config = await readConfig()
-  if (config[categoryId]) {
+
+  if (reorderedProjects) {
+    config[categoryId] = reorderedProjects
+  } else if (config[categoryId]) {
     config[categoryId] = config[categoryId].map((p) =>
       p.id === projectId ? { ...p, ...updates } : p
     )
   }
-  await saveConfig(config)
 
+  await saveConfig(config)
   return NextResponse.json({ ok: true })
 }

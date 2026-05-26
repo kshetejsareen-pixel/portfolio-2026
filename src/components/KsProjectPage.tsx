@@ -96,7 +96,7 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
   }
 
   return (
-    <>
+    <div className="ks-page-root">
       <header className={`cat-topbar${scrolled ? ' scrolled' : ''}`}>
         <div className="cat-tb-left">
           <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
@@ -166,6 +166,7 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
                     alt={`${project?.title ?? ''} ${c === 0 ? i * 2 + 1 : i * 2 + 2}`}
                     className="proj-gallery-img"
                     loading={i < 2 && c < 2 ? 'eager' : 'lazy'}
+                    onLoad={(e) => e.currentTarget.classList.add('loaded')}
                   />
                 ))}
               </div>
@@ -183,6 +184,6 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </>
+    </div>
   )
 }

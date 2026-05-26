@@ -57,6 +57,13 @@ button, input, textarea, select { font: inherit; }
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.4; transform: scale(0.6); }
 }
+@keyframes ks-page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ks-page-root {
+  animation: ks-page-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
 /* ─────────────────────────────────────────────
    Stage
@@ -67,6 +74,7 @@ button, input, textarea, select { font: inherit; }
   overflow: hidden;
   background: var(--ink);
   color: var(--paper);
+  animation: ks-page-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ─────────────────────────────────────────────
@@ -3198,6 +3206,25 @@ a.info-touch-val:hover { color: var(--paper); }
   transition: color 150ms, border-color 150ms;
 }
 .adm-project-img-btn:hover { color: #bbb; border-color: #444; }
+.adm-project-order-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.adm-project-order-btn {
+  background: none;
+  border: 1px solid #222;
+  color: #555;
+  font-size: 11px;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 150ms, color 150ms;
+}
+.adm-project-order-btn:hover:not(:disabled) { color: #bbb; border-color: #444; }
+.adm-project-order-btn:disabled { opacity: 0.25; cursor: default; }
 .adm-project-focal-btn {
   background: none;
   border: 1px solid #2a2a2a;
@@ -3694,6 +3721,11 @@ a.info-touch-val:hover { color: var(--paper); }
   width: 100%;
   height: auto;
   display: block;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.proj-gallery-img.loaded {
+  opacity: 1;
 }
 .proj-gallery-loading {
   padding: 80px var(--cat-pad);
