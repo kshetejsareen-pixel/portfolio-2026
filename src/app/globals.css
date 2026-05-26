@@ -290,7 +290,7 @@ button, input, textarea, select { font: inherit; }
 }
 .ks-top-nav a {
   font-family: var(--font-mono);
-  font-size: 28px;
+  font-size: 19px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -309,7 +309,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 40px;
+  gap: 35px;
   z-index: 6;
 }
 
@@ -330,13 +330,13 @@ button, input, textarea, select { font: inherit; }
 
 .ks-cat-n {
   font-family: var(--font-mono);
-  font-size: 25px;
+  font-size: 19px;
   letter-spacing: 0.22em;
   text-align: right;
 }
 .ks-cat-name {
   font-family: var(--font-serif);
-  font-size: 35px;
+  font-size: 30px;
   letter-spacing: 0.01em;
   transition: font-size 300ms ease;
 }
@@ -351,7 +351,7 @@ button, input, textarea, select { font: inherit; }
 .ks-cat:not(.active)        { opacity: 0.55; }
 .ks-cat.active              { color: var(--paper); opacity: 1; }
 .ks-cat.active .ks-cat-name {
-  font-size: 30px;
+  font-size: 35px;
   animation: ks-cat-breathe 12s ease-in-out 1;
   animation-delay: 0.8s;
   transform-origin: right center;
@@ -404,7 +404,7 @@ button, input, textarea, select { font: inherit; }
 
 /* Landing-specific eyebrow override — does not affect other pages */
 .ks-meta .ks-eyebrow {
-  font-size: 35px;
+  font-size: 19px;
 }
 
 /* ─────────────────────────────────────────────
@@ -457,7 +457,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   gap: 36px;
   color: var(--paper-dim);
-  font-size: 30px;
+  font-size: 20px;
   line-height: 1.5;
 }
 .ks-subline-col { max-width: 260px; }
@@ -469,7 +469,7 @@ button, input, textarea, select { font: inherit; }
 .ks-slate {
   font-family: var(--font-mono);
   color: var(--mute);
-  font-size: 30px;
+  font-size: 20px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -515,7 +515,7 @@ button, input, textarea, select { font: inherit; }
   bottom: 32px;
   z-index: 6;
   font-family: var(--font-mono);
-  font-size: 30px;
+  font-size: 19px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
@@ -567,7 +567,7 @@ button, input, textarea, select { font: inherit; }
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     padding: 0;
-    gap: 32px;
+    gap: 28px;
   }
   .ks-cat {
     display: flex;
@@ -576,8 +576,8 @@ button, input, textarea, select { font: inherit; }
     min-height: auto;
     align-items: center;
   }
-  .ks-cat-name { font-size: 28px; }
-  .ks-cat.active .ks-cat-name { font-size: 24px; }
+  .ks-cat-name { font-size: 24px; }
+  .ks-cat.active .ks-cat-name { font-size: 28px; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -632,7 +632,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-menu-btn {
   font-family: var(--font-mono);
-  font-size: 28px;
+  font-size: 19px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--mute);
