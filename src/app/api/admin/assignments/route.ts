@@ -34,6 +34,10 @@ export async function GET() {
         angle:        data.angle,
         flipH:        data.flipH,
         flipV:        data.flipV,
+        title:        data.title,
+        location:     data.location,
+        year:         data.year,
+        camera:       data.camera,
       }
     }
 

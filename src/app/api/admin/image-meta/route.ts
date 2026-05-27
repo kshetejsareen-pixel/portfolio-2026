@@ -40,18 +40,19 @@ export async function PATCH(req: Request) {
   if (contextParts.length === 0) return NextResponse.json({ ok: true })
 
   try {
-    await cloudinary.uploader.explicit(publicId, {
-      type: 'upload',
-      context: contextParts.join('|'),
-    })
-
-    // Keep Cloudinary store in sync so gallery/landing pages see updated copy immediately
+    // Firestore is authoritative — update it first so the website reflects changes immediately
     await updateCopyByPublicId(publicId, {
       ...(title    !== undefined && { title }),
       ...(location !== undefined && { location }),
       ...(year     !== undefined && { year }),
       ...(camera   !== undefined && { camera }),
     })
+
+    // Sync Cloudinary context tags (fire-and-forget — not critical for the website)
+    cloudinary.uploader.explicit(publicId, {
+      type: 'upload',
+      context: contextParts.join('|'),
+    }).catch(() => {})
 
     return NextResponse.json({ ok: true })
   } catch (err) {

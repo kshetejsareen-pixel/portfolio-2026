@@ -25,6 +25,10 @@ interface Assignment {
   angle?: 0 | 90 | 180 | 270
   flipH?: boolean
   flipV?: boolean
+  title?: string
+  location?: string
+  year?: string
+  camera?: string
 }
 
 interface ImageCopy {
@@ -165,11 +169,10 @@ export function AdminPanel() {
   // ── Fetch assignments ──────────────────────────────────────────────────────
   const fetchAssignments = useCallback(async () => {
     const data = await fetch('/api/admin/assignments').then((r) => r.json())
-    // Map to Assignment shape — focalX/focalY pass through if present
     const mapped: Record<string, Assignment> = {}
     for (const [id, asgn] of Object.entries(data.assignments ?? {})) {
-      const a = asgn as { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number; angle?: 0 | 90 | 180 | 270; flipH?: boolean; flipV?: boolean }
-      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY, angle: a.angle, flipH: a.flipH, flipV: a.flipV }
+      const a = asgn as Assignment
+      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY, angle: a.angle, flipH: a.flipH, flipV: a.flipV, title: a.title, location: a.location, year: a.year, camera: a.camera }
     }
     setAssignments(mapped)
   }, [])
@@ -393,23 +396,23 @@ export function AdminPanel() {
   }
 
   // ── Open copy editor ───────────────────────────────────────────────────────
-  const openCopyEditor = async (slot: Slot) => {
+  const openCopyEditor = (slot: Slot) => {
     const asgn = assignments[slot.id]
     if (!asgn) return
-    const data = await fetch(`/api/admin/image-meta?publicId=${encodeURIComponent(asgn.publicId)}`).then((r) => r.json())
-    // Pre-fill from Cloudinary context; fall back to static categories.ts data
-    const cat   = categories.find((c) => slot.id.startsWith(`landing-${c.id}-`))
-    const idx   = parseInt(slot.id.split('-').pop() ?? '0', 10)
-    const base  = cat?.frames[idx]
+    // Use copy cached in assignments state (from Firestore — authoritative and always fresh)
+    // Fall back to static categories.ts frame data for frames that have never been edited
+    const cat  = categories.find((c) => slot.id.startsWith(`landing-${c.id}-`))
+    const idx  = parseInt(slot.id.split('-').pop() ?? '0', 10)
+    const base = cat?.frames[idx]
     setRightPanel({
       mode: 'copy-editor',
       slotId: slot.id,
       publicId: asgn.publicId,
       initial: {
-        title:    data.title    || base?.title    || '',
-        location: data.location || base?.location || '',
-        year:     data.year     || base?.year     || '',
-        camera:   data.camera   || base?.camera   || '',
+        title:    asgn.title    || base?.title    || '',
+        location: asgn.location || base?.location || '',
+        year:     asgn.year     || base?.year     || '',
+        camera:   asgn.camera   || base?.camera   || '',
       },
     })
     setSelectedSlot(null)
@@ -672,13 +675,23 @@ export function AdminPanel() {
           publicId={rightPanel.publicId}
           initial={rightPanel.initial}
           onSave={async (copy) => {
-            await fetch('/api/admin/image-meta', {
+            const res = await fetch('/api/admin/image-meta', {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ publicId: rightPanel.publicId, ...copy }),
             })
-            showToast('Copy saved')
-            setRightPanel({ mode: 'library' })
+            if (res.ok) {
+              // Update local assignments state so reopening the editor shows fresh values
+              setAssignments((prev) => {
+                const asgn = prev[rightPanel.slotId]
+                if (!asgn) return prev
+                return { ...prev, [rightPanel.slotId]: { ...asgn, ...copy } }
+              })
+              showToast('Copy saved')
+              setRightPanel({ mode: 'library' })
+            } else {
+              showToast('Error saving copy — please try again')
+            }
           }}
           onCancel={() => setRightPanel({ mode: 'library' })}
         />
