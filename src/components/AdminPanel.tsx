@@ -584,30 +584,37 @@ export function AdminPanel() {
         ) : (() => {
           const heroSlots    = pageSlots.filter((s) => s.id.endsWith('-hero'))
           const gallerySlots = pageSlots.filter((s) => !s.id.endsWith('-hero'))
-          const renderCard = (slot: Slot, galleryIdx?: number) => (
-            <SlotCard
-              key={slot.id}
-              slot={slot}
-              assignment={assignments[slot.id]}
-              selected={selectedSlot?.id === slot.id}
-              assigningThis={assigningSlotId === slot.id}
-              onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
-              onClear={() => unassignSlot(slot)}
-              onEditCopy={() => openCopyEditor(slot)}
-              onSetFocus={() => {
-                const asgn = assignments[slot.id]
-                if (!asgn) return
-                setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: buildDisplayUrl(asgn), focalX: asgn.focalX, focalY: asgn.focalY })
-                setSelectedSlot(null)
-              }}
-              onTransform={(action) => handleTransform(slot, action)}
-              onViewLink={assignments[slot.id]
-                ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${assignments[slot.id].publicId}`, '_blank')
-                : undefined}
-              onMoveUp={galleryIdx != null && galleryIdx > 0 ? () => swapSlots(slot.id, gallerySlots[galleryIdx - 1].id) : undefined}
-              onMoveDown={galleryIdx != null && galleryIdx < gallerySlots.length - 1 ? () => swapSlots(slot.id, gallerySlots[galleryIdx + 1].id) : undefined}
-            />
-          )
+          // Only assigned slots participate in reordering — arrows skip empty gaps
+          const assignedGallery = gallerySlots.filter((s) => assignments[s.id])
+          const renderCard = (slot: Slot) => {
+            const asgn = assignments[slot.id]
+            const ai   = assignedGallery.findIndex((s) => s.id === slot.id)
+            const prevAssigned = ai > 0 ? assignedGallery[ai - 1] : undefined
+            const nextAssigned = ai >= 0 && ai < assignedGallery.length - 1 ? assignedGallery[ai + 1] : undefined
+            return (
+              <SlotCard
+                key={slot.id}
+                slot={slot}
+                assignment={asgn}
+                selected={selectedSlot?.id === slot.id}
+                assigningThis={assigningSlotId === slot.id}
+                onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
+                onClear={() => unassignSlot(slot)}
+                onEditCopy={() => openCopyEditor(slot)}
+                onSetFocus={() => {
+                  if (!asgn) return
+                  setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: buildDisplayUrl(asgn), focalX: asgn.focalX, focalY: asgn.focalY })
+                  setSelectedSlot(null)
+                }}
+                onTransform={(action) => handleTransform(slot, action)}
+                onViewLink={asgn
+                  ? () => window.open(`https://res.cloudinary.com/dsouvrzlr/image/upload/${asgn.publicId}`, '_blank')
+                  : undefined}
+                onMoveUp={asgn && prevAssigned ? () => swapSlots(slot.id, prevAssigned.id) : undefined}
+                onMoveDown={asgn && nextAssigned ? () => swapSlots(slot.id, nextAssigned.id) : undefined}
+              />
+            )
+          }
           return (
             <div className="adm-slots-scroll adm-slots-scroll--cat">
               {heroSlots.length > 0 && (
@@ -627,7 +634,7 @@ export function AdminPanel() {
                   <span className="adm-cat-section-desc">{gallerySlots.filter((s) => assignments[s.id]).length} / {gallerySlots.length} assigned</span>
                 </div>
                 <div className="adm-slots-grid">
-                  {gallerySlots.map((slot, i) => renderCard(slot, i))}
+                  {gallerySlots.map((slot) => renderCard(slot))}
                 </div>
               </div>
             </div>
