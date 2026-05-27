@@ -543,7 +543,7 @@ button, input, textarea, select { font: inherit; }
     padding-bottom: 14px;
     align-items: center;
   }
-  .ks-wordmark-ks { font-size: 15px; }
+  .ks-wordmark-ks { font-size: 24px; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
@@ -570,8 +570,8 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     padding: 2px 0;
   }
-  .ks-cat-name { font-size: 19px; transform: none; }
-  .ks-cat.active .ks-cat-name { font-size: 22px; transform: none; }
+  .ks-cat-name { font-size: 10.5px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 10.5px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -586,12 +586,12 @@ button, input, textarea, select { font: inherit; }
     max-width: none;
   }
   .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
-  .ks-meta .ks-eyebrow { font-size: 9px; letter-spacing: 0.12em; }
+  .ks-meta .ks-eyebrow { font-size: 9.5px; letter-spacing: 0.12em; }
   .ks-meta-above .ks-dot { width: 4px; height: 4px; }
 
   /* Background numeral: bigger + offset right on mobile */
   .ks-counter {
-    font-size: clamp(200px, 55vw, 320px);
+    font-size: clamp(180px, 50vw, 280px);
     right: -10px;
     top: 50%;
     transform: translateY(-50%);
@@ -600,7 +600,7 @@ button, input, textarea, select { font: inherit; }
   }
 
   /* Compact name — collapse to a single line on mobile */
-  .ks-name { font-size: clamp(26px, 8.5vw, 36px); line-height: 1; letter-spacing: -0.025em; }
+  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; }
   .ks-name br { display: none; }
   .ks-name-last { display: inline; }
   .ks-name-last::before { content: " "; }
@@ -617,7 +617,7 @@ button, input, textarea, select { font: inherit; }
     position: static;
     text-align: left;
     margin-top: 10px;
-    font-size: 11px;
+    font-size: 9.5px;
     letter-spacing: 0.22em;
     line-height: 1.6;
   }
@@ -959,7 +959,7 @@ button, input, textarea, select { font: inherit; }
 .cat-cap-subj { color: var(--paper-dim); }
 .cat-cap-dot { letter-spacing: 0; padding: 0 0.2em; }
 @media (max-width: 767px) {
-  .cat-cap { margin-top: 12px; font-size: 12px; letter-spacing: 0.10em; }
+  .cat-cap { margin-top: 12px; font-size: 9.5px; letter-spacing: 0.10em; }
 }
 
 /* Full-bleed row */
