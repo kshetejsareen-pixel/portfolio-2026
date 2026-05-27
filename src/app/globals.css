@@ -1019,14 +1019,15 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-row-offset-neg { /* purely structural spacer — no height needed */ }
 .cat-row-offset-quote {
-  padding: 60px var(--cat-pad) 80px; max-width: 920px; margin: 0 auto; text-align: center;
+  padding: 80px var(--cat-pad); max-width: 920px; margin: 0 auto; text-align: center;
 }
+.cat-row:has(.cat-row-offset-quote) { margin-bottom: 0; }
 @media (max-width: 1023px) {
   .cat-row-offset-grid { grid-template-columns: 1fr; }
   .cat-row-offset-neg { display: none; }
 }
 @media (max-width: 767px) {
-  .cat-row-offset-quote { padding: 32px var(--cat-pad) 48px; }
+  .cat-row-offset-quote { padding: 40px var(--cat-pad); }
 }
 
 /* Pull quote */
