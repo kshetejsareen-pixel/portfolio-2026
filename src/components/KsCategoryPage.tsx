@@ -443,7 +443,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
           <div className="cat-tb-crumb">
             <Link href="/">Index</Link>
             <span>/</span>
-            <span className="cat-tb-cur">{data.cat.n} · {data.cat.name}</span>
+            <span className="cat-tb-cur">{data.cat.name}</span>
           </div>
         </div>
         <div className="cat-tb-right">
@@ -539,10 +539,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       <section className="cat-projects" data-sr>
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
-            {copy.projectsSectionTitle
-              ? <>{copy.projectsSectionTitle}<span style={{ fontStyle: 'normal', color: 'var(--paper-dim)' }}>.</span></>
-              : <>Selected<br />projects<span style={{ fontStyle: 'normal', color: 'var(--paper-dim)' }}>.</span></>
-            }
+            {copy.projectsSectionTitle || 'Selected Projects'}
           </h2>
           <p className="cat-projects-note">
             Bodies of work made over weeks or months. Full edits, contact sheets, and shoot notes.
