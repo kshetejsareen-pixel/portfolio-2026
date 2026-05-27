@@ -300,9 +300,13 @@ function RowOffset({ row, idx }: { row: Extract<FlowRow, { kind: 'offset' }>; id
         <div className="cat-row-offset-grid">
           <div className="cat-row-offset-neg" />
           <CatPhotoWithCap photo={row.photo} idx={idx} />
-          <div className="cat-row-offset-text">{row.text}</div>
         </div>
       </div>
+      {row.text && (
+        <div className="cat-row-offset-quote">
+          <p className="cat-pull-quote-text">{row.text}</p>
+        </div>
+      )}
     </div>
   )
 }

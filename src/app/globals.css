@@ -1013,21 +1013,20 @@ button, input, textarea, select { font: inherit; }
 /* Offset row */
 .cat-row-offset-grid {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr;
+  grid-template-columns: 1fr 1.4fr;
   gap: 40px;
   align-items: start;
 }
 .cat-row-offset-neg { /* purely structural spacer — no height needed */ }
-.cat-row-offset-text {
-  font-family: var(--font-serif); font-style: italic; font-size: 24px; line-height: 1.4;
-  color: var(--paper-dim); padding-top: 8px;
+.cat-row-offset-quote {
+  padding: 60px var(--cat-pad) 80px; max-width: 920px; margin: 0 auto; text-align: center;
 }
 @media (max-width: 1023px) {
   .cat-row-offset-grid { grid-template-columns: 1fr; }
   .cat-row-offset-neg { display: none; }
 }
 @media (max-width: 767px) {
-  .cat-row-offset-text { padding-top: 8px; padding-bottom: 0; font-size: 20px; }
+  .cat-row-offset-quote { padding: 32px var(--cat-pad) 48px; }
 }
 
 /* Pull quote */
