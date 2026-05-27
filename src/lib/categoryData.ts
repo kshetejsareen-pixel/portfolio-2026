@@ -227,7 +227,7 @@ export const culinaryData: CategoryData = {
     {
       kind: 'offset',
       photo: { tint: '#2a1814', aspect: 'portrait', title:'Knife, oak handle', location:'Studio', year:'2025' },
-      text: 'A working archive — partial, particular, never finished.',
+      text: 'A working archive. Partial, particular, never finished.',
     },
 
     { kind: 'full-bleed', photo: { tint: '#3a2418', aspect: 'wide', title:'Last light, kitchen window', location:'Bombay', year:'2025' } },
@@ -461,7 +461,7 @@ export const objectsData: CategoryData = {
     {
       kind: 'offset',
       photo: { tint: '#1e1c16', aspect: 'portrait', title:'Salt cellar, single', location:'Studio', year:'2025' },
-      text: 'A working archive — partial, particular, never finished.',
+      text: 'A working archive. Partial, particular, never finished.',
     },
 
     { kind: 'full-bleed', photo: { tint: '#24211a', aspect: 'wide', title:'Table, after the shoot', location:'Studio', year:'2025' } },
