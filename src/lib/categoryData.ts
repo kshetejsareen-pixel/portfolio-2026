@@ -70,9 +70,12 @@ export const portraitsData: CategoryData = {
     },
 
     {
-      kind: 'centered-tall',
-      photo: { tint: '#1e1c19', aspect: 'portrait', title:'Jonas, porch', location:'Catskills, NY', year:'2024' },
-      side: { text: 'From the long-form series. Pentax 67, 105mm, ambient porch light, no fill.' },
+      kind: 'three-up',
+      photos: [
+        { tint: '#1c1a17', aspect: 'tall', title:'Jonas, sitting',  location:'Catskills, NY', year:'2024' },
+        { tint: '#1e1c19', aspect: 'tall', title:'Jonas, porch',     location:'Catskills, NY', year:'2024' },
+        { tint: '#1a1917', aspect: 'tall', title:'Jonas, profile',   location:'Catskills, NY', year:'2024' },
+      ],
     },
 
     {
@@ -184,9 +187,12 @@ export const culinaryData: CategoryData = {
     },
 
     {
-      kind: 'centered-tall',
-      photo: { tint: '#2a1814', aspect: 'portrait', title:'Persimmons, after rain', location:'Kyoto', year:'2024' },
-      side: { text: 'Untitled, from the fruit table series. 4×5 large format, Velvia 50.' },
+      kind: 'three-up',
+      photos: [
+        { tint: '#241a14', aspect: 'tall', title:'Persimmons, study',      location:'Kyoto', year:'2024' },
+        { tint: '#2a1814', aspect: 'tall', title:'Persimmons, after rain',  location:'Kyoto', year:'2024' },
+        { tint: '#3a2418', aspect: 'tall', title:'Persimmons, detail',      location:'Kyoto', year:'2024' },
+      ],
     },
 
     {
@@ -298,9 +304,12 @@ export const spacesData: CategoryData = {
     },
 
     {
-      kind: 'centered-tall',
-      photo: { tint: '#16191d', aspect: 'portrait', title:'Concrete chapel', location:'Tadao Ando, Naoshima', year:'2023' },
-      side: { text: 'From the sacred spaces series. Mamiya 7, 65mm, ambient daylight only.' },
+      kind: 'three-up',
+      photos: [
+        { tint: '#181f23', aspect: 'tall', title:'Chapel, approach',  location:'Naoshima', year:'2023' },
+        { tint: '#16191d', aspect: 'tall', title:'Concrete chapel',   location:'Tadao Ando, Naoshima', year:'2023' },
+        { tint: '#1c2428', aspect: 'tall', title:'Chapel, interior',  location:'Naoshima', year:'2023' },
+      ],
     },
 
     {
@@ -412,9 +421,12 @@ export const objectsData: CategoryData = {
     },
 
     {
-      kind: 'centered-tall',
-      photo: { tint: '#22201a', aspect: 'portrait', title:'Linen, folded', location:'Studio', year:'2024' },
-      side: { text: 'From the catalogue series. Phase One, 120mm macro, north-window light.' },
+      kind: 'three-up',
+      photos: [
+        { tint: '#26231c', aspect: 'tall', title:'Linen, no. 1',    location:'Studio', year:'2024' },
+        { tint: '#22201a', aspect: 'tall', title:'Linen, folded',   location:'Studio', year:'2024' },
+        { tint: '#1e1c16', aspect: 'tall', title:'Linen, draped',   location:'Studio', year:'2024' },
+      ],
     },
 
     {
@@ -526,9 +538,12 @@ export const motionData: CategoryData = {
     },
 
     {
-      kind: 'centered-tall',
-      photo: { tint: '#0e1216', aspect: 'portrait', title:'Single-shot · sixty seconds', location:'Marfa, TX', year:'2024' },
-      side: { text: 'Bolex H16, 16mm, Tri-X reversal. One continuous take, no edit.' },
+      kind: 'three-up',
+      photos: [
+        { tint: '#12161a', aspect: 'tall', title:'Frame study · 01',           location:'Marfa, TX', year:'2024' },
+        { tint: '#0e1216', aspect: 'tall', title:'Single-shot · sixty seconds', location:'Marfa, TX', year:'2024' },
+        { tint: '#0c1115', aspect: 'tall', title:'Frame study · 60',           location:'Marfa, TX', year:'2024' },
+      ],
     },
 
     {

@@ -30,39 +30,39 @@ export function getLandingSlots(config: Record<string, number>): Slot[] {
 }
 
 // Category gallery pages
-// Each category has exactly 15 image slots matching the editorial flow:
-// 1 full-bleed + 3 asym + 1 centered-tall + 3 three-up + 1 full-bleed-pano +
-// 2 diptych + 2 duo + 1 offset + 1 full-bleed = 15
+// Each category has exactly 17 image slots matching the editorial flow:
+// 1 full-bleed + 3 asym + 3 three-up + 3 three-up + 1 full-bleed-pano +
+// 2 diptych + 2 duo + 1 offset + 1 full-bleed = 17
 
-const CULINARY_SLOTS: Slot[] = Array.from({ length: 15 }, (_, i) => ({
+const CULINARY_SLOTS: Slot[] = Array.from({ length: 17 }, (_, i) => ({
   id: `culinary-${i}`,
   page: 'Culinary',
   label: `Culinary · Frame ${i + 1}`,
   hint: 'Gallery · landscape or portrait',
 }))
 
-const SPACES_SLOTS: Slot[] = Array.from({ length: 15 }, (_, i) => ({
+const SPACES_SLOTS: Slot[] = Array.from({ length: 17 }, (_, i) => ({
   id: `spaces-${i}`,
   page: 'Spaces',
   label: `Spaces · Frame ${i + 1}`,
   hint: 'Gallery · landscape or portrait',
 }))
 
-const PORTRAITS_SLOTS: Slot[] = Array.from({ length: 15 }, (_, i) => ({
+const PORTRAITS_SLOTS: Slot[] = Array.from({ length: 17 }, (_, i) => ({
   id: `portraits-${i}`,
   page: 'Portraits',
   label: `Portraits · Frame ${i + 1}`,
   hint: 'Gallery · portrait preferred',
 }))
 
-const OBJECTS_SLOTS: Slot[] = Array.from({ length: 15 }, (_, i) => ({
+const OBJECTS_SLOTS: Slot[] = Array.from({ length: 17 }, (_, i) => ({
   id: `objects-${i}`,
   page: 'Objects',
   label: `Objects · Frame ${i + 1}`,
   hint: 'Gallery · square or portrait',
 }))
 
-const MOTION_SLOTS: Slot[] = Array.from({ length: 15 }, (_, i) => ({
+const MOTION_SLOTS: Slot[] = Array.from({ length: 17 }, (_, i) => ({
   id: `motion-${i}`,
   page: 'Motion',
   label: `Motion · Frame ${i + 1}`,
