@@ -2680,6 +2680,15 @@ a.info-touch-val:hover { color: var(--paper); }
   letter-spacing: 0.08em;
   margin-bottom: 8px;
 }
+.adm-slot-copy-preview {
+  font-size: 9px;
+  color: #6a9;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .adm-slot-actions {
   display: flex;

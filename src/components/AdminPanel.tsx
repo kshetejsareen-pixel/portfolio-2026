@@ -848,7 +848,13 @@ function SlotCard({
       )}
       <div className="adm-slot-meta">
         <div className="adm-slot-label">{slot.label}</div>
-        <div className="adm-slot-hint">{!assignment && !assigningThis ? 'Click to select, then pick from library' : slot.hint}</div>
+        {assignment && (assignment.title || assignment.location) ? (
+          <div className="adm-slot-copy-preview">
+            {[assignment.title, assignment.location, assignment.year].filter(Boolean).join(' · ')}
+          </div>
+        ) : (
+          <div className="adm-slot-hint">{!assignment && !assigningThis ? 'Click to select, then pick from library' : slot.hint}</div>
+        )}
         {/* Row 1: primary action + clear */}
         <div className="adm-slot-actions">
           <button className="adm-slot-assign-btn" onClick={onSelect} disabled={assigningThis}>
