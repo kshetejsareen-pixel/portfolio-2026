@@ -1022,6 +1022,32 @@ button, input, textarea, select { font: inherit; }
 .cat-row-duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); align-items: end; }
 @media (max-width: 767px) { .cat-row-duo-grid { grid-template-columns: 1fr; } }
 
+/* Desktop: multi-photo items don't animate — parent .cat-row handles the reveal */
+.cat-row-threeup .cat-multi-item[data-sr],
+.cat-row-diptych .cat-multi-item[data-sr],
+.cat-row-duo .cat-multi-item[data-sr] { opacity: 1; transition: none; }
+
+/* Mobile: row container stays visible, each item fades in independently with stagger */
+@media (max-width: 767px) {
+  .cat-row-threeup,
+  .cat-row-diptych,
+  .cat-row-duo { opacity: 1 !important; transition: none !important; }
+
+  .cat-row-threeup .cat-multi-item[data-sr],
+  .cat-row-diptych .cat-multi-item[data-sr],
+  .cat-row-duo .cat-multi-item[data-sr] { opacity: 0; transition: opacity 1s linear; }
+
+  .cat-row-threeup .cat-multi-item[data-sr].sr-visible,
+  .cat-row-diptych .cat-multi-item[data-sr].sr-visible,
+  .cat-row-duo .cat-multi-item[data-sr].sr-visible { opacity: 1; }
+
+  .cat-row-threeup .cat-multi-item[data-sr]:nth-child(2),
+  .cat-row-diptych .cat-multi-item[data-sr]:nth-child(2),
+  .cat-row-duo .cat-multi-item[data-sr]:nth-child(2) { transition-delay: 0.18s; }
+
+  .cat-row-threeup .cat-multi-item[data-sr]:nth-child(3) { transition-delay: 0.36s; }
+}
+
 /* Offset row */
 .cat-row-offset-grid {
   display: grid;

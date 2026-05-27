@@ -257,11 +257,13 @@ function RowCenteredTall({ row, idx }: { row: Extract<FlowRow, { kind: 'centered
 
 function RowThreeUp({ row, idxBase }: { row: Extract<FlowRow, { kind: 'three-up' }>; idxBase: number }) {
   return (
-    <div className="cat-row">
+    <div className="cat-row cat-row-threeup">
       <div className="cat-contained">
         <div className="cat-row-3up-grid">
           {row.photos.map((p, i) => (
-            <CatPhotoWithCap key={i} photo={p} idx={idxBase + i} />
+            <div key={i} className="cat-multi-item" data-sr>
+              <CatPhotoWithCap photo={p} idx={idxBase + i} />
+            </div>
           ))}
         </div>
       </div>
@@ -271,11 +273,13 @@ function RowThreeUp({ row, idxBase }: { row: Extract<FlowRow, { kind: 'three-up'
 
 function RowDiptych({ row, idxBase }: { row: Extract<FlowRow, { kind: 'diptych' }>; idxBase: number }) {
   return (
-    <div className="cat-row">
+    <div className="cat-row cat-row-diptych">
       <div className="cat-contained">
         <div className="cat-row-diptych-grid">
           {row.photos.map((p, i) => (
-            <CatPhotoWithCap key={i} photo={p} idx={idxBase + i} />
+            <div key={i} className="cat-multi-item" data-sr>
+              <CatPhotoWithCap photo={p} idx={idxBase + i} />
+            </div>
           ))}
         </div>
       </div>
@@ -285,11 +289,13 @@ function RowDiptych({ row, idxBase }: { row: Extract<FlowRow, { kind: 'diptych' 
 
 function RowDuo({ row, idxBase }: { row: Extract<FlowRow, { kind: 'duo' }>; idxBase: number }) {
   return (
-    <div className="cat-row">
+    <div className="cat-row cat-row-duo">
       <div className="cat-contained">
         <div className="cat-row-duo-grid">
           {row.photos.map((p, i) => (
-            <CatPhotoWithCap key={i} photo={p} idx={idxBase + i} />
+            <div key={i} className="cat-multi-item" data-sr>
+              <CatPhotoWithCap photo={p} idx={idxBase + i} />
+            </div>
           ))}
         </div>
       </div>
