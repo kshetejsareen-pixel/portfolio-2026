@@ -567,8 +567,8 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     padding: 2px 0;
   }
-  .ks-cat-name { font-size: 13.2px; transform: none; }
-  .ks-cat.active .ks-cat-name { font-size: 16.38px; transform: none; }
+  .ks-cat-name { font-size: 18px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 21px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
