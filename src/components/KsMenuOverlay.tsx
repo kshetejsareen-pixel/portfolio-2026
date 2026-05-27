@@ -34,7 +34,10 @@ export function KsMenuOverlay({ open, onClose }: { open: boolean; onClose: () =>
           <a className="ks-menu-link" href="/contact">Contact</a>
           <a className="ks-menu-link" href="/info">Info</a>
         </div>
-        <div className="ks-menu-footer">info@kshetejsareen.com</div>
+        <div className="ks-menu-footer">
+          <span>info@kshetejsareen.com</span>
+          <a className="ks-menu-admin-link" href="/admin">Admin ↗</a>
+        </div>
       </div>
     </div>
   )

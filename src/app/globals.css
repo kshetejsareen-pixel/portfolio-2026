@@ -754,7 +754,20 @@ button, input, textarea, select { font: inherit; }
   text-transform: uppercase;
   color: var(--mute);
   margin-top: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+.ks-menu-admin-link {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(138, 133, 125, 0.45);
+  text-decoration: none;
+  transition: color 200ms;
+}
+.ks-menu-admin-link:hover { color: var(--mute); }
 
 /* Mobile adjustments */
 @media (max-width: 767px) {
