@@ -599,13 +599,17 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
                           </div>
                         )}
                         <div className="cat-project-info">
-                          <h3 className="cat-project-title">
-                            {p.title}{p.it && <em>, {p.it}</em>}
-                          </h3>
+                          <div className="cat-project-info-top">
+                            <h3 className="cat-project-title">
+                              {p.title}{p.it && <em>, {p.it}</em>}
+                            </h3>
+                            {p.imageCount != null && (
+                              <span className="cat-project-frames">{p.imageCount} frames</span>
+                            )}
+                          </div>
                           <div className="cat-project-meta">
                             <span className="cat-project-yr">{p.year}</span>
-                            <span>{p.location}</span><br />
-                            {p.imageCount != null && <span>{p.imageCount} frames</span>}
+                            <span>{p.location}</span>
                           </div>
                         </div>
                         {p.desc && <p className="cat-project-desc">{p.desc}</p>}
