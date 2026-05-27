@@ -165,7 +165,7 @@ export const culinaryData: CategoryData = {
   intro: {
     label: 'On the work',
     body: [
-      'Five years between studio and kitchen pass, photographing the moments before service ',
+      '{yearSpan} years between studio and kitchen pass, photographing the moments before service ',
       { it: 'and the quiet ones after.' },
       ' A working archive of ingredients, hands, light, and the small accidents that make a plate worth keeping.',
     ],

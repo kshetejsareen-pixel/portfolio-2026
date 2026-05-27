@@ -439,6 +439,17 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       })()
     : null
 
+  const YEAR_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
+                      'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Twenty']
+  const yearSpanNum = assignedYears.length >= 2
+    ? Math.max(...assignedYears) - Math.min(...assignedYears)
+    : null
+  const yearSpanWord = yearSpanNum !== null
+    ? (yearSpanNum < YEAR_WORDS.length ? YEAR_WORDS[yearSpanNum] : String(yearSpanNum))
+    : null
+  const applyYearSpan = (s: string) =>
+    yearSpanWord ? s.replace('{yearSpan}', yearSpanWord) : s.replace('{yearSpan}', 'Five')
+
   let photoIdx = 1
   const flowWithIdx = visibleFlow.map(row => {
     const start = photoIdx
@@ -501,10 +512,10 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         <div className="cat-intro-label ks-eyebrow">{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body">
           {copy.introBody
-            ? copy.introBody
+            ? applyYearSpan(copy.introBody)
             : data.intro.body.map((seg: IntroPart, i: number) =>
                 typeof seg === 'string'
-                  ? <span key={i}>{seg}</span>
+                  ? <span key={i}>{applyYearSpan(seg)}</span>
                   : <em key={i}>{(seg as { it: string }).it}</em>
               )
           }
