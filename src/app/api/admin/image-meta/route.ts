@@ -47,16 +47,18 @@ export async function PATCH(req: Request) {
       ...(year     !== undefined && { year }),
       ...(camera   !== undefined && { camera }),
     })
-
-    // Sync Cloudinary context tags (fire-and-forget — not critical for the website)
-    cloudinary.uploader.explicit(publicId, {
-      type: 'upload',
-      context: contextParts.join('|'),
-    }).catch(() => {})
-
-    return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('image-meta PATCH error:', err)
     return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
   }
+
+  // Sync Cloudinary context tags — fully isolated so any error never blocks the response
+  try {
+    cloudinary.uploader.explicit(publicId, {
+      type: 'upload',
+      context: contextParts.join('|'),
+    }).catch(() => {})
+  } catch { /* ignore */ }
+
+  return NextResponse.json({ ok: true })
 }
