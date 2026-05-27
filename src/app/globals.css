@@ -570,8 +570,9 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     padding: 2px 0;
   }
+  .ks-cat-n { font-size: 9px; }
   .ks-cat-name { font-size: 10.5px; transform: none; }
-  .ks-cat.active .ks-cat-name { font-size: 10.5px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 13px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
