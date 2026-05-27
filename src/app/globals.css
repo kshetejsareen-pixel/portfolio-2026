@@ -980,6 +980,18 @@ button, input, textarea, select { font: inherit; }
 }
 @media (max-width: 767px) { .cat-row-asym-grid { grid-template-columns: 1fr; } }
 
+/* Desktop: asym items don't animate — parent .cat-row handles the reveal */
+.cat-row-asym .cat-asym-item[data-sr] { opacity: 1; transition: none; }
+
+/* Mobile: row container stays visible, each item fades in independently */
+@media (max-width: 767px) {
+  .cat-row-asym { opacity: 1 !important; transition: none !important; }
+  .cat-row-asym .cat-asym-item[data-sr] { opacity: 0; transition: opacity 1s linear; }
+  .cat-row-asym .cat-asym-item[data-sr].sr-visible { opacity: 1; }
+  .cat-small-stack .cat-asym-item[data-sr]:nth-child(1) { transition-delay: 0.18s; }
+  .cat-small-stack .cat-asym-item[data-sr]:nth-child(2) { transition-delay: 0.36s; }
+}
+
 /* Centered-tall row */
 .cat-row-ct-grid {
   display: grid; grid-template-columns: 1fr 480px 1fr; gap: 40px; align-items: end;

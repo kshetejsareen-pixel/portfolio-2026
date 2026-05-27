@@ -217,13 +217,17 @@ function RowFullBleedPano({ row, idx }: { row: Extract<FlowRow, { kind: 'full-bl
 
 function RowAsym({ row, idxBase }: { row: Extract<FlowRow, { kind: 'asym' }>; idxBase: number }) {
   return (
-    <div className="cat-row">
+    <div className="cat-row cat-row-asym">
       <div className="cat-contained">
         <div className="cat-row-asym-grid">
-          <CatPhotoWithCap photo={row.large} idx={idxBase} />
+          <div className="cat-asym-item" data-sr>
+            <CatPhotoWithCap photo={row.large} idx={idxBase} />
+          </div>
           <div className="cat-small-stack">
             {row.smalls.map((p, i) => (
-              <CatPhotoWithCap key={i} photo={p} idx={idxBase + 1 + i} />
+              <div key={i} className="cat-asym-item" data-sr>
+                <CatPhotoWithCap photo={p} idx={idxBase + 1 + i} />
+              </div>
             ))}
           </div>
         </div>
