@@ -406,12 +406,9 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
     focalOverrides,
   )
 
-  // Only show rows where at least one photo is assigned; pull-quotes only when there's content
   const assignedCount = countAssigned(enrichedFlow)
   const anyAssigned   = assignedCount > 0
-  const visibleFlow   = enrichedFlow.filter((row) =>
-    row.kind === 'pull-quote' ? anyAssigned : rowHasAnyImage(row)
-  )
+  const visibleFlow   = enrichedFlow
 
   const heroTint     = getHeroTint(visibleFlow[0] ?? enrichedFlow[0] ?? data.flow[0])
   const frameCount   = anyAssigned ? assignedCount : enrichedFlow.reduce((n, r) => n + countPhotos(r), 0)
