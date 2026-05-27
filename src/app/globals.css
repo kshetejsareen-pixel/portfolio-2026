@@ -928,6 +928,7 @@ button, input, textarea, select { font: inherit; }
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to top, rgba(0,0,0,0.30), transparent 40%);
 }
+.cat-row-full-bleed .cat-photo::after { background: none; }
 .cat-photo-img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
