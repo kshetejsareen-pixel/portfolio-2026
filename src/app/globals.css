@@ -1013,7 +1013,7 @@ button, input, textarea, select { font: inherit; }
 /* Offset row */
 .cat-row-offset-grid {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr;
+  grid-template-columns: 0.5fr 2.4fr 0.5fr;
   gap: 40px;
   align-items: start;
 }
