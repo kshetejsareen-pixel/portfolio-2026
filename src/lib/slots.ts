@@ -7,12 +7,11 @@ export interface Slot {
   hint: string
 }
 
-// Frame label: use categories.ts metadata if it exists, else fall back to a number
+// Frame label: always use category name + frame number — saved copy is the title source of truth
 function landingSlotLabel(catId: string, index: number): string {
   const cat = categories.find((c) => c.id === catId)
-  const frame = cat?.frames[index]
   const catLabel = cat?.label ?? catId
-  return frame ? `${catLabel} · ${frame.title}` : `${catLabel} · Frame ${index + 1}`
+  return `${catLabel} · Frame ${index + 1}`
 }
 
 // Generate landing slots dynamically for a given config
