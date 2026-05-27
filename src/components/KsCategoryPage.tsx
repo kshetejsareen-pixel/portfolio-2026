@@ -470,15 +470,17 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
             <span className="ks-eyebrow">Category · {data.cat.n} of 05</span>
           </div>
           <h1 className="cat-hero-title">{copy.heroTitle || data.cat.name}</h1>
-          <div className="cat-hero-stats">
-            <span><strong>{frameCount}</strong> Frames</span>
-            <span><strong>{projectCount}</strong> Projects</span>
-            <span><strong>2021–2026</strong></span>
+          <div className="cat-hero-lower">
+            <div className="cat-hero-stats">
+              <span><strong>{frameCount}</strong> Frames</span>
+              <span><strong>{projectCount}</strong> Projects</span>
+              <span><strong>2021–2026</strong></span>
+            </div>
+            <div className="cat-scroll-hint">
+              <span className="cat-scroll-hint-label">Scroll</span>
+              <span className="cat-scroll-hint-arrow" />
+            </div>
           </div>
-        </div>
-        <div className="cat-scroll-hint">
-          <span className="cat-scroll-hint-label">Scroll</span>
-          <span className="cat-scroll-hint-arrow" />
         </div>
       </section>
 

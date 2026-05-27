@@ -329,10 +329,7 @@ button, input, textarea, select { font: inherit; }
 .ks-cat:hover { color: var(--paper-dim); }
 
 .ks-cat-n {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 0.22em;
-  text-align: right;
+  display: none;
 }
 .ks-cat-name {
   font-family: var(--font-serif);
@@ -570,9 +567,8 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     padding: 2px 0;
   }
-  .ks-cat-n { font-size: 9px; }
-  .ks-cat-name { font-size: 10.5px; transform: none; }
-  .ks-cat.active .ks-cat-name { font-size: 13px; transform: none; }
+  .ks-cat-name { font-size: 11px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 13.65px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -848,8 +844,8 @@ button, input, textarea, select { font: inherit; }
   content: '';
   position: absolute; inset: 0;
   background:
-    linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 30%, transparent 55%),
-    linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 22%),
+    linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.60) 35%, transparent 65%),
+    linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 22%),
     radial-gradient(120% 80% at 50% 50%, transparent 50%, rgba(0,0,0,0.55) 100%);
 }
 .cat-hero-letter {
@@ -871,13 +867,21 @@ button, input, textarea, select { font: inherit; }
 .cat-hero-stats {
   margin-top: 36px; display: flex; flex-wrap: wrap; gap: 32px;
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--mute);
+  color: var(--mute); word-spacing: -0.15em;
 }
 .cat-hero-stats strong { color: var(--paper); font-weight: 500; }
+/* Desktop: lower is transparent so stats + scroll-hint retain their original layout */
+.cat-hero-lower { display: contents; }
 .cat-scroll-hint {
   position: absolute; right: var(--cat-pad); bottom: 96px; z-index: 4;
   display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
   text-align: right;
+}
+@media (max-width: 767px) {
+  .cat-hero-lower {
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .cat-scroll-hint { position: static; right: auto; bottom: auto; }
 }
 .cat-scroll-hint-label {
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
