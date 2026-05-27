@@ -855,7 +855,7 @@ button, input, textarea, select { font: inherit; }
 .cat-hero-letter--top    { top: 0; }
 .cat-hero-letter--bottom { bottom: 0; }
 .cat-hero-meta {
-  position: absolute; left: var(--cat-pad); bottom: 96px; z-index: 4;
+  position: absolute; left: var(--cat-pad); right: var(--cat-pad); bottom: 96px; z-index: 4;
 }
 .cat-hero-eyebrow { margin-bottom: 18px; display: flex; gap: 14px; align-items: center; }
 .cat-hero-title {
@@ -865,24 +865,23 @@ button, input, textarea, select { font: inherit; }
   font-style: italic; color: var(--paper);
   white-space: nowrap;
 }
+.cat-hero-lower {
+  margin-top: 36px; display: flex; justify-content: space-between; align-items: flex-start;
+}
 .cat-hero-stats {
-  margin-top: 36px; display: flex; flex-wrap: wrap; gap: 32px;
+  display: flex; flex-wrap: wrap; gap: 32px;
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--mute); word-spacing: -0.15em;
 }
 .cat-hero-stats strong { color: var(--paper); font-weight: 500; }
-/* Desktop: lower is transparent so stats + scroll-hint retain their original layout */
-.cat-hero-lower { display: contents; }
-.cat-scroll-hint {
-  position: absolute; right: var(--cat-pad); bottom: 96px; z-index: 4;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-  text-align: right;
+.cat-hero-year {
+  margin-top: 10px;
+  font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--mute); word-spacing: -0.15em;
 }
-@media (max-width: 767px) {
-  .cat-hero-lower {
-    display: flex; align-items: flex-start; justify-content: space-between;
-  }
-  .cat-scroll-hint { position: static; right: auto; bottom: auto; }
+.cat-scroll-hint {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right;
+  flex-shrink: 0;
 }
 .cat-scroll-hint-label {
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
