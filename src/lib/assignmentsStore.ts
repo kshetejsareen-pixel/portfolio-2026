@@ -26,10 +26,19 @@ export async function getAllAssignments(): Promise<Store> {
 // Alias for public routes — identical with Firestore (no CDN caching issue)
 export const getAllAssignmentsPublic = getAllAssignments
 
+// Dedup only within the same slot "family" so the same image can appear on
+// both the landing page and a category gallery page without either being erased.
+function slotFamily(id: string): 'landing' | 'gallery' {
+  return id.startsWith('landing-') ? 'landing' : 'gallery'
+}
+
 export async function setAssignment(slotId: string, data: StoredAssignment): Promise<void> {
   const store = await firestoreRead<Store>(DOC_ID, {})
+  const family = slotFamily(slotId)
   for (const [key, val] of Object.entries(store)) {
-    if (key !== slotId && val.publicId === data.publicId) delete store[key]
+    if (key !== slotId && slotFamily(key) === family && val.publicId === data.publicId) {
+      delete store[key]
+    }
   }
   store[slotId] = data
   await firestoreWrite(DOC_ID, store)
