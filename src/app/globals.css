@@ -534,7 +534,7 @@ button, input, textarea, select { font: inherit; }
   .ks-top-bar {
     top: 0;
     height: auto;
-    padding-top: max(18px, env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 14px);
     padding-left: 22px;
     padding-right: 22px;
     padding-bottom: 14px;
@@ -573,13 +573,13 @@ button, input, textarea, select { font: inherit; }
 
   .ks-scrubber {
     left: 22px; right: 22px;
-    bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 
   .ks-meta {
     left: 22px;
     right: 140px;
-    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
   .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
