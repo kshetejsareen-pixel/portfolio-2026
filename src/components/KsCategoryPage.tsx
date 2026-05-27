@@ -428,6 +428,17 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   const frameCount   = anyAssigned ? assignedCount : enrichedFlow.reduce((n, r) => n + countPhotos(r), 0)
   const projectCount = adminProjects?.length ?? data.projects.length
 
+  const assignedYears = Object.values(galleryAssignments)
+    .map((a) => parseInt(a.year, 10))
+    .filter((y) => !isNaN(y))
+  const yearRange = assignedYears.length > 0
+    ? (() => {
+        const min = Math.min(...assignedYears)
+        const max = Math.max(...assignedYears)
+        return min === max ? String(min) : `${min}–${max}`
+      })()
+    : null
+
   let photoIdx = 1
   const flowWithIdx = visibleFlow.map(row => {
     const start = photoIdx
@@ -476,7 +487,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
                 <span><strong>{frameCount}</strong> Frames</span>
                 <span><strong>{projectCount}</strong> Projects</span>
               </div>
-              <div className="cat-hero-year">2021–2026</div>
+              {yearRange && <div className="cat-hero-year">{yearRange}</div>}
             </div>
             <div className="cat-scroll-hint">
               <span className="cat-scroll-hint-label">Scroll</span>
