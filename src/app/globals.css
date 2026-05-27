@@ -882,7 +882,7 @@ button, input, textarea, select { font: inherit; }
   white-space: nowrap;
 }
 .cat-hero-lower {
-  margin-top: 36px; display: flex; justify-content: space-between; align-items: flex-start;
+  margin-top: 64px; display: flex; justify-content: space-between; align-items: flex-start;
 }
 .cat-hero-stats {
   display: flex; flex-wrap: wrap; gap: 32px;
