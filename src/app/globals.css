@@ -540,7 +540,7 @@ button, input, textarea, select { font: inherit; }
     padding-bottom: 14px;
     align-items: center;
   }
-  .ks-wordmark-ks { font-size: 24px; }
+  .ks-wordmark-ks { font-size: 15px; }
   .ks-top-nav { gap: 16px; }
   .ks-top-nav a { display: none; }
 
@@ -567,8 +567,8 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     padding: 2px 0;
   }
-  .ks-cat-name { font-size: 11px; transform: none; }
-  .ks-cat.active .ks-cat-name { font-size: 13.65px; transform: none; }
+  .ks-cat-name { font-size: 13.2px; transform: none; }
+  .ks-cat.active .ks-cat-name { font-size: 16.38px; transform: none; }
   .ks-cat-tick { display: none; }
 
   .ks-scrubber {
@@ -819,6 +819,7 @@ button, input, textarea, select { font: inherit; }
 }
 @media (max-width: 767px) {
   .cat-topbar { padding: max(18px, env(safe-area-inset-top, 0px)) 22px 14px; }
+  .cat-tb-ks { font-size: 15px !important; }
 }
 .cat-tb-crumb { display: flex; gap: 10px; align-items: baseline; color: var(--mute); }
 .cat-tb-cur { color: var(--paper); }
