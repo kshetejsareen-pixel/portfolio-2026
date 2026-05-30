@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { readLandingConfig } from '@/lib/landingConfig'
+import { readLandingConfig, readCategoryOrder } from '@/lib/landingConfig'
 import { getAllAssignmentsPublic } from '@/lib/assignmentsStore'
 
 const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
@@ -21,9 +21,10 @@ function buildUrl(publicId: string, angle?: number, flipH?: boolean, flipV?: boo
 
 // Public endpoint — returns frame config + image assignments for the landing page.
 export async function GET() {
-  const [config, store] = await Promise.all([
+  const [config, store, categoryOrder] = await Promise.all([
     readLandingConfig(),
     getAllAssignmentsPublic(),
+    readCategoryOrder(),
   ])
 
   const assignments: Record<string, {
@@ -51,7 +52,7 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({ config, assignments }, {
+  return NextResponse.json({ config, assignments, categoryOrder }, {
     headers: { 'Cache-Control': 'no-store' },
   })
 }

@@ -2523,6 +2523,20 @@ a.info-touch-val:hover { color: var(--paper); }
   line-height: 1.5;
 }
 
+.adm-cat-order-n {
+  color: #333;
+  margin-right: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.adm-count-saving {
+  color: #444;
+  font-size: 9px;
+  margin-left: 8px;
+  font-family: var(--font-mono);
+}
+
 /* Scrollable slot area (used when Landing has grouping) */
 .adm-slots-scroll {
   flex: 1;

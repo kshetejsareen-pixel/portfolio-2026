@@ -31,13 +31,21 @@ interface LandingAssignment {
   focalY?: number
 }
 
-// Build the active categories list from config + Cloudinary assignments.
-// Cloudinary copy (ks_* context fields) takes precedence over static categories.ts data.
+// Build the active categories list from config + assignments, sorted by stored order.
 function buildCategories(
   config: Record<string, number>,
   assignments: Record<string, LandingAssignment>,
+  order: string[],
 ): Category[] {
-  return categories.map((cat) => {
+  const sorted = order.length
+    ? [...categories].sort((a, b) => {
+        const ai = order.indexOf(a.id)
+        const bi = order.indexOf(b.id)
+        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
+      })
+    : categories
+
+  return sorted.map((cat) => {
     const count = config[cat.id] ?? cat.frames.length
     const frames: Frame[] = Array.from({ length: count }, (_, i) => {
       const slotId = `landing-${cat.id}-${i}`
@@ -153,8 +161,8 @@ export function CategoryLanding() {
   const fetchLanding = useCallback(() => {
     fetch('/api/landing')
       .then((r) => r.json())
-      .then(({ config, assignments }) => {
-        setActiveCategories(buildCategories(config ?? {}, assignments ?? {}))
+      .then(({ config, assignments, categoryOrder }) => {
+        setActiveCategories(buildCategories(config ?? {}, assignments ?? {}, categoryOrder ?? []))
       })
       .catch(() => {})
   }, [])

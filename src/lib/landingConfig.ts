@@ -6,7 +6,10 @@ export type LandingConfig = Record<string, number>
 
 export const MAX_FRAMES = 20
 
-const PUBLIC_ID = 'ks-landing-config'
+export const DEFAULT_CATEGORY_ORDER = ['culinary', 'spaces', 'portraits', 'objects', 'motion']
+
+const CONFIG_DOC = 'ks-landing-config'
+const ORDER_DOC  = 'ks-category-order'
 
 const DEFAULT_CONFIG: LandingConfig = {
   culinary:  4,
@@ -17,10 +20,19 @@ const DEFAULT_CONFIG: LandingConfig = {
 }
 
 export async function readLandingConfig(): Promise<LandingConfig> {
-  const stored = await firestoreRead<LandingConfig>(PUBLIC_ID, {})
+  const stored = await firestoreRead<LandingConfig>(CONFIG_DOC, {})
   return { ...DEFAULT_CONFIG, ...stored }
 }
 
 export async function writeLandingConfig(config: LandingConfig): Promise<void> {
-  await firestoreWrite(PUBLIC_ID, config)
+  await firestoreWrite(CONFIG_DOC, config)
+}
+
+export async function readCategoryOrder(): Promise<string[]> {
+  const data = await firestoreRead<{ order?: string[] }>(ORDER_DOC, {})
+  return data.order ?? [...DEFAULT_CATEGORY_ORDER]
+}
+
+export async function writeCategoryOrder(order: string[]): Promise<void> {
+  await firestoreWrite(ORDER_DOC, { order })
 }

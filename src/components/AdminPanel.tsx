@@ -130,6 +130,10 @@ export function AdminPanel() {
   // Page copy
   const [copyCfg, setCopyCfg]           = useState<Record<string, CategoryCopy>>({})
 
+  // Category order
+  const [catOrder, setCatOrder] = useState<string[]>(['culinary', 'spaces', 'portraits', 'objects', 'motion'])
+  const [orderSaving, setOrderSaving] = useState(false)
+
   // Selection / panel state
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null)
   const [activePage, setActivePage]     = useState('Landing')
@@ -177,10 +181,11 @@ export function AdminPanel() {
     setAssignments(mapped)
   }, [])
 
-  // ── Fetch landing config ───────────────────────────────────────────────────
+  // ── Fetch landing config + category order ─────────────────────────────────
   const fetchConfig = useCallback(async () => {
     const data = await fetch('/api/admin/config').then((r) => r.json())
     if (data.config) setLandingConfig(data.config)
+    if (data.categoryOrder) setCatOrder(data.categoryOrder)
   }, [])
 
   // ── Fetch projects ─────────────────────────────────────────────────────────
@@ -202,6 +207,24 @@ export function AdminPanel() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ categoryId: catId, reorderedProjects: arr }),
     })
+  }
+
+  // ── Reorder categories ─────────────────────────────────────────────────────
+  const moveCat = async (catId: string, dir: 'up' | 'down') => {
+    const arr = [...catOrder]
+    const idx = arr.indexOf(catId)
+    const swapIdx = dir === 'up' ? idx - 1 : idx + 1
+    if (idx === -1 || swapIdx < 0 || swapIdx >= arr.length) return
+    ;[arr[idx], arr[swapIdx]] = [arr[swapIdx], arr[idx]]
+    setCatOrder(arr)
+    setOrderSaving(true)
+    await fetch('/api/admin/config', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'order', order: arr }),
+    })
+    setOrderSaving(false)
+    showToast('Category order saved')
   }
 
   // ── Fetch page copy config ─────────────────────────────────────────────────
@@ -423,7 +446,13 @@ export function AdminPanel() {
     setTimeout(() => setToast(''), 2500)
   }
 
-  const landingGroups = LANDING_CATS.map((cat) => {
+  const orderedLandingCats = [...LANDING_CATS].sort((a, b) => {
+    const ai = catOrder.indexOf(a.id)
+    const bi = catOrder.indexOf(b.id)
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
+  })
+
+  const landingGroups = orderedLandingCats.map((cat) => {
     const count  = landingConfig[cat.id] ?? 0
     const slots  = landingSlots.filter((s) => s.id.startsWith(`landing-${cat.id}-`))
     const filled = slots.filter((s) => assignments[s.id]).length
@@ -492,6 +521,37 @@ export function AdminPanel() {
             </div>
           )}
         </div>
+
+        {/* Category order — Landing only */}
+        {activePage === 'Landing' && (
+          <div className="adm-frame-counts">
+            <div className="adm-frame-counts-title">
+              Category order
+              {orderSaving && <span className="adm-count-saving"> saving…</span>}
+            </div>
+            <div className="adm-frame-counts-table">
+              {catOrder.map((id, i) => {
+                const cat = LANDING_CATS.find((c) => c.id === id)
+                if (!cat) return null
+                return (
+                  <div key={id} className="adm-frame-row">
+                    <div className="adm-frame-row-label">
+                      <span className="adm-cat-order-n">{String(i + 1).padStart(2, '0')}</span>
+                      {cat.label}
+                    </div>
+                    <div className="adm-frame-row-controls">
+                      <button className="adm-count-btn" onClick={() => moveCat(id, 'up')}   disabled={i === 0 || orderSaving}>↑</button>
+                      <button className="adm-count-btn" onClick={() => moveCat(id, 'down')} disabled={i === catOrder.length - 1 || orderSaving}>↓</button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="adm-frame-counts-note">
+              Order applies to the landing page carousel and the navigation menu.
+            </div>
+          </div>
+        )}
 
         {/* Frame count controls — Landing only */}
         {activePage === 'Landing' && (
