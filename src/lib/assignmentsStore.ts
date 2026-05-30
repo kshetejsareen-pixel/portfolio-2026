@@ -44,6 +44,13 @@ export async function setAssignment(slotId: string, data: StoredAssignment): Pro
   await firestoreWrite(DOC_ID, store)
 }
 
+export async function removeAssignment(slotId: string): Promise<void> {
+  const store = await firestoreRead<Store>(DOC_ID, {})
+  delete store[slotId]
+  await firestoreWrite(DOC_ID, store)
+}
+
+// Removes every slot that holds this publicId — use only when truly purging an image.
 export async function removeAssignmentByPublicId(publicId: string): Promise<void> {
   const store = await firestoreRead<Store>(DOC_ID, {})
   for (const key of Object.keys(store)) {

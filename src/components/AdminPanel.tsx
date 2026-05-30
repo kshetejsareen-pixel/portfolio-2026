@@ -336,7 +336,7 @@ export function AdminPanel() {
     await fetch('/api/admin/assign', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ publicId: asgn.publicId }),
+      body: JSON.stringify({ publicId: asgn.publicId, slotId: slot.id }),
     })
     // Optimistic remove
     setAssignments((prev) => {

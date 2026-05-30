@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
-import { setAssignment, removeAssignmentByPublicId, swapAssignments, getAllAssignments, updateFocalPoint, updateTransform } from '@/lib/assignmentsStore'
+import { setAssignment, removeAssignment, removeAssignmentByPublicId, swapAssignments, getAllAssignments, updateFocalPoint, updateTransform } from '@/lib/assignmentsStore'
 
 const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
 
@@ -123,15 +123,23 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   const { publicId, slotId } = await req.json()
 
-  if (!publicId) {
-    return NextResponse.json({ error: 'publicId required' }, { status: 400 })
+  if (!slotId && !publicId) {
+    return NextResponse.json({ error: 'slotId required' }, { status: 400 })
   }
 
   try {
     // Best-effort tag clear on Cloudinary (non-fatal)
-    cloudinary.uploader.explicit(publicId, { type: 'upload', context: 'portfolio_slot=' }).catch(() => {})
+    if (publicId) {
+      cloudinary.uploader.explicit(publicId, { type: 'upload', context: 'portfolio_slot=' }).catch(() => {})
+    }
 
-    await removeAssignmentByPublicId(publicId)
+    // Remove only this specific slot — do NOT wipe the same image from other slots
+    // (e.g. a gallery delete must not also clear a matching landing-page slot)
+    if (slotId) {
+      await removeAssignment(slotId)
+    } else {
+      await removeAssignmentByPublicId(publicId)
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
