@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { categories, type Category, type Frame } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { useNavigate } from '@/components/PageTransition'
@@ -72,6 +73,8 @@ export function CategoryLanding() {
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
+  const [parallax, setParallax] = useState({ x: 0, y: 0 })
+  const parallaxRaf = useRef(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -237,6 +240,24 @@ export function CategoryLanding() {
     return () => window.removeEventListener('keydown', onKey)
   }, [catIdx, activeCategories, stopCycle, startIdleCountdown])
 
+  // ── Mouse parallax (#3) ──────────────────────────────────────────────────
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (parallaxRaf.current) return
+    const clientX = e.clientX
+    const clientY = e.clientY
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    parallaxRaf.current = requestAnimationFrame(() => {
+      const nx = ((clientX - rect.left) / rect.width  - 0.5) * 2
+      const ny = ((clientY - rect.top)  / rect.height - 0.5) * 2
+      setParallax({ x: nx * -8, y: ny * -5 })
+      parallaxRaf.current = 0
+    })
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setParallax({ x: 0, y: 0 })
+  }, [])
+
   // ── Category-strip click ─────────────────────────────────────────────────
   const handleCatClick = (i: number) => {
     if (i === catIdx) {
@@ -287,12 +308,17 @@ export function CategoryLanding() {
       className="ks-stage"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Effect 3 — ambient particles */}
       <canvas ref={canvasRef} className="ks-particles" aria-hidden="true" />
 
       {/* Photo layers */}
-      <div className="ks-photo-layer">
+      <div
+        className="ks-photo-layer"
+        style={{ transform: `translate(${parallax.x}px, ${parallax.y}px)` }}
+      >
         {activeCategories.map((c, ci) =>
           c.frames.map((f, fi) => {
             const active = ci === catIdx && fi === frameForDisplay
@@ -336,8 +362,21 @@ export function CategoryLanding() {
         )}
       </div>
 
-      {/* Background category numeral */}
-      <div className="ks-counter" aria-hidden="true">{cat.n}</div>
+      {/* Background category numeral — #5 slot roll */}
+      <div className="ks-counter-wrap" aria-hidden="true">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={catIdx}
+            className="ks-counter"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0,  opacity: 1 }}
+            exit={{    y: -80, opacity: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 0.1, 0, 1] }}
+          >
+            {pad2(catIdx + 1)}
+          </motion.span>
+        </AnimatePresence>
+      </div>
 
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
@@ -365,7 +404,7 @@ export function CategoryLanding() {
             className={`ks-cat${i === catIdx ? ' active' : ''}`}
             onClick={() => handleCatClick(i)}
           >
-            <span className="ks-cat-n">{c.n}</span>
+            <span className="ks-cat-n">{pad2(i + 1)}</span>
             <span className="ks-cat-name">{c.label}</span>
             <span className="ks-cat-tick" />
           </button>
@@ -409,26 +448,23 @@ export function CategoryLanding() {
             Available for commission and prints.<br />Booking — info@kshetejsareen.com
           </div>
         </div>
-        {/* Inline slate — mobile only */}
-        <div className="ks-slate ks-slate--inline">
+        {/* Inline slate — mobile only · key triggers stagger on frame change (#2) */}
+        <div key={`slate-m-${catIdx}-${frameForDisplay}`} className="ks-slate ks-slate--inline">
           <div className="ks-slate-subj">{frame.title}</div>
           <div>{[frame.location, frame.year].filter(Boolean).join(' · ')}</div>
         </div>
       </div>
 
-      {/* Slate — desktop bottom-right */}
-      <div className="ks-slate ks-slate--desktop">
+      {/* Slate — desktop bottom-right · key remounts on change → CSS entrance (#2) */}
+      <div key={`slate-${catIdx}-${frameForDisplay}`} className="ks-slate ks-slate--desktop">
         <div className="ks-slate-subj">{frame.title}</div>
         <div>{[frame.location, frame.year].filter(Boolean).join(' · ')}</div>
         {frame.camera && <div>{frame.camera}</div>}
       </div>
 
-      {/* Scrubber */}
+      {/* Scrubber — key restarts countdown animation on each frame (#4) */}
       <div className="ks-scrubber" aria-hidden="true">
-        <div
-          className="ks-scrubber-fill"
-          style={{ width: `${((frameForDisplay + 1) / totalFrames) * 100}%` }}
-        />
+        <div key={`scrub-${catIdx}-${frameForDisplay}`} className="ks-scrubber-fill" />
       </div>
 
       {/* Footer corners — desktop only */}

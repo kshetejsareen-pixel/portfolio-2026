@@ -115,6 +115,32 @@ button, input, textarea, select { font: inherit; }
   to   { transform: scale(1.07) translate(1.5%,  2%);   }
 }
 
+/* ── Animation #2 — staggered caption entrance ───────────────────────────── */
+@keyframes ks-slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ks-slate--desktop > :nth-child(1),
+.ks-slate--inline  > :nth-child(1) {
+  animation: ks-slide-up 0.38s cubic-bezier(0.22, 0.1, 0, 1) both;
+}
+.ks-slate--desktop > :nth-child(2),
+.ks-slate--inline  > :nth-child(2) {
+  animation: ks-slide-up 0.38s cubic-bezier(0.22, 0.1, 0, 1) both;
+  animation-delay: 70ms;
+}
+.ks-slate--desktop > :nth-child(3),
+.ks-slate--inline  > :nth-child(3) {
+  animation: ks-slide-up 0.38s cubic-bezier(0.22, 0.1, 0, 1) both;
+  animation-delay: 140ms;
+}
+
+/* ── Animation #4 — scrubber countdown ──────────────────────────────────── */
+@keyframes ks-scrubber-grow {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
 /* ── Scroll reveal ────────────────────────────────────────────────────────── */
 /* Hidden / post-exit state.
    Exit transition: opacity fades over 1.6s, then transform snaps back
@@ -154,7 +180,12 @@ button, input, textarea, select { font: inherit; }
 /* ─────────────────────────────────────────────
    Photo layer
    ───────────────────────────────────────────── */
-.ks-photo-layer { position: absolute; inset: 0; }
+.ks-photo-layer {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.9s cubic-bezier(0.22, 0.1, 0, 1);
+  will-change: transform;
+}
 
 /* Effect 3 — ambient particles canvas */
 .ks-particles {
@@ -222,20 +253,24 @@ button, input, textarea, select { font: inherit; }
 /* ─────────────────────────────────────────────
    Background frame numeral
    ───────────────────────────────────────────── */
-.ks-counter {
+.ks-counter-wrap {
   position: absolute;
   right: -10px;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 5;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+.ks-counter {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 300px;
   line-height: 1;
   color: rgba(236, 232, 224, 0.08);
-  z-index: 5;
-  pointer-events: none;
-  user-select: none;
   letter-spacing: -0.04em;
+  display: block;
 }
 
 
@@ -493,7 +528,7 @@ button, input, textarea, select { font: inherit; }
 .ks-scrubber-fill {
   height: 1px;
   background: var(--paper);
-  transition: width 600ms cubic-bezier(.22,.61,.36,1);
+  animation: ks-scrubber-grow 4s linear forwards;
 }
 
 /* ─────────────────────────────────────────────
@@ -587,11 +622,13 @@ button, input, textarea, select { font: inherit; }
   .ks-meta-above .ks-dot { width: 4px; height: 4px; }
 
   /* Background numeral: bigger + offset right on mobile */
-  .ks-counter {
-    font-size: clamp(180px, 50vw, 280px);
+  .ks-counter-wrap {
     right: -10px;
     top: 50%;
     transform: translateY(-50%);
+  }
+  .ks-counter {
+    font-size: clamp(180px, 50vw, 280px);
     color: rgba(236, 232, 224, 0.08);
     letter-spacing: -0.05em;
   }
