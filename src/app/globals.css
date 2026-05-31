@@ -41,6 +41,7 @@ html, body {
   padding: 0;
   background: var(--ink);
   color: var(--paper);
+  overscroll-behavior: none;
 }
 
 body { font-family: var(--font-sans); }

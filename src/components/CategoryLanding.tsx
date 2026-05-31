@@ -74,6 +74,19 @@ export function CategoryLanding() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const stageRef  = useRef<HTMLDivElement>(null)
+
+  // Prevent iOS Safari pull-to-refresh on the fixed stage.
+  // overscroll-behavior:none in CSS covers Chrome/Android; this covers Safari
+  // (requires passive:false so preventDefault() is actually honoured).
+  // Our swipe detection uses touchstart/touchend only, so nothing breaks.
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el) return
+    const block = (e: TouchEvent) => e.preventDefault()
+    el.addEventListener('touchmove', block, { passive: false })
+    return () => el.removeEventListener('touchmove', block)
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -327,6 +340,7 @@ export function CategoryLanding() {
 
   return (
     <div
+      ref={stageRef}
       className="ks-stage"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
