@@ -232,14 +232,11 @@ export function CategoryLanding() {
   }, [startIdleCountdown, stopCycle])
 
   // ── Keyboard navigation ──────────────────────────────────────────────────
-  // Left/right follow the full slideshow sequence: all frames of a category
-  // in order, then wrap into the next/previous category.
-  // Up/down jump directly between categories.
+  // Left/right mirror the auto-slideshow sequence exactly:
+  //   advance category, bump the round counter only when wrapping back to cat 0.
+  // Up/down jump directly to next/prev category without touching frameIdx.
   useEffect(() => {
-    const cats  = activeCategories
-    const catLen = cats.length
-    const total  = cats[catIdx]?.frames.length ?? 1
-    const frameDisplay = frameIdx % (total || 1)
+    const catLen = activeCategories.length
 
     const onKey = (e: KeyboardEvent) => {
       if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
@@ -247,20 +244,16 @@ export function CategoryLanding() {
       stopCycle()
 
       if (e.key === 'ArrowRight') {
-        if (frameDisplay >= total - 1) {
-          setCatIdx((c) => (c + 1) % catLen)
-          setFrameIdx(0)
-        } else {
-          setFrameIdx(frameDisplay + 1)
-        }
+        const next = (catIdx + 1) % catLen
+        setCatIdx(next)
+        setFrameIdx(next === 0 ? frameIdx + 1 : frameIdx)
       } else if (e.key === 'ArrowLeft') {
-        if (frameDisplay === 0) {
-          const prevCat   = ((catIdx - 1) + catLen) % catLen
-          const prevTotal = cats[prevCat]?.frames.length ?? 1
-          setCatIdx(prevCat)
-          setFrameIdx(prevTotal - 1)
+        if (catIdx === 0) {
+          setCatIdx(catLen - 1)
+          setFrameIdx(Math.max(0, frameIdx - 1))
         } else {
-          setFrameIdx(frameDisplay - 1)
+          setCatIdx(catIdx - 1)
+          // frameIdx unchanged — same round, prev category
         }
       } else if (e.key === 'ArrowDown') {
         setCatIdx((c) => (c + 1) % catLen)
@@ -307,24 +300,23 @@ export function CategoryLanding() {
 
     if (Math.max(absDx, absDy) >= 30) {
       if (absDx > absDy) {
-        // Horizontal swipe — follow the full slideshow sequence cross-category
-        const cats  = activeCatsRef.current
-        const ci    = catIdxRef.current
-        const fi    = frameIdxRef.current
-        const tot   = cats[ci]?.frames.length ?? 1
-        const fd    = fi % (tot || 1)
+        // Horizontal — mirror slideshow: advance category, bump round counter at lap end
+        const cats = activeCatsRef.current
+        const ci   = catIdxRef.current
+        const fi   = frameIdxRef.current
         if (dx < 0) {
           // Swipe left → forward
-          if (fd >= tot - 1) { setCatIdx((c) => (c + 1) % cats.length); setFrameIdx(0) }
-          else                { setFrameIdx(fd + 1) }
+          const next = (ci + 1) % cats.length
+          setCatIdx(next)
+          setFrameIdx(next === 0 ? fi + 1 : fi)
         } else {
           // Swipe right → backward
-          if (fd === 0) {
-            const prev      = ((ci - 1) + cats.length) % cats.length
-            const prevTotal = cats[prev]?.frames.length ?? 1
-            setCatIdx(prev); setFrameIdx(prevTotal - 1)
+          if (ci === 0) {
+            setCatIdx(cats.length - 1)
+            setFrameIdx(Math.max(0, fi - 1))
           } else {
-            setFrameIdx(fd - 1)
+            setCatIdx(ci - 1)
+            // fi unchanged — same round, prev category
           }
         }
       } else {
