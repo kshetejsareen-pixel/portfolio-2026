@@ -180,12 +180,7 @@ button, input, textarea, select { font: inherit; }
 /* ─────────────────────────────────────────────
    Photo layer
    ───────────────────────────────────────────── */
-.ks-photo-layer {
-  position: absolute;
-  inset: 0;
-  transition: transform 0.9s cubic-bezier(0.22, 0.1, 0, 1);
-  will-change: transform;
-}
+.ks-photo-layer { position: absolute; inset: 0; }
 
 /* Effect 3 — ambient particles canvas */
 .ks-particles {

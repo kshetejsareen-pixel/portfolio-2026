@@ -73,8 +73,6 @@ export function CategoryLanding() {
   const [frameIdx, setFrameIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
-  const [parallax, setParallax] = useState({ x: 0, y: 0 })
-  const parallaxRaf = useRef(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -221,42 +219,49 @@ export function CategoryLanding() {
   }, [startIdleCountdown, stopCycle])
 
   // ── Keyboard navigation ──────────────────────────────────────────────────
-  // Stops the cycle immediately on any keypress, then restarts the idle countdown.
-  // Re-registers on catIdx change so `total` stays current.
+  // Left/right follow the full slideshow sequence: all frames of a category
+  // in order, then wrap into the next/previous category.
+  // Up/down jump directly between categories.
   useEffect(() => {
-    const total   = activeCategories[catIdx]?.frames.length ?? 1
-    const catLen  = activeCategories.length
+    const cats  = activeCategories
+    const catLen = cats.length
+    const total  = cats[catIdx]?.frames.length ?? 1
+    const frameDisplay = frameIdx % (total || 1)
+
     const onKey = (e: KeyboardEvent) => {
       if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
       e.preventDefault()
       stopCycle()
-      if (e.key === 'ArrowRight') setFrameIdx((f) => f + 1)
-      else if (e.key === 'ArrowLeft') setFrameIdx((f) => Math.max(0, f - 1))
-      else if (e.key === 'ArrowDown') { setCatIdx((c) => (c + 1) % catLen); setFrameIdx(0) }
-      else if (e.key === 'ArrowUp')   { setCatIdx((c) => ((c - 1) + catLen) % catLen); setFrameIdx(0) }
+
+      if (e.key === 'ArrowRight') {
+        if (frameDisplay >= total - 1) {
+          setCatIdx((c) => (c + 1) % catLen)
+          setFrameIdx(0)
+        } else {
+          setFrameIdx(frameDisplay + 1)
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (frameDisplay === 0) {
+          const prevCat   = ((catIdx - 1) + catLen) % catLen
+          const prevTotal = cats[prevCat]?.frames.length ?? 1
+          setCatIdx(prevCat)
+          setFrameIdx(prevTotal - 1)
+        } else {
+          setFrameIdx(frameDisplay - 1)
+        }
+      } else if (e.key === 'ArrowDown') {
+        setCatIdx((c) => (c + 1) % catLen)
+        setFrameIdx(0)
+      } else if (e.key === 'ArrowUp') {
+        setCatIdx((c) => ((c - 1) + catLen) % catLen)
+        setFrameIdx(0)
+      }
+
       startIdleCountdown()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [catIdx, activeCategories, stopCycle, startIdleCountdown])
-
-  // ── Mouse parallax (#3) ──────────────────────────────────────────────────
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (parallaxRaf.current) return
-    const clientX = e.clientX
-    const clientY = e.clientY
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    parallaxRaf.current = requestAnimationFrame(() => {
-      const nx = ((clientX - rect.left) / rect.width  - 0.5) * 2
-      const ny = ((clientY - rect.top)  / rect.height - 0.5) * 2
-      setParallax({ x: nx * -8, y: ny * -5 })
-      parallaxRaf.current = 0
-    })
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    setParallax({ x: 0, y: 0 })
-  }, [])
+  }, [catIdx, frameIdx, activeCategories, stopCycle, startIdleCountdown])
 
   // ── Category-strip click ─────────────────────────────────────────────────
   const handleCatClick = (i: number) => {
@@ -289,9 +294,26 @@ export function CategoryLanding() {
 
     if (Math.max(absDx, absDy) >= 30) {
       if (absDx > absDy) {
-        // Horizontal → step through frames of current category
-        if (dx < 0) setFrameIdx((f) => f + 1)
-        else        setFrameIdx((f) => Math.max(0, f - 1))
+        // Horizontal swipe — follow the full slideshow sequence cross-category
+        const cats  = activeCatsRef.current
+        const ci    = catIdxRef.current
+        const fi    = frameIdxRef.current
+        const tot   = cats[ci]?.frames.length ?? 1
+        const fd    = fi % (tot || 1)
+        if (dx < 0) {
+          // Swipe left → forward
+          if (fd >= tot - 1) { setCatIdx((c) => (c + 1) % cats.length); setFrameIdx(0) }
+          else                { setFrameIdx(fd + 1) }
+        } else {
+          // Swipe right → backward
+          if (fd === 0) {
+            const prev      = ((ci - 1) + cats.length) % cats.length
+            const prevTotal = cats[prev]?.frames.length ?? 1
+            setCatIdx(prev); setFrameIdx(prevTotal - 1)
+          } else {
+            setFrameIdx(fd - 1)
+          }
+        }
       } else {
         // Vertical → change category, reset frame
         if (dy < 0) { setCatIdx((c) => (c + 1) % activeCategories.length); setFrameIdx(0) }
@@ -308,17 +330,12 @@ export function CategoryLanding() {
       className="ks-stage"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
       {/* Effect 3 — ambient particles */}
       <canvas ref={canvasRef} className="ks-particles" aria-hidden="true" />
 
       {/* Photo layers */}
-      <div
-        className="ks-photo-layer"
-        style={{ transform: `translate(${parallax.x}px, ${parallax.y}px)` }}
-      >
+      <div className="ks-photo-layer">
         {activeCategories.map((c, ci) =>
           c.frames.map((f, fi) => {
             const active = ci === catIdx && fi === frameForDisplay

@@ -36,20 +36,20 @@ export function KsMenuOverlay({ open, onClose }: { open: boolean; onClose: () =>
       <div className="ks-menu-inner">
         <div className="ks-menu-eyebrow">Navigation</div>
         <nav className="ks-menu-cats">
-          {orderedCats.map((c, i) => (
+          {orderedCats.map((c) => (
             <a
               key={c.id}
               href={CATEGORY_ROUTES[c.id]}
               className="ks-menu-cat-link"
               onClick={onClose}
             >
-              <span className="ks-menu-cat-n">{String(i + 1).padStart(2, '0')}</span>
               <span className="ks-menu-cat-name">{c.label}</span>
             </a>
           ))}
         </nav>
         <div className="ks-menu-divider" />
         <div className="ks-menu-links">
+          <a className="ks-menu-link" href="/">Home</a>
           <a className="ks-menu-link" href="/contact">Contact</a>
           <a className="ks-menu-link" href="/info">Info</a>
         </div>
