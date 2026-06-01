@@ -7,6 +7,14 @@ import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { BrandMarquee } from '@/components/BrandMarquee'
 import { PROJECT_TAGS } from '@/lib/tags'
 
+const ALL_CATEGORIES = [
+  { id: 'culinary',  name: 'Culinary' },
+  { id: 'spaces',    name: 'Spaces' },
+  { id: 'objects',   name: 'Objects' },
+  { id: 'portraits', name: 'Portraits' },
+  { id: 'motion',    name: 'Motion' },
+]
+
 interface CategoryCopy {
   introLabel?: string
   introBody?: string
@@ -669,8 +677,15 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       )}
 
       <footer className="cat-footer">
-        <div>© Kshetej Sareen · MMXXVI</div>
-        <div className="cat-footer-right">info@kshetejsareen.com</div>
+        <nav className="cat-footer-nav">
+          {ALL_CATEGORIES.filter(c => c.id !== catId).map(c => (
+            <a key={c.id} href={`/${c.id}`} className="cat-footer-nav-link">{c.name}</a>
+          ))}
+        </nav>
+        <div className="cat-footer-copy">
+          <div>© Kshetej Sareen · MMXXVI</div>
+          <div>info@kshetejsareen.com</div>
+        </div>
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
