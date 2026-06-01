@@ -1,4 +1,4 @@
-import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
+import { firestoreRead, firestoreWrite, firestoreDeleteNestedField, firestoreTransaction } from '@/lib/firestoreStore'
 
 const DOC_ID = 'ks-assignments'
 
@@ -33,39 +33,43 @@ function slotFamily(id: string): 'landing' | 'gallery' {
 }
 
 export async function setAssignment(slotId: string, data: StoredAssignment): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  const family = slotFamily(slotId)
-  for (const [key, val] of Object.entries(store)) {
-    if (key !== slotId && slotFamily(key) === family && val.publicId === data.publicId) {
-      delete store[key]
+  // Run inside a transaction so the dedup read and subsequent write are atomic —
+  // a concurrent assign on another serverless instance cannot cause lost assignments.
+  await firestoreTransaction<Store>(DOC_ID, {}, (store) => {
+    const family = slotFamily(slotId)
+    for (const [key, val] of Object.entries(store)) {
+      if (key !== slotId && slotFamily(key) === family && val.publicId === data.publicId) {
+        delete store[key]
+      }
     }
-  }
-  store[slotId] = data
-  await firestoreWrite(DOC_ID, store)
+    store[slotId] = data
+    return store
+  })
 }
 
 export async function removeAssignment(slotId: string): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  delete store[slotId]
-  await firestoreWrite(DOC_ID, store)
+  // Atomic single-field delete — zero read-modify-write, cannot touch any other slot.
+  await firestoreDeleteNestedField(DOC_ID, slotId)
 }
 
 // Removes every slot that holds this publicId — use only when truly purging an image.
 export async function removeAssignmentByPublicId(publicId: string): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  for (const key of Object.keys(store)) {
-    if (store[key].publicId === publicId) delete store[key]
-  }
-  await firestoreWrite(DOC_ID, store)
+  await firestoreTransaction<Store>(DOC_ID, {}, (store) => {
+    for (const key of Object.keys(store)) {
+      if (store[key].publicId === publicId) delete store[key]
+    }
+    return store
+  })
 }
 
 export async function swapAssignments(slotA: string, slotB: string): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  const a = store[slotA]
-  const b = store[slotB]
-  if (a) store[slotB] = a; else delete store[slotB]
-  if (b) store[slotA] = b; else delete store[slotA]
-  await firestoreWrite(DOC_ID, store)
+  await firestoreTransaction<Store>(DOC_ID, {}, (store) => {
+    const a = store[slotA]
+    const b = store[slotB]
+    if (a) store[slotB] = a; else delete store[slotB]
+    if (b) store[slotA] = b; else delete store[slotA]
+    return store
+  })
 }
 
 export async function updateTransform(
@@ -74,30 +78,27 @@ export async function updateTransform(
   flipH: boolean,
   flipV: boolean,
 ): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  if (store[slotId]) {
-    store[slotId] = { ...store[slotId], angle, flipH, flipV }
-    await firestoreWrite(DOC_ID, store)
-  }
+  await firestoreTransaction<Store>(DOC_ID, {}, (store) => {
+    if (store[slotId]) store[slotId] = { ...store[slotId], angle, flipH, flipV }
+    return store
+  })
 }
 
 export async function updateFocalPoint(slotId: string, focalX: number, focalY: number): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  if (store[slotId]) {
-    store[slotId] = { ...store[slotId], focalX, focalY }
-    await firestoreWrite(DOC_ID, store)
-  }
+  await firestoreTransaction<Store>(DOC_ID, {}, (store) => {
+    if (store[slotId]) store[slotId] = { ...store[slotId], focalX, focalY }
+    return store
+  })
 }
 
 export async function updateCopyByPublicId(
   publicId: string,
   copy: Partial<Pick<StoredAssignment, 'title' | 'location' | 'year' | 'camera'>>,
 ): Promise<void> {
-  const store = await firestoreRead<Store>(DOC_ID, {})
-  for (const key of Object.keys(store)) {
-    if (store[key].publicId === publicId) {
-      store[key] = { ...store[key], ...copy }
+  await firestoreTransaction<Store>(DOC_ID, {}, (store) => {
+    for (const key of Object.keys(store)) {
+      if (store[key].publicId === publicId) store[key] = { ...store[key], ...copy }
     }
-  }
-  await firestoreWrite(DOC_ID, store)
+    return store
+  })
 }
