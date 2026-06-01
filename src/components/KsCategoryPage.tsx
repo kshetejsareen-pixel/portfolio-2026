@@ -704,7 +704,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       <footer className="cat-footer">
         <ExploreNav catId={catId} />
         <div className="cat-footer-copy">
-          <div>© Kshetej Sareen · MMXXVI</div>
+          <div>© Kshetej Sareen · 2026</div>
           <div>info@kshetejsareen.com</div>
         </div>
       </footer>
