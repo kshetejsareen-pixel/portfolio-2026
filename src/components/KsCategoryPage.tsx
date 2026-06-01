@@ -465,8 +465,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         <div className="cat-tb-left">
           <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
           <div className="cat-tb-crumb">
-            <Link href="/">Index</Link>
-            <span>/</span>
             <span className="cat-tb-cur">{data.cat.name}</span>
           </div>
         </div>
@@ -640,9 +638,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
                         <h3 className="cat-project-title">
                           {p.title}{p.it && <em>, {p.it}</em>}
                         </h3>
-                        {p.imageCount != null && (
-                          <span className="cat-project-frames">{p.imageCount} frames</span>
-                        )}
                       </div>
                       <div className="cat-project-meta">
                         <span className="cat-project-yr">{p.year}</span>
@@ -674,7 +669,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
 
       <footer className="cat-footer">
         <div>© Kshetej Sareen · MMXXVI</div>
-        <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
         <div className="cat-footer-right">info@kshetejsareen.com</div>
       </footer>
 
