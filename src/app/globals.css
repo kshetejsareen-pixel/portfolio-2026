@@ -1431,7 +1431,9 @@ button, input, textarea, select { font: inherit; }
 .cat-footer-nav-inner {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20px;
+  width: 100%;
 }
 .cat-footer-nav-eyebrow {
   font-family: var(--font-mono);
@@ -1439,11 +1441,13 @@ button, input, textarea, select { font: inherit; }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(236, 232, 224, 0.38);
+  text-align: center;
 }
 .cat-footer-nav-cats {
   display: flex;
+  justify-content: center;
   gap: 48px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 @keyframes cat-footer-glow {
