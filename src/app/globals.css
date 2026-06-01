@@ -1431,6 +1431,23 @@ button, input, textarea, select { font: inherit; }
 .cat-footer-nav::before { top: 0; }
 .cat-footer-nav::after  { bottom: 0; }
 
+.cat-footer-nav-label {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 232, 224, 0.72);
+  white-space: nowrap;
+  padding: 0 24px 0 56px;
+  flex-shrink: 0;
+}
+.cat-footer-nav-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(236, 232, 224, 0.1);
+  flex-shrink: 0;
+}
+
 .cat-footer-nav-link {
   font-family: var(--font-mono);
   font-size: 20px;
@@ -1467,6 +1484,7 @@ button, input, textarea, select { font: inherit; }
       transparent 100%
     );
   }
+  .cat-footer-nav-label { font-size: 13px; padding: 0 12px 0 22px; }
   .cat-footer-nav-link { font-size: 13px; padding: 0 4px; }
   .cat-footer-copy { padding: 24px 22px; }
 }

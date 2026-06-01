@@ -678,6 +678,8 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
 
       <footer className="cat-footer">
         <nav className="cat-footer-nav">
+          <span className="cat-footer-nav-label">Explore</span>
+          <span className="cat-footer-nav-divider" />
           {ALL_CATEGORIES.filter(c => c.id !== catId).map(c => (
             <a key={c.id} href={`/${c.id}`} className="cat-footer-nav-link">{c.name}</a>
           ))}
