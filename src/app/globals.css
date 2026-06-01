@@ -124,7 +124,7 @@ button, input, textarea, select { font: inherit; }
 
 .brand-bar {
   position: absolute;
-  left: 0; right: 0; bottom: 48px;
+  left: 0; right: 0; bottom: 58px;
   height: 64px;
   background: #000;
   z-index: 8;
