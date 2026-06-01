@@ -200,6 +200,26 @@ export function CategoryLanding() {
   const frameForDisplay = Math.floor(globalIdx / numCats) % totalFrames
   const frame = cat.frames[frameForDisplay] ?? cat.frames[0]
 
+  // Only mount <img> tags for frames that have been shown — prevents iOS Safari
+  // from downloading all 17+ full-res images at once and crashing the tab.
+  const [loadedSlots, setLoadedSlots] = useState<Set<string>>(
+    () => new Set([`${categories[0]?.id ?? ''}-0`])
+  )
+  useEffect(() => {
+    // Add current slot and preload next so the upcoming transition is smooth
+    const nextG   = globalIdx + 1
+    const nextCi  = nextG % numCats
+    const nextCat = activeCategories[nextCi]
+    const nextFi  = nextCat ? Math.floor(nextG / numCats) % (nextCat.frames.length || 1) : 0
+    setLoadedSlots((prev) => {
+      const s = new Set(prev)
+      s.add(`${cat.id}-${frameForDisplay}`)
+      if (nextCat) s.add(`${nextCat.id}-${nextFi}`)
+      return s
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalIdx])
+
   // ── Idle-cycle helpers ───────────────────────────────────────────────────
   const stopCycle = useCallback(() => {
     if (cycleRef.current) { clearInterval(cycleRef.current); cycleRef.current = null }
@@ -326,7 +346,7 @@ export function CategoryLanding() {
                 style={{ backgroundColor: c.tint }}
                 aria-hidden={!active}
               >
-                {f.image
+                {f.image && loadedSlots.has(`${c.id}-${fi}`)
                   ? (
                     <picture>
                       {f.mobileImage && (
@@ -343,7 +363,7 @@ export function CategoryLanding() {
                       />
                     </picture>
                   )
-                  : active && (
+                  : active && !f.image && (
                     <div className="ks-slot-tag">
                       {c.label.toUpperCase()} · DROP IMAGE — {f.title.toUpperCase()}
                     </div>
