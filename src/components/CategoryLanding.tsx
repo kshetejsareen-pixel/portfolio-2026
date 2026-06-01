@@ -454,13 +454,6 @@ export function CategoryLanding() {
 
       {/* Meta block */}
       <div className="ks-meta">
-        <div className="ks-meta-above">
-          <span className="ks-dot" />
-          <span className="ks-eyebrow">
-            Featured — {cat.label} · {pad2(frameForDisplay + 1)} / {pad2(totalFrames)}
-          </span>
-          <a href={`/${cat.id}`} className="ks-eyebrow ks-open-cat">Open ↗</a>
-        </div>
         <h1 className="ks-name">
           Kshetej<br /><span className="ks-name-last">Sareen</span>
         </h1>

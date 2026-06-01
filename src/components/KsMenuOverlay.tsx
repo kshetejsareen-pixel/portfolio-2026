@@ -36,6 +36,9 @@ export function KsMenuOverlay({ open, onClose }: { open: boolean; onClose: () =>
       <div className="ks-menu-inner">
         <div className="ks-menu-eyebrow">Navigation</div>
         <nav className="ks-menu-cats">
+          <a href="/" className="ks-menu-cat-link" onClick={onClose}>
+            <span className="ks-menu-cat-name">Home</span>
+          </a>
           {orderedCats.map((c) => (
             <a
               key={c.id}
@@ -49,7 +52,6 @@ export function KsMenuOverlay({ open, onClose }: { open: boolean; onClose: () =>
         </nav>
         <div className="ks-menu-divider" />
         <div className="ks-menu-links">
-          <a className="ks-menu-link" href="/">Home</a>
           <a className="ks-menu-link" href="/contact">Contact</a>
           <a className="ks-menu-link" href="/info">Info</a>
         </div>
