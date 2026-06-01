@@ -233,36 +233,29 @@ export function CategoryLanding() {
   }, [startIdleCountdown, stopCycle])
 
   // ── Keyboard navigation ──────────────────────────────────────────────────
-  // Left/right mirror the auto-slideshow sequence exactly:
-  //   advance category, bump the round counter only when wrapping back to cat 0.
-  // Up/down jump directly to next/prev category without touching frameIdx.
+  // ↑ / ↓  → change category   (no frame change)
+  // ← / →  → change frame within current category
+  // Reads from refs so the listener never needs to re-register on state changes.
   useEffect(() => {
-    const catLen = activeCategories.length
-
     const onKey = (e: KeyboardEvent) => {
       if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
       e.preventDefault()
       stopCycle()
 
-      if (e.key === 'ArrowRight') {
-        setCatIdx((catIdx + 1) % catLen)
-        setFrameIdx(frameIdx + 1)
-      } else if (e.key === 'ArrowLeft') {
-        setCatIdx(catIdx === 0 ? catLen - 1 : catIdx - 1)
-        setFrameIdx(Math.max(0, frameIdx - 1))
-      } else if (e.key === 'ArrowDown') {
-        setCatIdx((c) => (c + 1) % catLen)
-        setFrameIdx(0)
-      } else if (e.key === 'ArrowUp') {
-        setCatIdx((c) => ((c - 1) + catLen) % catLen)
-        setFrameIdx(0)
-      }
+      const catLen = activeCatsRef.current.length
+      const ci = catIdxRef.current
+      const fi = frameIdxRef.current
+
+      if      (e.key === 'ArrowRight') setFrameIdx(fi + 1)
+      else if (e.key === 'ArrowLeft')  setFrameIdx(Math.max(0, fi - 1))
+      else if (e.key === 'ArrowDown')  setCatIdx((ci + 1) % catLen)
+      else if (e.key === 'ArrowUp')    setCatIdx((ci - 1 + catLen) % catLen)
 
       startIdleCountdown()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [catIdx, frameIdx, activeCategories, stopCycle, startIdleCountdown])
+  }, [stopCycle, startIdleCountdown])
 
   // ── Category-strip click ─────────────────────────────────────────────────
   const handleCatClick = (i: number) => {
@@ -293,29 +286,25 @@ export function CategoryLanding() {
     const absDx = Math.abs(dx)
     const absDy = Math.abs(dy)
 
-    if (Math.max(absDx, absDy) >= 30) {
-      if (absDx > absDy) {
-        // Horizontal — mirror slideshow: advance category, bump round counter at lap end
-        const cats = activeCatsRef.current
-        const ci   = catIdxRef.current
-        const fi   = frameIdxRef.current
-        if (dx < 0) {
-          // Swipe left → next category, always advance frame
-          setCatIdx((ci + 1) % cats.length)
-          setFrameIdx(fi + 1)
-        } else {
-          // Swipe right → prev category, always retreat frame
-          setCatIdx(ci === 0 ? cats.length - 1 : ci - 1)
-          setFrameIdx(Math.max(0, fi - 1))
-        }
-      } else {
-        // Vertical → change category, reset frame
-        if (dy < 0) { setCatIdx((c) => (c + 1) % activeCategories.length); setFrameIdx(0) }
-        else        { setCatIdx((c) => ((c - 1) + activeCategories.length) % activeCategories.length); setFrameIdx(0) }
-      }
+    if (Math.max(absDx, absDy) < 30) {
+      startIdleCountdown()
+      return
     }
 
-    // Always restart the idle countdown after any touch interaction
+    const catLen = activeCatsRef.current.length
+    const ci = catIdxRef.current
+    const fi = frameIdxRef.current
+
+    if (absDx >= absDy) {
+      // Horizontal swipe → change frame within current category
+      if (dx < 0) setFrameIdx(fi + 1)          // swipe left  → next frame
+      else        setFrameIdx(Math.max(0, fi - 1)) // swipe right → prev frame
+    } else {
+      // Vertical swipe → change category
+      if (dy < 0) setCatIdx((ci + 1) % catLen)              // swipe up   → next cat
+      else        setCatIdx((ci - 1 + catLen) % catLen)      // swipe down → prev cat
+    }
+
     startIdleCountdown()
   }
 

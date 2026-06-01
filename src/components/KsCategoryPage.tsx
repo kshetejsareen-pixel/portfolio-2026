@@ -558,6 +558,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </section>
       )}
 
+      {(filteredProjects ?? data.projects).length > 0 && (
       <section className="cat-projects" data-sr>
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
