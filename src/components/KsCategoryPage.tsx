@@ -347,6 +347,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
 
   useEffect(() => {
+    if (typeof BroadcastChannel === 'undefined') return
     const bc = new BroadcastChannel('ks-focal-preview')
     const prefix = `${catId}-`
     bc.onmessage = (e) => {

@@ -146,6 +146,7 @@ export function CategoryLanding() {
   }, [])
 
   useEffect(() => {
+    if (typeof BroadcastChannel === 'undefined') return
     const bc = new BroadcastChannel('ks-focal-preview')
     bc.onmessage = (e) => {
       if (e.data.type === 'preview') {
