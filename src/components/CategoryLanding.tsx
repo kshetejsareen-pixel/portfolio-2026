@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { categories, type Category, type Frame } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import { BrandMarquee } from '@/components/BrandMarquee'
 import { useNavigate } from '@/components/PageTransition'
 
 function pad2(n: number) {
@@ -493,6 +494,9 @@ export function CategoryLanding() {
       {/* Footer corners — desktop only */}
       <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
       <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
+
+      {/* Brand marquee bar */}
+      <BrandMarquee />
 
       {/* Full-screen menu overlay */}
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />

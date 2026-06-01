@@ -116,6 +116,78 @@ button, input, textarea, select { font: inherit; }
   to   { transform: scale(1.07) translate(1.5%,  2%);   }
 }
 
+/* ── Brand marquee ───────────────────────────────────────────────────────── */
+@keyframes ks-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.brand-bar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 44px;
+  background: var(--ink);
+  border-top: 1px solid rgba(236, 232, 224, 0.07);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.brand-bar-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(236, 232, 224, 0.28);
+  white-space: nowrap;
+  padding: 0 22px;
+  flex-shrink: 0;
+}
+
+.brand-bar-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(236, 232, 224, 0.1);
+  flex-shrink: 0;
+}
+
+.brand-bar-track-wrap {
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+}
+
+.brand-bar-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: ks-marquee 38s linear infinite;
+}
+
+.brand-bar-track:hover {
+  animation-play-state: paused;
+}
+
+.brand-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(236, 232, 224, 0.42);
+  white-space: nowrap;
+  padding: 0 18px;
+}
+
+.brand-bar-sep {
+  color: rgba(236, 232, 224, 0.18);
+  font-size: 8px;
+}
+
 /* ── Animation #2 — staggered caption entrance ───────────────────────────── */
 @keyframes ks-slide-up {
   from { opacity: 0; transform: translateY(10px); }
@@ -542,8 +614,8 @@ button, input, textarea, select { font: inherit; }
   color: var(--mute);
   white-space: nowrap;
 }
-.ks-footer-l { left: 56px; }
-.ks-footer-r { right: 56px; }
+.ks-footer-l { left: 56px; bottom: 54px; }
+.ks-footer-r { right: 56px; bottom: 54px; }
 
 /* Gradient overlay is reliably dark — category rail stays white on all images */
 
@@ -604,15 +676,23 @@ button, input, textarea, select { font: inherit; }
 
   .ks-scrubber {
     left: 22px; right: 22px;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(52px + env(safe-area-inset-bottom, 0px));
   }
 
   .ks-meta {
     left: 22px;
     right: 140px;
-    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
+
+  /* Brand bar: full width, safe-area aware, hide label on mobile */
+  .brand-bar {
+    height: 40px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .brand-bar-label,
+  .brand-bar-divider { display: none; }
   .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
   .ks-meta .ks-eyebrow { font-size: 9.5px; letter-spacing: 0.12em; }
   .ks-meta-above .ks-dot { width: 4px; height: 4px; }
