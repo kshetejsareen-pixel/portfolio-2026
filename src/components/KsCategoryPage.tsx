@@ -559,7 +559,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </section>
       )}
 
-      {(filteredProjects ?? data.projects).length > 0 && (
+      {adminProjects !== null && (filteredProjects ?? adminProjects).length > 0 && (
       <section className="cat-projects" data-sr>
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
@@ -592,88 +592,63 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         )}
 
         {(() => {
-          const source = filteredProjects ?? data.projects
+          const source = filteredProjects ?? adminProjects ?? []
           const visible = showAllProjects ? source : source.slice(0, PROJECTS_INITIAL)
           const remaining = source.length - PROJECTS_INITIAL
 
           return (
             <>
               <div className="cat-projects-grid">
-                {filteredProjects !== null
-                  ? (visible as AdminProject[]).map((p) => (
-                      <a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project">
-                        <div className="cat-project-cover">
-                          <div className="cat-photo" style={{ backgroundColor: '#1a1a1c', width: '100%', height: '100%' }}>
-                            {p.coverUrl
-                              ? <img
-                                  src={p.coverUrl}
-                                  alt={p.title}
-                                  className="cat-photo-img"
-                                  style={p.coverFocalX != null && p.coverFocalY != null
-                                    ? { objectPosition: `${p.coverFocalX}% ${p.coverFocalY}%` }
-                                    : undefined}
-                                />
-                              : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
-                            }
-                          </div>
-                        </div>
-                        {p.tags && p.tags.length > 0 && (
-                          <div className="cat-project-tags">
-                            {p.tags.map((tid) => {
-                              const tag = PROJECT_TAGS.find((t) => t.id === tid)
-                              return tag ? (
-                                <span
-                                  key={tid}
-                                  className="cat-project-tag"
-                                  style={{ '--tag-color': tag.color } as React.CSSProperties}
-                                >
-                                  {tag.label}
-                                </span>
-                              ) : null
-                            })}
-                          </div>
+                {visible.map((p) => (
+                  <a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project">
+                    <div className="cat-project-cover">
+                      <div className="cat-photo" style={{ backgroundColor: '#1a1a1c', width: '100%', height: '100%' }}>
+                        {p.coverUrl
+                          ? <img
+                              src={p.coverUrl}
+                              alt={p.title}
+                              className="cat-photo-img"
+                              style={p.coverFocalX != null && p.coverFocalY != null
+                                ? { objectPosition: `${p.coverFocalX}% ${p.coverFocalY}%` }
+                                : undefined}
+                            />
+                          : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
+                        }
+                      </div>
+                    </div>
+                    {p.tags && p.tags.length > 0 && (
+                      <div className="cat-project-tags">
+                        {p.tags.map((tid) => {
+                          const tag = PROJECT_TAGS.find((t) => t.id === tid)
+                          return tag ? (
+                            <span
+                              key={tid}
+                              className="cat-project-tag"
+                              style={{ '--tag-color': tag.color } as React.CSSProperties}
+                            >
+                              {tag.label}
+                            </span>
+                          ) : null
+                        })}
+                      </div>
+                    )}
+                    <div className="cat-project-info">
+                      <div className="cat-project-info-top">
+                        <h3 className="cat-project-title">
+                          {p.title}{p.it && <em>, {p.it}</em>}
+                        </h3>
+                        {p.imageCount != null && (
+                          <span className="cat-project-frames">{p.imageCount} frames</span>
                         )}
-                        <div className="cat-project-info">
-                          <div className="cat-project-info-top">
-                            <h3 className="cat-project-title">
-                              {p.title}{p.it && <em>, {p.it}</em>}
-                            </h3>
-                            {p.imageCount != null && (
-                              <span className="cat-project-frames">{p.imageCount} frames</span>
-                            )}
-                          </div>
-                          <div className="cat-project-meta">
-                            <span className="cat-project-yr">{p.year}</span>
-                            <span>{p.location}</span>
-                          </div>
-                        </div>
-                        {p.desc && <p className="cat-project-desc">{p.desc}</p>}
-                      </a>
-                    ))
-                  : (visible as typeof data.projects).map((p) => (
-                      <a key={p.id} className="cat-project">
-                        <div className="cat-project-cover">
-                          <div className="cat-photo" style={{ backgroundColor: p.tint, width: '100%', height: '100%' }}>
-                            {p.image
-                              ? <img src={p.image} alt={p.title} className="cat-photo-img" />
-                              : <div className="cat-photo-ctr">{p.title.toUpperCase()}</div>
-                            }
-                          </div>
-                        </div>
-                        <div className="cat-project-info">
-                          <h3 className="cat-project-title">
-                            {p.title}{p.it && <em>, {p.it}</em>}
-                          </h3>
-                          <div className="cat-project-meta">
-                            <span className="cat-project-yr">{p.year}</span>
-                            <span>{p.location}</span><br />
-                            <span>{p.count} frames</span>
-                          </div>
-                        </div>
-                        <p className="cat-project-desc">{p.desc}</p>
-                      </a>
-                    ))
-                }
+                      </div>
+                      <div className="cat-project-meta">
+                        <span className="cat-project-yr">{p.year}</span>
+                        <span>{p.location}</span>
+                      </div>
+                    </div>
+                    {p.desc && <p className="cat-project-desc">{p.desc}</p>}
+                  </a>
+                ))}
               </div>
 
               {!showAllProjects && remaining > 0 && (
