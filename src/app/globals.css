@@ -124,10 +124,10 @@ button, input, textarea, select { font: inherit; }
 
 .brand-bar {
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 44px;
+  left: 0; right: 0; bottom: 40px;
+  height: 64px;
   background: var(--ink);
-  border-top: 1px solid rgba(236, 232, 224, 0.07);
+  border-top: 1px solid rgba(236, 232, 224, 0.12);
   z-index: 8;
   display: flex;
   align-items: center;
@@ -136,12 +136,12 @@ button, input, textarea, select { font: inherit; }
 
 .brand-bar-label {
   font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(236, 232, 224, 0.28);
+  color: rgba(236, 232, 224, 0.32);
   white-space: nowrap;
-  padding: 0 22px;
+  padding: 0 28px;
   flex-shrink: 0;
 }
 
@@ -163,7 +163,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   align-items: center;
   width: max-content;
-  animation: ks-marquee 38s linear infinite;
+  animation: ks-marquee 70s linear infinite;
 }
 
 .brand-bar-track:hover {
@@ -173,14 +173,14 @@ button, input, textarea, select { font: inherit; }
 .brand-bar-item {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 24px;
   font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.2em;
+  font-size: 13px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(236, 232, 224, 0.42);
+  color: rgba(236, 232, 224, 0.52);
   white-space: nowrap;
-  padding: 0 18px;
+  padding: 0 24px;
 }
 
 .brand-bar-sep {
@@ -351,7 +351,7 @@ button, input, textarea, select { font: inherit; }
   z-index: 4;
 }
 .ks-letterbox--top { display: none; }
-.ks-letterbox--bottom { bottom: 0; height: 56px; background: var(--ink); }
+.ks-letterbox--bottom { bottom: 0; height: 160px; background: var(--ink); }
 
 /* ─────────────────────────────────────────────
    Top bar
@@ -505,7 +505,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-meta {
   position: absolute;
-  left: 56px; bottom: 96px;
+  left: 56px; bottom: 132px;
   max-width: 720px;
   z-index: 6;
   animation: ks-drift-meta 18s ease-in-out infinite;
@@ -588,7 +588,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-scrubber {
   position: absolute;
-  left: 56px; right: 56px; bottom: 72px;
+  left: 56px; right: 56px; bottom: 116px;
   height: 1px;
   background: rgba(236, 232, 224, 0.18);
   z-index: 6;
@@ -614,8 +614,8 @@ button, input, textarea, select { font: inherit; }
   color: var(--mute);
   white-space: nowrap;
 }
-.ks-footer-l { left: 56px; bottom: 54px; }
-.ks-footer-r { right: 56px; bottom: 54px; }
+.ks-footer-l { left: 56px; bottom: 12px; }
+.ks-footer-r { right: 56px; bottom: 12px; }
 
 /* Gradient overlay is reliably dark — category rail stays white on all images */
 
@@ -676,23 +676,25 @@ button, input, textarea, select { font: inherit; }
 
   .ks-scrubber {
     left: 22px; right: 22px;
-    bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
   }
 
   .ks-meta {
     left: 22px;
     right: 140px;
-    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
 
-  /* Brand bar: full width, safe-area aware, hide label on mobile */
+  /* Brand bar: full width, safe-area aware; reset bottom to 0 on mobile (no footer row) */
   .brand-bar {
-    height: 40px;
+    bottom: 0;
+    height: 56px;
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  .brand-bar-label,
-  .brand-bar-divider { display: none; }
+  .brand-bar-label { font-size: 9px; padding: 0 16px; }
+  .brand-bar-divider { height: 14px; }
+  .brand-bar-item { font-size: 11px; padding: 0 16px; }
   .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
   .ks-meta .ks-eyebrow { font-size: 9.5px; letter-spacing: 0.12em; }
   .ks-meta-above .ks-dot { width: 4px; height: 4px; }

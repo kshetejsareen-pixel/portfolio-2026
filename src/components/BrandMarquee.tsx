@@ -1,17 +1,22 @@
 'use client'
 
-// Update this list with real client/brand names
 const BRANDS = [
   'Tom Ford',
-  'RAVOH',
-  'Architectural Digest',
-  'Vogue India',
-  'Paul John',
-  'Toit Brewpub',
-  'Bandra Brewing Co.',
+  'Brunello Cucinelli',
+  'Berluti',
+  'Brioni',
+  'Ladurée',
+  'Six Senses',
+  'JW Marriott',
   'Taj Hotels',
-  'The Leela',
-  'Godrej Design Lab',
+  'Le Méridien',
+  'Jumeirah',
+  'Crowne Plaza',
+  'Jamie Oliver\'s',
+  'Air India',
+  'RAVOH',
+  'DLF Emporio',
+  'Good Homes',
 ]
 
 const SEP = '·'
