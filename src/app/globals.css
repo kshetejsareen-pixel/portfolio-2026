@@ -1300,23 +1300,20 @@ button, input, textarea, select { font: inherit; }
   max-width: var(--cat-maxw); margin: 0 auto;
 }
 .cat-projects-header {
-  display: grid; grid-template-columns: 2fr 1fr; gap: 40px;
-  align-items: end; margin-bottom: 64px;
+  text-align: center; margin-bottom: 64px;
 }
 .cat-projects-title {
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(48px, 7vw, 96px); line-height: 0.92; letter-spacing: -0.035em;
-  margin: 0; color: var(--paper);
+  margin: 0 0 20px; color: var(--paper);
 }
 .cat-projects-note {
-  font-size: 18px; line-height: 1.55; color: var(--paper-dim); margin: 0; text-align: right;
+  font-size: 18px; line-height: 1.55; color: var(--paper-dim); margin: 0; text-align: center;
 }
 .cat-projects-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 64px 40px;
 }
 @media (max-width: 767px) {
-  .cat-projects-header { grid-template-columns: 1fr; text-align: center; }
-  .cat-projects-note { max-width: none; text-align: center; }
   .cat-projects-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 .cat-project { display: block; cursor: pointer; color: inherit; text-decoration: none; }
@@ -1328,9 +1325,9 @@ button, input, textarea, select { font: inherit; }
   transition: transform 700ms cubic-bezier(.22,.61,.36,1);
 }
 .cat-project:hover .cat-project-cover .cat-photo { transform: scale(1.03); }
-.cat-project-info { margin-top: 18px; }
+.cat-project-info { margin-top: 18px; text-align: center; }
 .cat-project-info-top {
-  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  display: flex; justify-content: center; align-items: flex-start; gap: 16px;
 }
 .cat-project-title {
   margin: 0;
@@ -1394,7 +1391,7 @@ button, input, textarea, select { font: inherit; }
 
 /* ── Project tag pills ───────────────────────────────────────────────────── */
 .cat-project-tags {
-  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; justify-content: center;
 }
 .cat-project-tag {
   font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em;
@@ -1473,12 +1470,14 @@ button, input, textarea, select { font: inherit; }
   padding: 28px var(--cat-pad);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mute);
+  text-align: center;
 }
 
 @media (max-width: 767px) {
