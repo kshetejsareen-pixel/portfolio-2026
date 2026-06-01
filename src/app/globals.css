@@ -665,7 +665,7 @@ button, input, textarea, select { font: inherit; }
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     padding: 0;
-    gap: 10px;
+    gap: 18px;
   }
   .ks-cat {
     display: flex;
