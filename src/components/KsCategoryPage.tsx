@@ -690,6 +690,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
           )
         })()}
       </section>
+      )}
 
       <footer className="cat-footer">
         <div>© Kshetej Sareen · MMXXVI</div>
