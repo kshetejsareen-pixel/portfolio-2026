@@ -136,12 +136,12 @@ button, input, textarea, select { font: inherit; }
 
 .brand-bar-label {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-size: 15px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(236, 232, 224, 0.32);
+  color: rgba(236, 232, 224, 0.72);
   white-space: nowrap;
-  padding: 0 28px;
+  padding: 0 32px;
   flex-shrink: 0;
 }
 
@@ -695,7 +695,7 @@ button, input, textarea, select { font: inherit; }
     height: 56px;
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  .brand-bar-label { font-size: 9px; padding: 0 16px; }
+  .brand-bar-label { font-size: 11px; padding: 0 18px; color: rgba(236, 232, 224, 0.72); }
   .brand-bar-divider { height: 14px; }
   .brand-bar-item { font-size: 11px; padding: 0 16px; }
   .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
