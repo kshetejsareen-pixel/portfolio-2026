@@ -255,13 +255,11 @@ export function CategoryLanding() {
 
       const g = globalIdxRef.current
       const n = activeCatsRef.current.length || 1
-      const ci = g % n
-      const lap = Math.floor(g / n)
 
-      if      (e.key === 'ArrowRight') setGlobalIdx(g + n)
+      if      (e.key === 'ArrowDown')  setGlobalIdx(g + 1)
+      else if (e.key === 'ArrowUp')    setGlobalIdx(Math.max(0, g - 1))
+      else if (e.key === 'ArrowRight') setGlobalIdx(g + n)
       else if (e.key === 'ArrowLeft')  setGlobalIdx(Math.max(0, g - n))
-      else if (e.key === 'ArrowDown')  setGlobalIdx(lap * n + (ci + 1) % n)
-      else if (e.key === 'ArrowUp')    setGlobalIdx(lap * n + (ci - 1 + n) % n)
 
       startIdleCountdown()
     }
@@ -305,17 +303,10 @@ export function CategoryLanding() {
     }
 
     const g = globalIdxRef.current
-    const n = activeCatsRef.current.length || 1
-    const ci = g % n
-    const lap = Math.floor(g / n)
-
-    if (absDx >= absDy) {
-      if (dx < 0) setGlobalIdx(g + 1)           // swipe left  → next image
-      else        setGlobalIdx(Math.max(0, g - 1)) // swipe right → prev image
-    } else {
-      if (dy < 0) setGlobalIdx(lap * n + (ci + 1) % n)          // swipe up   → next cat
-      else        setGlobalIdx(lap * n + (ci - 1 + n) % n)       // swipe down → prev cat
-    }
+    // Both axes: step forward or backward through the round-robin sequence
+    const goNext = (absDx >= absDy) ? dx < 0 : dy < 0
+    if (goNext) setGlobalIdx(g + 1)
+    else        setGlobalIdx(Math.max(0, g - 1))
 
     startIdleCountdown()
   }
