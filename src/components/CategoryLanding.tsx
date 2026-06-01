@@ -71,7 +71,7 @@ function buildCategories(
 export function CategoryLanding() {
   const navigate = useNavigate()
   const [globalIdx, setGlobalIdx] = useState(0)
-  const [scrubDuration, setScrubDuration] = useState(IDLE_DELAY + CYCLE_INTERVAL)
+  const [scrubDuration, setScrubDuration] = useState(CYCLE_INTERVAL)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -240,11 +240,22 @@ export function CategoryLanding() {
     }, IDLE_DELAY)
   }, [stopCycle])
 
-  // Start the countdown on mount; clean up on unmount
+  // On initial mount, start cycling immediately (no idle delay) so first image
+  // changes exactly when the 4s scrubber bar completes.
+  const startAutoPlay = useCallback(() => {
+    stopCycle()
+    cycleRef.current = setInterval(() => {
+      setScrubDuration(CYCLE_INTERVAL)
+      const g = globalIdxRef.current
+      globalIdxRef.current = g + 1
+      setGlobalIdx(g + 1)
+    }, CYCLE_INTERVAL)
+  }, [stopCycle])
+
   useEffect(() => {
-    startIdleCountdown()
+    startAutoPlay()
     return stopCycle
-  }, [startIdleCountdown, stopCycle])
+  }, [startAutoPlay, stopCycle])
 
   // ── Keyboard navigation ──────────────────────────────────────────────────
   // ↑ / ↓  → change category   (no frame change)

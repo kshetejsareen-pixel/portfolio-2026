@@ -124,7 +124,7 @@ button, input, textarea, select { font: inherit; }
 
 .brand-bar {
   position: absolute;
-  left: 0; right: 0; bottom: 40px;
+  left: 0; right: 0; bottom: 46px;
   height: 64px;
   background: var(--ink);
   border-top: 1px solid rgba(236, 232, 224, 0.12);
@@ -283,7 +283,7 @@ button, input, textarea, select { font: inherit; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top,  rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.72) 20%, rgba(0,0,0,0.35) 40%, transparent 65%),
+    linear-gradient(to top,  rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.38) 44%, rgba(0,0,0,0.10) 56%, transparent 68%),
     linear-gradient(to left, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.80) 15%, rgba(0,0,0,0.55) 32%, rgba(0,0,0,0.22) 52%, transparent 72%);
 }
 
@@ -592,7 +592,7 @@ button, input, textarea, select { font: inherit; }
    ───────────────────────────────────────────── */
 .ks-scrubber {
   position: absolute;
-  left: 56px; right: 56px; bottom: 120px;
+  left: 56px; right: 56px; bottom: 129px;
   height: 1px;
   background: rgba(236, 232, 224, 0.18);
   z-index: 6;
