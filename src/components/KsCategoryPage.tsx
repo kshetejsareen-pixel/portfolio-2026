@@ -15,86 +15,24 @@ const ALL_CATEGORIES = [
   { id: 'motion',    name: 'Motion' },
 ]
 
-const MARQUEE_DURATION_MS = 70000
-
+// Glow cycle: 6s total, 4 items offset by 1.5s each.
+// Delay formula puts item 0 at peak (50% of keyframe) immediately at mount.
 function ExploreNav({ catId }: { catId: string }) {
-  const wrapRef  = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const didDrag  = useRef(false)
-
-  useEffect(() => {
-    const wrap  = wrapRef.current
-    const track = trackRef.current
-    if (!wrap || !track) return
-
-    let startX   = 0
-    let pausedX  = 0
-    let dragging = false
-
-    const onDown = (e: PointerEvent) => {
-      const m = new DOMMatrixReadOnly(window.getComputedStyle(track).transform)
-      pausedX  = m.m41
-      startX   = e.clientX
-      dragging = true
-      didDrag.current = false
-      track.style.animationPlayState = 'paused'
-      track.style.transform = `translateX(${m.m41}px)`
-      wrap.style.cursor = 'grabbing'
-      wrap.setPointerCapture(e.pointerId)
-      e.preventDefault()
-    }
-
-    const onMove = (e: PointerEvent) => {
-      if (!dragging) return
-      const delta = e.clientX - startX
-      if (Math.abs(delta) > 4) didDrag.current = true
-      track.style.transform = `translateX(${pausedX + delta}px)`
-    }
-
-    const onUp = () => {
-      if (!dragging) return
-      dragging = false
-      wrap.style.cursor = ''
-      const currentX  = new DOMMatrixReadOnly(window.getComputedStyle(track).transform).m41
-      const halfWidth = track.scrollWidth / 2
-      const pos       = ((-currentX) % halfWidth + halfWidth) % halfWidth
-      const delay     = (pos / halfWidth) * MARQUEE_DURATION_MS
-      track.style.animationDelay     = `-${delay}ms`
-      track.style.transform          = ''
-      track.style.animationPlayState = ''
-    }
-
-    wrap.addEventListener('pointerdown', onDown)
-    wrap.addEventListener('pointermove', onMove, { passive: true })
-    wrap.addEventListener('pointerup',   onUp)
-    wrap.addEventListener('pointercancel', onUp)
-
-    return () => {
-      wrap.removeEventListener('pointerdown', onDown)
-      wrap.removeEventListener('pointermove', onMove)
-      wrap.removeEventListener('pointerup',   onUp)
-      wrap.removeEventListener('pointercancel', onUp)
-    }
-  }, [])
-
-  const others    = ALL_CATEGORIES.filter(c => c.id !== catId)
-  const loopItems = [...others, ...others]
+  const others = ALL_CATEGORIES.filter(c => c.id !== catId)
 
   return (
     <nav className="cat-footer-nav">
-      <span className="cat-footer-nav-label">Explore</span>
-      <span className="cat-footer-nav-divider" />
-      <div className="cat-footer-nav-track-wrap" ref={wrapRef} style={{ cursor: 'grab' }}>
-        <div className="cat-footer-nav-track" ref={trackRef}>
-          {loopItems.map((c, i) => (
+      <div className="cat-footer-nav-inner">
+        <div className="cat-footer-nav-eyebrow">Explore More</div>
+        <div className="cat-footer-nav-cats">
+          {others.map((c, i) => (
             <a
-              key={i}
+              key={c.id}
               href={`/${c.id}`}
               className="cat-footer-nav-link"
-              onClick={(e) => { if (didDrag.current) { e.preventDefault(); didDrag.current = false } }}
+              style={{ animationDelay: `${i * 1.5 - 3}s` }}
             >
               {c.name}
-              <span className="cat-footer-nav-sep">·</span>
             </a>
           ))}
         </div>
