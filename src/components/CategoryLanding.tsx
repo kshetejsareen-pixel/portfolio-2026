@@ -491,12 +491,6 @@ export function CategoryLanding() {
 
       {/* Mobile swipe hint dots — hidden on desktop */}
       <div className="ks-nav-dots" aria-hidden="true">
-        {/* Vertical dots = up/down (categories) */}
-        <div className="ks-nav-dots-y">
-          {activeCategories.map((_, i) => (
-            <span key={i} className={`ks-nav-pip${i === catIdx ? ' active' : ''}`} />
-          ))}
-        </div>
         {/* Horizontal dots = left/right (frames), only when multiple frames exist */}
         {totalFrames > 1 && (
           <div className="ks-nav-dots-x">
@@ -505,6 +499,12 @@ export function CategoryLanding() {
             ))}
           </div>
         )}
+        {/* Vertical dots = up/down (categories) — rightmost, under the category rail */}
+        <div className="ks-nav-dots-y">
+          {activeCategories.map((_, i) => (
+            <span key={i} className={`ks-nav-pip${i === catIdx ? ' active' : ''}`} />
+          ))}
+        </div>
       </div>
 
       {/* Brand marquee bar */}
