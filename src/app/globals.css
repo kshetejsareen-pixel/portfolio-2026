@@ -1070,7 +1070,7 @@ button, input, textarea, select { font: inherit; }
   white-space: nowrap;
 }
 .cat-hero-lower {
-  margin-top: 64px; display: flex; justify-content: space-between; align-items: flex-start;
+  margin-top: 16px; display: flex; justify-content: space-between; align-items: flex-start;
 }
 .cat-hero-year {
   font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.18em;
