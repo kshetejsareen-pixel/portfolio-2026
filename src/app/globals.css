@@ -600,7 +600,7 @@ button, input, textarea, select { font: inherit; }
 .ks-scrubber-fill {
   height: 1px;
   background: var(--paper);
-  animation: ks-scrubber-grow 4s linear forwards;
+  animation: ks-scrubber-grow linear forwards;
 }
 
 /* ─────────────────────────────────────────────

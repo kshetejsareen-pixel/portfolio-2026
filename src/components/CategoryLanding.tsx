@@ -71,6 +71,7 @@ function buildCategories(
 export function CategoryLanding() {
   const navigate = useNavigate()
   const [globalIdx, setGlobalIdx] = useState(0)
+  const [scrubDuration, setScrubDuration] = useState(IDLE_DELAY + CYCLE_INTERVAL)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -228,8 +229,10 @@ export function CategoryLanding() {
 
   const startIdleCountdown = useCallback(() => {
     stopCycle()
+    setScrubDuration(IDLE_DELAY + CYCLE_INTERVAL)
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
+        setScrubDuration(CYCLE_INTERVAL)
         const g = globalIdxRef.current
         globalIdxRef.current = g + 1
         setGlobalIdx(g + 1)
@@ -468,7 +471,7 @@ export function CategoryLanding() {
 
       {/* Scrubber — key restarts countdown animation on each frame (#4) */}
       <div className="ks-scrubber" aria-hidden="true">
-        <div key={`scrub-${catIdx}-${frameForDisplay}`} className="ks-scrubber-fill" />
+        <div key={`scrub-${catIdx}-${frameForDisplay}`} className="ks-scrubber-fill" style={{ animationDuration: `${scrubDuration}ms` }} />
       </div>
 
       {/* Footer corners — desktop only */}
