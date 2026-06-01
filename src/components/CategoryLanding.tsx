@@ -70,8 +70,7 @@ function buildCategories(
 
 export function CategoryLanding() {
   const navigate = useNavigate()
-  const [catIdx, setCatIdx]   = useState(0)
-  const [frameIdx, setFrameIdx] = useState(0)
+  const [globalIdx, setGlobalIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -166,11 +165,9 @@ export function CategoryLanding() {
 
   // Refs so the interval callback always reads current values without stale closures
   const activeCatsRef = useRef(activeCategories)
-  const catIdxRef     = useRef(0)
-  const frameIdxRef   = useRef(0)
+  const globalIdxRef  = useRef(0)
   useEffect(() => { activeCatsRef.current = activeCategories }, [activeCategories])
-  useEffect(() => { catIdxRef.current   = catIdx   }, [catIdx])
-  useEffect(() => { frameIdxRef.current = frameIdx }, [frameIdx])
+  useEffect(() => { globalIdxRef.current = globalIdx }, [globalIdx])
 
   // Fetch config + assignments — polls every 3s while tab is visible for live admin preview
   const fetchLanding = useCallback(() => {
@@ -195,10 +192,11 @@ export function CategoryLanding() {
     }
   }, [fetchLanding])
 
+  const numCats = activeCategories.length || 1
+  const catIdx = globalIdx % numCats
   const cat = activeCategories[catIdx] ?? activeCategories[0]
-  const totalFrames = cat.frames.length
-  // frameIdx is a round counter; derive actual frame position with modulo
-  const frameForDisplay = frameIdx % (totalFrames || 1)
+  const totalFrames = cat.frames.length || 1
+  const frameForDisplay = Math.floor(globalIdx / numCats) % totalFrames
   const frame = cat.frames[frameForDisplay] ?? cat.frames[0]
 
   // ── Idle-cycle helpers ───────────────────────────────────────────────────
@@ -211,17 +209,9 @@ export function CategoryLanding() {
     stopCycle()
     idleRef.current = setTimeout(() => {
       cycleRef.current = setInterval(() => {
-        const cats    = activeCatsRef.current
-        const ci      = catIdxRef.current
-        const fi      = frameIdxRef.current
-        // Round-robin: always advance to the next category
-        const nextCat = (ci + 1) % cats.length
-        // Increment the round counter each time we complete a full lap
-        const nextFrame = nextCat === 0 ? fi + 1 : fi
-        catIdxRef.current   = nextCat
-        frameIdxRef.current = nextFrame
-        setCatIdx(nextCat)
-        setFrameIdx(nextFrame)
+        const g = globalIdxRef.current
+        globalIdxRef.current = g + 1
+        setGlobalIdx(g + 1)
       }, CYCLE_INTERVAL)
     }, IDLE_DELAY)
   }, [stopCycle])
@@ -242,14 +232,15 @@ export function CategoryLanding() {
       e.preventDefault()
       stopCycle()
 
-      const catLen = activeCatsRef.current.length
-      const ci = catIdxRef.current
-      const fi = frameIdxRef.current
+      const g = globalIdxRef.current
+      const n = activeCatsRef.current.length || 1
+      const ci = g % n
+      const lap = Math.floor(g / n)
 
-      if      (e.key === 'ArrowRight') setFrameIdx(fi + 1)
-      else if (e.key === 'ArrowLeft')  setFrameIdx(Math.max(0, fi - 1))
-      else if (e.key === 'ArrowDown')  setCatIdx((ci + 1) % catLen)
-      else if (e.key === 'ArrowUp')    setCatIdx((ci - 1 + catLen) % catLen)
+      if      (e.key === 'ArrowRight') setGlobalIdx(g + n)
+      else if (e.key === 'ArrowLeft')  setGlobalIdx(Math.max(0, g - n))
+      else if (e.key === 'ArrowDown')  setGlobalIdx(lap * n + (ci + 1) % n)
+      else if (e.key === 'ArrowUp')    setGlobalIdx(lap * n + (ci - 1 + n) % n)
 
       startIdleCountdown()
     }
@@ -265,8 +256,9 @@ export function CategoryLanding() {
       return
     }
     stopCycle()
-    setCatIdx(i)
-    setFrameIdx(0)
+    const g = globalIdxRef.current
+    const n = activeCatsRef.current.length || 1
+    setGlobalIdx(Math.floor(g / n) * n + i)
     startIdleCountdown()
   }
 
@@ -291,18 +283,17 @@ export function CategoryLanding() {
       return
     }
 
-    const catLen = activeCatsRef.current.length
-    const ci = catIdxRef.current
-    const fi = frameIdxRef.current
+    const g = globalIdxRef.current
+    const n = activeCatsRef.current.length || 1
+    const ci = g % n
+    const lap = Math.floor(g / n)
 
     if (absDx >= absDy) {
-      // Horizontal swipe → change frame within current category
-      if (dx < 0) setFrameIdx(fi + 1)          // swipe left  → next frame
-      else        setFrameIdx(Math.max(0, fi - 1)) // swipe right → prev frame
+      if (dx < 0) setGlobalIdx(g + 1)           // swipe left  → next image
+      else        setGlobalIdx(Math.max(0, g - 1)) // swipe right → prev image
     } else {
-      // Vertical swipe → change category
-      if (dy < 0) setCatIdx((ci + 1) % catLen)              // swipe up   → next cat
-      else        setCatIdx((ci - 1 + catLen) % catLen)      // swipe down → prev cat
+      if (dy < 0) setGlobalIdx(lap * n + (ci + 1) % n)          // swipe up   → next cat
+      else        setGlobalIdx(lap * n + (ci - 1 + n) % n)       // swipe down → prev cat
     }
 
     startIdleCountdown()
@@ -418,12 +409,12 @@ export function CategoryLanding() {
         <>
           <button
             className="ks-step-hint ks-step-hint--prev"
-            onClick={() => setFrameIdx((f) => ((f - 1) + totalFrames) % totalFrames)}
+            onClick={() => { const g = globalIdxRef.current; const n = activeCatsRef.current.length || 1; setGlobalIdx(Math.max(0, g - n)) }}
             aria-label="Previous frame"
           >←</button>
           <button
             className="ks-step-hint ks-step-hint--next"
-            onClick={() => setFrameIdx((f) => (f + 1) % totalFrames)}
+            onClick={() => { const g = globalIdxRef.current; const n = activeCatsRef.current.length || 1; setGlobalIdx(g + n) }}
             aria-label="Next frame"
           >→</button>
         </>
