@@ -700,11 +700,11 @@ button, input, textarea, select { font: inherit; }
   /* Nav dots — two-axis swipe hint */
   .ks-nav-dots {
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 8px;
     position: absolute;
     right: 16px;
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     z-index: 6;
     pointer-events: none;
   }
