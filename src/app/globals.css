@@ -225,10 +225,10 @@ button, input, textarea, select { font: inherit; }
   animation-delay: 140ms;
 }
 
-/* ── Animation #4 — scrubber countdown ──────────────────────────────────── */
-@keyframes ks-scrubber-grow {
-  from { width: 0%; }
-  to   { width: 100%; }
+/* ── Animation #4 — background numeral dim ───────────────────────────────── */
+@keyframes ks-counter-fade {
+  from { color: rgba(236, 232, 224, 0.08); }
+  to   { color: rgba(236, 232, 224, 0.02); }
 }
 
 /* ── Scroll reveal ────────────────────────────────────────────────────────── */
@@ -353,9 +353,13 @@ button, input, textarea, select { font: inherit; }
   font-style: italic;
   font-size: 300px;
   line-height: 1;
-  color: rgba(236, 232, 224, 0.08);
   letter-spacing: -0.04em;
   display: block;
+}
+.ks-counter-dim {
+  display: block;
+  color: rgba(236, 232, 224, 0.08);
+  animation: ks-counter-fade linear forwards;
 }
 
 
@@ -604,22 +608,6 @@ button, input, textarea, select { font: inherit; }
 }
 
 /* ─────────────────────────────────────────────
-   Scrubber
-   ───────────────────────────────────────────── */
-.ks-scrubber {
-  position: absolute;
-  left: 56px; right: 56px; bottom: 129px;
-  height: 1px;
-  background: rgba(236, 232, 224, 0.18);
-  z-index: 6;
-}
-.ks-scrubber-fill {
-  height: 1px;
-  background: var(--paper);
-  animation: ks-scrubber-grow linear forwards;
-}
-
-/* ─────────────────────────────────────────────
    Footer corners
    ───────────────────────────────────────────── */
 .ks-footer-l,
@@ -653,15 +641,9 @@ button, input, textarea, select { font: inherit; }
    */
   .ks-letterbox { display: none; }
 
-  /* Top bar: start at screen edge, padding clears status bar on iOS + Android */
+  /* Top bar: match category-page padding (max 18px or safe-area, 22px sides) */
   .ks-top-bar {
-    top: 0;
-    height: auto;
-    padding-top: env(safe-area-inset-top, 14px);
-    padding-left: 22px;
-    padding-right: 22px;
-    padding-bottom: 14px;
-    align-items: center;
+    padding: max(18px, env(safe-area-inset-top, 0px)) 22px 14px;
   }
   .ks-wordmark-ks { font-size: 15px; }
   .ks-top-nav { gap: 16px; }
@@ -694,10 +676,7 @@ button, input, textarea, select { font: inherit; }
   .ks-cat.active .ks-cat-name { font-size: 21px; transform: none; }
   .ks-cat-tick { display: none; }
 
-  .ks-scrubber {
-    left: 22px; right: 22px;
-    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
-  }
+
 
   .ks-meta {
     left: 22px;
@@ -738,8 +717,10 @@ button, input, textarea, select { font: inherit; }
   }
   .ks-counter {
     font-size: clamp(180px, 50vw, 280px);
-    color: rgba(236, 232, 224, 0.08);
     letter-spacing: -0.05em;
+  }
+  .ks-counter-dim {
+    color: rgba(236, 232, 224, 0.08);
   }
 
   /* Compact name — collapse to a single line on mobile */

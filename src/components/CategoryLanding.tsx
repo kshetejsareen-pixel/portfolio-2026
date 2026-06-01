@@ -387,7 +387,7 @@ export function CategoryLanding() {
         )}
       </div>
 
-      {/* Background category numeral — #5 slot roll */}
+      {/* Background category numeral — dims over cycle, snaps on change */}
       <div className="ks-counter-wrap" aria-hidden="true">
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
@@ -398,7 +398,13 @@ export function CategoryLanding() {
             exit={{    y: -80, opacity: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 0.1, 0, 1] }}
           >
-            {pad2(catIdx + 1)}
+            <span
+              key={`dim-${catIdx}-${frameForDisplay}`}
+              className="ks-counter-dim"
+              style={{ animationDuration: `${scrubDuration}ms` }}
+            >
+              {pad2(catIdx + 1)}
+            </span>
           </motion.span>
         </AnimatePresence>
       </div>
@@ -478,11 +484,6 @@ export function CategoryLanding() {
         <div className="ks-slate-subj">{frame.title}</div>
         <div>{[frame.location, frame.year].filter(Boolean).join(' · ')}</div>
         {frame.camera && <div>{frame.camera}</div>}
-      </div>
-
-      {/* Scrubber — key restarts countdown animation on each frame (#4) */}
-      <div className="ks-scrubber" aria-hidden="true">
-        <div key={`scrub-${catIdx}-${frameForDisplay}`} className="ks-scrubber-fill" style={{ animationDuration: `${scrubDuration}ms` }} />
       </div>
 
       {/* Footer corners — desktop only */}
