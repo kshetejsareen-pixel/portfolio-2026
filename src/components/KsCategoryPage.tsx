@@ -30,7 +30,7 @@ function ExploreNav({ catId }: { catId: string }) {
               key={c.id}
               href={`/${c.id}`}
               className="cat-footer-nav-link"
-              style={{ animationDelay: `${i * 1.5 - 3}s` }}
+              style={{ animationDelay: `${i * 2 - 4}s` }}
             >
               {c.name}
             </a>
@@ -691,7 +691,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
                     onClick={() => setShowAllProjects(true)}
                   >
                     View more projects
-                    <span className="cat-projects-more-count">+{remaining}</span>
                   </button>
                 </div>
               )}
