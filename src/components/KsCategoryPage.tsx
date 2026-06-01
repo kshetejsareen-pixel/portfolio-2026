@@ -466,7 +466,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
           <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
           <span className="cat-tb-sep">/</span>
           <div className="cat-tb-crumb">
-            <span className="cat-tb-cur">{data.cat.name}</span>
+            <button className="cat-tb-cur" onClick={() => setMenuOpen(true)}>{data.cat.name}</button>
           </div>
         </div>
         <div className="cat-tb-right">
