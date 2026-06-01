@@ -303,10 +303,17 @@ export function CategoryLanding() {
     }
 
     const g = globalIdxRef.current
-    // Both axes: step forward or backward through the round-robin sequence
-    const goNext = (absDx >= absDy) ? dx < 0 : dy < 0
-    if (goNext) setGlobalIdx(g + 1)
-    else        setGlobalIdx(Math.max(0, g - 1))
+    const n = activeCatsRef.current.length || 1
+
+    if (absDx >= absDy) {
+      // Horizontal swipe → frame jump within same category (mirrors ← → keys)
+      if (dx < 0) setGlobalIdx(g + n)
+      else        setGlobalIdx(Math.max(0, g - n))
+    } else {
+      // Vertical swipe → round-robin through sequence (mirrors ↑ ↓ keys)
+      if (dy < 0) setGlobalIdx(g + 1)
+      else        setGlobalIdx(Math.max(0, g - 1))
+    }
 
     startIdleCountdown()
   }
