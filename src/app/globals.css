@@ -207,7 +207,7 @@ button, input, textarea, select { font: inherit; }
 
 /* Brand bar in normal document flow (category pages) */
 .cat-brand-strip {
-  padding: 80px 0;
+  padding: 48px 0;
 }
 .cat-brand-strip .brand-bar {
   position: relative;
@@ -215,15 +215,13 @@ button, input, textarea, select { font: inherit; }
   left: auto;
   right: auto;
   z-index: 1;
+  height: 80px;
 }
-/* Placement 1: strip sits between hero and intro — zero intro's own top padding */
-.cat-brand-strip + .cat-intro {
-  padding-top: 0;
-}
-/* Placement 2: strip sits between editorial/intro and projects — remove border and zeroed top padding */
+/* Strip → projects: remove border, restore top padding so spacing above/below bar is equal.
+   Editorial ends with 80px pb → 80+48 = 128px above bar; 48+80 = 128px below bar. */
 .cat-brand-strip + .cat-projects {
   border-top: none;
-  padding-top: 0;
+  padding-top: 80px;
 }
 
 /* ── Animation #2 — staggered caption entrance ───────────────────────────── */

@@ -510,8 +510,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </div>
       </section>
 
-      <div className="cat-brand-strip"><BrandMarquee /></div>
-
       <section className="cat-intro" data-sr>
         <div className="cat-intro-label ks-eyebrow">{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body">
