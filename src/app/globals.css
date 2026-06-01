@@ -1451,8 +1451,9 @@ button, input, textarea, select { font: inherit; }
 }
 
 @keyframes cat-footer-glow {
-  0%, 100% { color: rgba(236, 232, 224, 0.28); }
-  50%      { color: var(--paper); }
+  0%, 44%   { color: rgba(236, 232, 224, 0.28); }
+  50%       { color: var(--paper); }
+  56%, 100% { color: rgba(236, 232, 224, 0.28); }
 }
 .cat-footer-nav-link {
   font-family: var(--font-mono);
@@ -1491,8 +1492,8 @@ button, input, textarea, select { font: inherit; }
       transparent 100%
     );
   }
-  .cat-footer-nav-link { font-size: 15px; }
-  .cat-footer-nav-cats { gap: 28px; }
+  .cat-footer-nav-link { font-size: 13px; }
+  .cat-footer-nav-cats { gap: 20px; }
 }
 
 /* ─────────────────────────────────────────────
