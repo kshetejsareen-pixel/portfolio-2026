@@ -489,6 +489,24 @@ export function CategoryLanding() {
       <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
       <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
 
+      {/* Mobile swipe hint dots — hidden on desktop */}
+      <div className="ks-nav-dots" aria-hidden="true">
+        {/* Vertical dots = up/down (categories) */}
+        <div className="ks-nav-dots-y">
+          {activeCategories.map((_, i) => (
+            <span key={i} className={`ks-nav-pip${i === catIdx ? ' active' : ''}`} />
+          ))}
+        </div>
+        {/* Horizontal dots = left/right (frames), only when multiple frames exist */}
+        {totalFrames > 1 && (
+          <div className="ks-nav-dots-x">
+            {Array.from({ length: totalFrames }, (_, i) => (
+              <span key={i} className={`ks-nav-pip${i === frameForDisplay ? ' active' : ''}`} />
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Brand marquee bar */}
       <BrandMarquee />
 
