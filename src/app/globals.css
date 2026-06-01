@@ -205,6 +205,27 @@ button, input, textarea, select { font: inherit; }
   font-size: 8px;
 }
 
+/* Brand bar in normal document flow (category pages) */
+.cat-brand-strip {
+  padding: 80px 0;
+}
+.cat-brand-strip .brand-bar {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  z-index: 1;
+}
+/* Placement 1: strip sits between hero and intro — zero intro's own top padding */
+.cat-brand-strip + .cat-intro {
+  padding-top: 0;
+}
+/* Placement 2: strip sits between editorial/intro and projects — remove border and zeroed top padding */
+.cat-brand-strip + .cat-projects {
+  border-top: none;
+  padding-top: 0;
+}
+
 /* ── Animation #2 — staggered caption entrance ───────────────────────────── */
 @keyframes ks-slide-up {
   from { opacity: 0; transform: translateY(10px); }

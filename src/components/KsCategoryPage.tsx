@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import type { CategoryData, FlowRow, FlowPhoto, IntroPart } from '@/lib/categoryData'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import { BrandMarquee } from '@/components/BrandMarquee'
 import { PROJECT_TAGS } from '@/lib/tags'
 
 interface CategoryCopy {
@@ -509,6 +510,8 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </div>
       </section>
 
+      <div className="cat-brand-strip"><BrandMarquee /></div>
+
       <section className="cat-intro" data-sr>
         <div className="cat-intro-label ks-eyebrow">{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body">
@@ -560,6 +563,8 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       )}
 
       {adminProjects !== null && (filteredProjects ?? adminProjects).length > 0 && (
+      <>
+      <div className="cat-brand-strip"><BrandMarquee /></div>
       <section className="cat-projects" data-sr>
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
@@ -666,6 +671,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
           )
         })()}
       </section>
+      </>
       )}
 
       <footer className="cat-footer">
