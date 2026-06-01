@@ -680,9 +680,19 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         <nav className="cat-footer-nav">
           <span className="cat-footer-nav-label">Explore</span>
           <span className="cat-footer-nav-divider" />
-          {ALL_CATEGORIES.filter(c => c.id !== catId).map(c => (
-            <a key={c.id} href={`/${c.id}`} className="cat-footer-nav-link">{c.name}</a>
-          ))}
+          <div className="cat-footer-nav-track-wrap">
+            <div className="cat-footer-nav-track">
+              {(() => {
+                const others = ALL_CATEGORIES.filter(c => c.id !== catId)
+                return [...others, ...others].map((c, i) => (
+                  <a key={i} href={`/${c.id}`} className="cat-footer-nav-link">
+                    {c.name}
+                    <span className="cat-footer-nav-sep">·</span>
+                  </a>
+                ))
+              })()}
+            </div>
+          </div>
         </nav>
         <div className="cat-footer-copy">
           <div>© Kshetej Sareen · MMXXVI</div>

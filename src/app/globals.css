@@ -1411,7 +1411,7 @@ button, input, textarea, select { font: inherit; }
   background: #000;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  overflow: hidden;
 }
 .cat-footer-nav::before,
 .cat-footer-nav::after {
@@ -1460,6 +1460,24 @@ button, input, textarea, select { font: inherit; }
   transition: color 0.2s ease;
 }
 .cat-footer-nav-link:hover { color: var(--paper); }
+.cat-footer-nav-sep {
+  color: rgba(236, 232, 224, 0.18);
+  font-size: 8px;
+  margin-left: 12px;
+}
+.cat-footer-nav-track-wrap {
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+.cat-footer-nav-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: ks-marquee 70s linear infinite;
+}
+.cat-footer-nav-track:hover { animation-play-state: paused; }
 
 .cat-footer-copy {
   padding: 28px 56px;
