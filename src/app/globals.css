@@ -359,7 +359,7 @@ button, input, textarea, select { font: inherit; }
 .ks-counter-dim {
   display: block;
   color: rgba(236, 232, 224, 0.08);
-  animation: ks-counter-fade linear forwards;
+  animation: ks-counter-fade ease-in-out infinite alternate;
 }
 
 

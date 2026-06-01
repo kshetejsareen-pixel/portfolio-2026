@@ -399,7 +399,6 @@ export function CategoryLanding() {
             transition={{ duration: 0.45, ease: [0.22, 0.1, 0, 1] }}
           >
             <span
-              key={`dim-${catIdx}-${frameForDisplay}`}
               className="ks-counter-dim"
               style={{ animationDuration: `${scrubDuration}ms` }}
             >
