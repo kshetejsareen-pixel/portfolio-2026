@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import type { CategoryData, FlowRow, FlowPhoto, IntroPart } from '@/lib/categoryData'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
@@ -14,6 +14,83 @@ const ALL_CATEGORIES = [
   { id: 'portraits', name: 'Portraits' },
   { id: 'motion',    name: 'Motion' },
 ]
+
+const MARQUEE_DURATION_MS = 70000
+
+function ExploreNav({ catId }: { catId: string }) {
+  const wrapRef  = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const startX   = useRef(0)
+  const pausedX  = useRef(0)
+  const dragging = useRef(false)
+  const didDrag  = useRef(false)
+
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!trackRef.current) return
+    const m = new DOMMatrixReadOnly(window.getComputedStyle(trackRef.current).transform)
+    pausedX.current  = m.m41
+    startX.current   = e.clientX
+    dragging.current = true
+    didDrag.current  = false
+    trackRef.current.style.animationPlayState = 'paused'
+    trackRef.current.style.transform = `translateX(${m.m41}px)`
+    if (wrapRef.current) wrapRef.current.style.cursor = 'grabbing'
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }, [])
+
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging.current || !trackRef.current) return
+    const delta = e.clientX - startX.current
+    if (Math.abs(delta) > 4) didDrag.current = true
+    trackRef.current.style.transform = `translateX(${pausedX.current + delta}px)`
+  }, [])
+
+  const onPointerUp = useCallback(() => {
+    if (!dragging.current || !trackRef.current) return
+    dragging.current = false
+    if (wrapRef.current) wrapRef.current.style.cursor = ''
+    const currentX  = new DOMMatrixReadOnly(window.getComputedStyle(trackRef.current).transform).m41
+    const halfWidth = trackRef.current.scrollWidth / 2
+    const pos       = ((-currentX) % halfWidth + halfWidth) % halfWidth
+    const delay     = (pos / halfWidth) * MARQUEE_DURATION_MS
+    trackRef.current.style.animationDelay     = `-${delay}ms`
+    trackRef.current.style.transform          = ''
+    trackRef.current.style.animationPlayState = ''
+  }, [])
+
+  const others    = ALL_CATEGORIES.filter(c => c.id !== catId)
+  const loopItems = [...others, ...others]
+
+  return (
+    <nav className="cat-footer-nav">
+      <span className="cat-footer-nav-label">Explore</span>
+      <span className="cat-footer-nav-divider" />
+      <div
+        className="cat-footer-nav-track-wrap"
+        ref={wrapRef}
+        style={{ cursor: 'grab' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <div className="cat-footer-nav-track" ref={trackRef}>
+          {loopItems.map((c, i) => (
+            <a
+              key={i}
+              href={`/${c.id}`}
+              className="cat-footer-nav-link"
+              onClick={(e) => { if (didDrag.current) { e.preventDefault(); didDrag.current = false } }}
+            >
+              {c.name}
+              <span className="cat-footer-nav-sep">·</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  )
+}
 
 interface CategoryCopy {
   introLabel?: string
@@ -677,23 +754,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       )}
 
       <footer className="cat-footer">
-        <nav className="cat-footer-nav">
-          <span className="cat-footer-nav-label">Explore</span>
-          <span className="cat-footer-nav-divider" />
-          <div className="cat-footer-nav-track-wrap">
-            <div className="cat-footer-nav-track">
-              {(() => {
-                const others = ALL_CATEGORIES.filter(c => c.id !== catId)
-                return [...others, ...others].map((c, i) => (
-                  <a key={i} href={`/${c.id}`} className="cat-footer-nav-link">
-                    {c.name}
-                    <span className="cat-footer-nav-sep">·</span>
-                  </a>
-                ))
-              })()}
-            </div>
-          </div>
-        </nav>
+        <ExploreNav catId={catId} />
         <div className="cat-footer-copy">
           <div>© Kshetej Sareen · MMXXVI</div>
           <div>info@kshetejsareen.com</div>

@@ -1468,6 +1468,7 @@ button, input, textarea, select { font: inherit; }
 .cat-footer-nav-track-wrap {
   flex: 1;
   overflow: hidden;
+  touch-action: pan-y;
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
