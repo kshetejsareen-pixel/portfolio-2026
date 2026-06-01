@@ -461,8 +461,6 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
   const visibleFlow   = enrichedFlow
 
   const heroTint     = getHeroTint(visibleFlow[0] ?? enrichedFlow[0] ?? data.flow[0])
-  const frameCount   = anyAssigned ? assignedCount : enrichedFlow.reduce((n, r) => n + countPhotos(r), 0)
-  const projectCount = adminProjects?.length ?? data.projects.length
 
   const assignedYears = Object.values(galleryAssignments)
     .map((a) => parseInt(a.year, 10))
@@ -522,19 +520,9 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         )}
         <div className="cat-hero-bg" />
         <div className="cat-hero-meta">
-          <div className="cat-hero-eyebrow">
-            <span className="ks-dot" />
-            <span className="ks-eyebrow">Category · {data.cat.n} of 05</span>
-          </div>
           <h1 className="cat-hero-title">{copy.heroTitle || data.cat.name}</h1>
           <div className="cat-hero-lower">
-            <div className="cat-hero-stats-block">
-              <div className="cat-hero-stats">
-                <span><strong>{frameCount}</strong> Frames</span>
-                <span><strong>{projectCount}</strong> Projects</span>
-              </div>
-              {yearRange && <div className="cat-hero-year">{yearRange}</div>}
-            </div>
+            {yearRange && <div className="cat-hero-year">{yearRange}</div>}
             <div className="cat-scroll-hint">
               <span className="cat-scroll-hint-label">Scroll</span>
               <span className="cat-scroll-hint-arrow" />

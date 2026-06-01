@@ -1062,7 +1062,6 @@ button, input, textarea, select { font: inherit; }
 @media (max-width: 767px) {
   .cat-hero-meta { bottom: max(6px, env(safe-area-inset-bottom, 6px)); }
 }
-.cat-hero-eyebrow { margin-bottom: 18px; display: flex; gap: 14px; align-items: center; }
 .cat-hero-title {
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(72px, 14vw, 220px);
@@ -1073,15 +1072,8 @@ button, input, textarea, select { font: inherit; }
 .cat-hero-lower {
   margin-top: 64px; display: flex; justify-content: space-between; align-items: flex-start;
 }
-.cat-hero-stats {
-  display: flex; flex-wrap: wrap; gap: 32px;
-  font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--mute); word-spacing: -0.15em;
-}
-.cat-hero-stats strong { color: var(--paper); font-weight: 500; }
 .cat-hero-year {
-  margin-top: 10px;
-  font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
+  font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.18em;
   text-transform: uppercase; color: var(--mute); word-spacing: -0.15em;
 }
 .cat-scroll-hint {
