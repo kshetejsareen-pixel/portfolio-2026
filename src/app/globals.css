@@ -205,9 +205,14 @@ button, input, textarea, select { font: inherit; }
   font-size: 8px;
 }
 
+/* Zero out whichever section ends just before the brand strip so only strip padding sets the gap */
+.cat-editorial:has(+ .cat-brand-strip) { padding-bottom: 0; }
+.cat-editorial:has(+ .cat-brand-strip) .cat-row:last-child { margin-bottom: 0; }
+.cat-intro:has(+ .cat-brand-strip) { padding-bottom: 0; }
+
 /* Brand bar in normal document flow (category pages) */
 .cat-brand-strip {
-  padding: 48px 0;
+  padding: 50px 0;
 }
 .cat-brand-strip .brand-bar {
   position: relative;
@@ -217,11 +222,10 @@ button, input, textarea, select { font: inherit; }
   z-index: 1;
   height: 80px;
 }
-/* Strip → projects: remove border, restore top padding so spacing above/below bar is equal.
-   Editorial ends with 80px pb → 80+48 = 128px above bar; 48+80 = 128px below bar. */
+/* Strip → projects: remove border, strip bottom padding alone provides the 50px gap */
 .cat-brand-strip + .cat-projects {
   border-top: none;
-  padding-top: 80px;
+  padding-top: 0;
 }
 
 /* ── Animation #2 — staggered caption entrance ───────────────────────────── */
