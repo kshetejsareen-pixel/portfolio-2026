@@ -245,17 +245,11 @@ export function CategoryLanding() {
       stopCycle()
 
       if (e.key === 'ArrowRight') {
-        const next = (catIdx + 1) % catLen
-        setCatIdx(next)
-        setFrameIdx(next === 0 ? frameIdx + 1 : frameIdx)
+        setCatIdx((catIdx + 1) % catLen)
+        setFrameIdx(frameIdx + 1)
       } else if (e.key === 'ArrowLeft') {
-        if (catIdx === 0) {
-          setCatIdx(catLen - 1)
-          setFrameIdx(Math.max(0, frameIdx - 1))
-        } else {
-          setCatIdx(catIdx - 1)
-          // frameIdx unchanged — same round, prev category
-        }
+        setCatIdx(catIdx === 0 ? catLen - 1 : catIdx - 1)
+        setFrameIdx(Math.max(0, frameIdx - 1))
       } else if (e.key === 'ArrowDown') {
         setCatIdx((c) => (c + 1) % catLen)
         setFrameIdx(0)
@@ -306,19 +300,13 @@ export function CategoryLanding() {
         const ci   = catIdxRef.current
         const fi   = frameIdxRef.current
         if (dx < 0) {
-          // Swipe left → forward
-          const next = (ci + 1) % cats.length
-          setCatIdx(next)
-          setFrameIdx(next === 0 ? fi + 1 : fi)
+          // Swipe left → next category, always advance frame
+          setCatIdx((ci + 1) % cats.length)
+          setFrameIdx(fi + 1)
         } else {
-          // Swipe right → backward
-          if (ci === 0) {
-            setCatIdx(cats.length - 1)
-            setFrameIdx(Math.max(0, fi - 1))
-          } else {
-            setCatIdx(ci - 1)
-            // fi unchanged — same round, prev category
-          }
+          // Swipe right → prev category, always retreat frame
+          setCatIdx(ci === 0 ? cats.length - 1 : ci - 1)
+          setFrameIdx(Math.max(0, fi - 1))
         }
       } else {
         // Vertical → change category, reset frame

@@ -7,17 +7,17 @@ const BRANDS = [
   'Brioni',
   'Ladurée',
   'Six Senses',
-  'JW Marriott',
-  'Taj Hotels',
+  'JW Marriott Hotels & Resorts',
+  'The Taj Hotels',
   'Le Méridien',
   'Jumeirah',
   'Crowne Plaza',
   'Jamie Oliver\'s',
-  'Meliá',
-  'MDH',
+  'Meliá Hotels & Resorts',
+  'MDH Spices',
   'RAVOH',
   'DLF Emporio',
-  'Good Homes',
+  'Good Homes Magazine',
 ]
 
 const SEP = '·'
