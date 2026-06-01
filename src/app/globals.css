@@ -126,13 +126,14 @@ button, input, textarea, select { font: inherit; }
   position: absolute;
   left: 0; right: 0; bottom: 46px;
   height: 64px;
-  background: var(--ink);
+  background: #000;
   border-top: 1px solid rgba(236, 232, 224, 0.12);
   border-bottom: 1px solid rgba(236, 232, 224, 0.12);
   z-index: 8;
   display: flex;
   align-items: center;
   overflow: hidden;
+  padding-right: 56px;
 }
 
 .brand-bar-label {
@@ -142,7 +143,7 @@ button, input, textarea, select { font: inherit; }
   text-transform: uppercase;
   color: rgba(236, 232, 224, 0.72);
   white-space: nowrap;
-  padding: 0 24px;
+  padding: 0 24px 0 56px;
   flex-shrink: 0;
 }
 
@@ -156,8 +157,8 @@ button, input, textarea, select { font: inherit; }
 .brand-bar-track-wrap {
   flex: 1;
   overflow: hidden;
-  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
 .brand-bar-track {
@@ -695,8 +696,10 @@ button, input, textarea, select { font: inherit; }
     bottom: 0;
     height: 56px;
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-right: 22px;
+    background: #000;
   }
-  .brand-bar-label { font-size: 11px; letter-spacing: 0.14em; padding: 0 16px; color: rgba(236, 232, 224, 0.72); }
+  .brand-bar-label { font-size: 11px; letter-spacing: 0.14em; padding: 0 12px 0 22px; color: rgba(236, 232, 224, 0.72); }
   .brand-bar-divider { height: 12px; }
   .brand-bar-item { font-size: 11px; letter-spacing: 0.14em; padding: 0 12px; }
   .ks-meta-above { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
