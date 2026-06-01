@@ -1296,7 +1296,7 @@ button, input, textarea, select { font: inherit; }
 /* Projects */
 .cat-projects {
   border-top: 1px solid var(--rule);
-  padding: 120px var(--cat-pad) 80px;
+  padding: 120px var(--cat-pad) 40px;
   max-width: var(--cat-maxw); margin: 0 auto;
 }
 .cat-projects-header {
@@ -1353,7 +1353,7 @@ button, input, textarea, select { font: inherit; }
 
 /* ── View more projects ──────────────────────────────────────────────────── */
 .cat-projects-more-wrap {
-  margin-top: 64px; display: flex; justify-content: center;
+  margin-top: 40px; display: flex; justify-content: center;
 }
 .cat-projects-more {
   display: inline-flex; align-items: center; gap: 10px;
