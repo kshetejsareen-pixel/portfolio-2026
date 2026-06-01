@@ -27,3 +27,4 @@ This project is now configured with a premium frontend design stack suitable for
 4. use typography utilities for rich editorial content and marketing copy
 
 This setup gives you the foundational skills and dependencies needed to execute a premium website design and build.
+
