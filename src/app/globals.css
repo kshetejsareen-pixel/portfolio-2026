@@ -352,7 +352,7 @@ button, input, textarea, select { font: inherit; }
   z-index: 4;
 }
 .ks-letterbox--top { display: none; }
-.ks-letterbox--bottom { bottom: 0; height: 160px; background: var(--ink); }
+.ks-letterbox--bottom { bottom: 0; height: 160px; background: #000; }
 
 /* ─────────────────────────────────────────────
    Top bar
