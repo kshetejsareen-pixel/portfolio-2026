@@ -1448,9 +1448,8 @@ button, input, textarea, select { font: inherit; }
 }
 
 @keyframes cat-footer-glow {
-  0%, 35%   { color: rgba(236, 232, 224, 0.28); }
-  50%       { color: var(--paper); }
-  65%, 100% { color: rgba(236, 232, 224, 0.28); }
+  0%, 100% { color: rgba(236, 232, 224, 0.28); }
+  50%      { color: var(--paper); }
 }
 .cat-footer-nav-link {
   font-family: var(--font-mono);
@@ -1458,7 +1457,7 @@ button, input, textarea, select { font: inherit; }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
-  animation: cat-footer-glow 8s ease-in-out infinite;
+  animation: cat-footer-glow 10s ease-in-out infinite;
   animation-fill-mode: backwards;
 }
 .cat-footer-nav-link:hover {

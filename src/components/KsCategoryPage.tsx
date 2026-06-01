@@ -30,7 +30,7 @@ function ExploreNav({ catId }: { catId: string }) {
               key={c.id}
               href={`/${c.id}`}
               className="cat-footer-nav-link"
-              style={{ animationDelay: `${i * 2 - 4}s` }}
+              style={{ animationDelay: `${i * 2.5 - 5}s` }}
             >
               {c.name}
             </a>
