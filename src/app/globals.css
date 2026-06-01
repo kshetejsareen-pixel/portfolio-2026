@@ -1068,6 +1068,7 @@ button, input, textarea, select { font: inherit; }
   line-height: 0.9; letter-spacing: -0.04em; margin: 0;
   font-style: italic; color: var(--paper);
   white-space: nowrap;
+  padding-bottom: 0.2em;
 }
 .cat-hero-lower {
   margin-top: 16px; display: flex; justify-content: space-between; align-items: flex-start;
