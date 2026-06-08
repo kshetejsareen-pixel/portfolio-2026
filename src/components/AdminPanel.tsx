@@ -65,6 +65,13 @@ interface AdminProject {
 
 type LandingConfig = Record<string, number>
 
+interface TextStyle {
+  font?: 'serif' | 'mono' | 'sans'
+  size?: number
+  italic?: boolean
+  bold?: boolean
+}
+
 interface CategoryCopy {
   introLabel?: string
   introBody?: string
@@ -72,6 +79,11 @@ interface CategoryCopy {
   pullQuoteAttr?: string
   heroTitle?: string
   projectsSectionTitle?: string
+  heroTitleStyle?: TextStyle
+  introLabelStyle?: TextStyle
+  introBodyStyle?: TextStyle
+  pullQuoteStyle?: TextStyle
+  pullQuoteAttrStyle?: TextStyle
 }
 
 type RightPanel =
@@ -1351,6 +1363,62 @@ function FolderBrowserPanel({
 
 // ─── PageCopyEditorPanel ──────────────────────────────────────────────────────
 
+const FONT_VAR: Record<NonNullable<TextStyle['font']>, string> = {
+  serif: 'var(--font-serif)',
+  mono:  'var(--font-mono)',
+  sans:  'var(--font-sans)',
+}
+
+function StyleControls({
+  value, onChange,
+}: {
+  value?: TextStyle
+  onChange: (s: TextStyle) => void
+}) {
+  const s = value ?? {}
+  const set = (patch: Partial<TextStyle>) => onChange({ ...s, ...patch })
+
+  return (
+    <div className="adm-style-row">
+      <div className="adm-style-group">
+        {(['serif', 'mono', 'sans'] as const).map((f) => (
+          <button
+            key={f}
+            className={`adm-style-btn${s.font === f ? ' active' : ''}`}
+            onClick={() => set({ font: s.font === f ? undefined : f })}
+            title={f}
+          >
+            {f === 'serif' ? 'Serif' : f === 'mono' ? 'Mono' : 'Sans'}
+          </button>
+        ))}
+      </div>
+      <div className="adm-style-group">
+        <button
+          className={`adm-style-btn adm-style-i${s.italic ? ' active' : ''}`}
+          onClick={() => set({ italic: !s.italic })}
+          title="Italic"
+        >I</button>
+        <button
+          className={`adm-style-btn adm-style-b${s.bold ? ' active' : ''}`}
+          onClick={() => set({ bold: !s.bold })}
+          title="Bold"
+        >B</button>
+      </div>
+      <div className="adm-style-size">
+        <input
+          type="number"
+          className="adm-style-size-input"
+          value={s.size ?? ''}
+          min={8} max={200}
+          placeholder="px"
+          onChange={(e) => set({ size: e.target.value ? Number(e.target.value) : undefined })}
+        />
+        <span className="adm-style-size-unit">px</span>
+      </div>
+    </div>
+  )
+}
+
 function PageCopyEditorPanel({
   categoryId, initial, onSave, onClose,
 }: {
@@ -1365,6 +1433,9 @@ function PageCopyEditorPanel({
   const set = (k: keyof CategoryCopy) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => setCopy((prev) => ({ ...prev, [k]: e.target.value }))
+
+  const setStyle = (k: keyof CategoryCopy) => (s: TextStyle) =>
+    setCopy((prev) => ({ ...prev, [k]: s }))
 
   const handleSave = async () => {
     setSaving(true)
@@ -1395,6 +1466,7 @@ function PageCopyEditorPanel({
             onChange={set('heroTitle')}
             placeholder={`e.g. ${label}`}
           />
+          <StyleControls value={copy.heroTitleStyle} onChange={setStyle('heroTitleStyle')} />
         </div>
 
         <div className="adm-copy-section-label">Intro</div>
@@ -1410,11 +1482,13 @@ function PageCopyEditorPanel({
             onChange={set('introLabel')}
             placeholder="e.g. On the table"
           />
+          <StyleControls value={copy.introLabelStyle} onChange={setStyle('introLabelStyle')} />
         </div>
+
         <div className="adm-copy-field">
           <label className="adm-copy-label">
             Intro body
-            <span className="adm-copy-hint">Main paragraph text (plain text, no formatting)</span>
+            <span className="adm-copy-hint">Main paragraph text</span>
           </label>
           <textarea
             className="adm-copy-textarea"
@@ -1423,6 +1497,7 @@ function PageCopyEditorPanel({
             rows={5}
             placeholder="Describe the work in a few sentences…"
           />
+          <StyleControls value={copy.introBodyStyle} onChange={setStyle('introBodyStyle')} />
         </div>
 
         <div className="adm-copy-section-label">Pull quote</div>
@@ -1436,7 +1511,9 @@ function PageCopyEditorPanel({
             rows={3}
             placeholder="A short, memorable quote or statement…"
           />
+          <StyleControls value={copy.pullQuoteStyle} onChange={setStyle('pullQuoteStyle')} />
         </div>
+
         <div className="adm-copy-field">
           <label className="adm-copy-label">
             Attribution
@@ -1448,6 +1525,7 @@ function PageCopyEditorPanel({
             onChange={set('pullQuoteAttr')}
             placeholder="e.g. — Kshetej Sareen, 2025"
           />
+          <StyleControls value={copy.pullQuoteAttrStyle} onChange={setStyle('pullQuoteAttrStyle')} />
         </div>
 
         <div className="adm-copy-section-label">Projects section</div>
@@ -1455,7 +1533,7 @@ function PageCopyEditorPanel({
         <div className="adm-copy-field">
           <label className="adm-copy-label">
             Section title
-            <span className="adm-copy-hint">Overrides &quot;Selected projects&quot;</span>
+            <span className="adm-copy-hint">Overrides &quot;Selected Projects&quot;</span>
           </label>
           <input
             className="adm-copy-input"

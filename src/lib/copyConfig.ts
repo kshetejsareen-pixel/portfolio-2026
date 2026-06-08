@@ -1,5 +1,12 @@
 import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
 
+export interface TextStyle {
+  font?: 'serif' | 'mono' | 'sans'
+  size?: number
+  italic?: boolean
+  bold?: boolean
+}
+
 export interface CategoryCopy {
   introLabel?: string
   introBody?: string
@@ -7,6 +14,11 @@ export interface CategoryCopy {
   pullQuoteAttr?: string
   heroTitle?: string
   projectsSectionTitle?: string
+  heroTitleStyle?: TextStyle
+  introLabelStyle?: TextStyle
+  introBodyStyle?: TextStyle
+  pullQuoteStyle?: TextStyle
+  pullQuoteAttrStyle?: TextStyle
 }
 
 export type CopyConfig = Record<string, CategoryCopy>

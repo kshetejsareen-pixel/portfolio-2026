@@ -3366,6 +3366,28 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-copy-input:focus { border-color: #444; }
 
+.adm-style-row {
+  display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap;
+}
+.adm-style-group { display: flex; gap: 3px; }
+.adm-style-btn {
+  padding: 2px 7px; font-size: 10px; border-radius: 3px;
+  border: 1px solid #333; background: #1a1a1a; color: #555;
+  cursor: pointer; letter-spacing: 0.04em; transition: all 120ms;
+}
+.adm-style-btn.active { background: #2a2a2a; color: #ccc; border-color: #555; }
+.adm-style-btn:hover { color: #aaa; border-color: #444; }
+.adm-style-i { font-style: italic; font-size: 11px; }
+.adm-style-b { font-weight: 700; font-size: 11px; }
+.adm-style-size { display: flex; align-items: center; gap: 3px; }
+.adm-style-size-input {
+  width: 44px; padding: 2px 5px; font-size: 10px;
+  border: 1px solid #333; background: #1a1a1a; color: #aaa;
+  border-radius: 3px; text-align: right;
+}
+.adm-style-size-input:focus { border-color: #444; outline: none; }
+.adm-style-size-unit { font-size: 9px; color: #444; }
+
 .adm-copy-actions {
   display: flex;
   gap: 8px;

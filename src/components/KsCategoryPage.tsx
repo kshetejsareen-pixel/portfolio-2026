@@ -41,6 +41,13 @@ function ExploreNav({ catId }: { catId: string }) {
   )
 }
 
+interface TextStyle {
+  font?: 'serif' | 'mono' | 'sans'
+  size?: number
+  italic?: boolean
+  bold?: boolean
+}
+
 interface CategoryCopy {
   introLabel?: string
   introBody?: string
@@ -48,6 +55,27 @@ interface CategoryCopy {
   pullQuoteAttr?: string
   heroTitle?: string
   projectsSectionTitle?: string
+  heroTitleStyle?: TextStyle
+  introLabelStyle?: TextStyle
+  introBodyStyle?: TextStyle
+  pullQuoteStyle?: TextStyle
+  pullQuoteAttrStyle?: TextStyle
+}
+
+const FONT_VAR: Record<NonNullable<TextStyle['font']>, string> = {
+  serif: 'var(--font-serif)',
+  mono:  'var(--font-mono)',
+  sans:  'var(--font-sans)',
+}
+
+function textStyle(s?: TextStyle): React.CSSProperties {
+  if (!s) return {}
+  return {
+    ...(s.font   ? { fontFamily:  FONT_VAR[s.font] }    : {}),
+    ...(s.size   ? { fontSize:    `${s.size}px` }        : {}),
+    ...(s.italic ? { fontStyle:   'italic' }              : { fontStyle: 'normal' }),
+    ...(s.bold   ? { fontWeight:  '700' }                 : {}),
+  }
 }
 
 interface AdminProject {
@@ -358,13 +386,13 @@ function RowOffset({ row, idx }: { row: Extract<FlowRow, { kind: 'offset' }>; id
 
 function RowPullQuote({ pullQuote, copyOverride }: {
   pullQuote: { text: string; attr: string }
-  copyOverride?: { text?: string; attr?: string }
+  copyOverride?: { text?: string; attr?: string; textStyle?: TextStyle; attrStyle?: TextStyle }
 }) {
   return (
     <div className="cat-row">
       <div className="cat-pull-quote">
-        <p className="cat-pull-quote-text">{copyOverride?.text || pullQuote.text}</p>
-        <div className="cat-pull-quote-attr">{copyOverride?.attr || pullQuote.attr}</div>
+        <p className="cat-pull-quote-text" style={textStyle(copyOverride?.textStyle)}>{copyOverride?.text || pullQuote.text}</p>
+        <div className="cat-pull-quote-attr" style={textStyle(copyOverride?.attrStyle)}>{copyOverride?.attr || pullQuote.attr}</div>
       </div>
     </div>
   )
@@ -520,7 +548,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         )}
         <div className="cat-hero-bg" />
         <div className="cat-hero-meta">
-          <h1 className="cat-hero-title">{copy.heroTitle || data.cat.name}</h1>
+          <h1 className="cat-hero-title" style={textStyle(copy.heroTitleStyle)}>{copy.heroTitle || data.cat.name}</h1>
           <div className="cat-hero-lower">
             {yearRange && <div className="cat-hero-year">{yearRange}</div>}
             <div className="cat-scroll-hint">
@@ -532,8 +560,8 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
       </section>
 
       <section className="cat-intro" data-sr>
-        <div className="cat-intro-label ks-eyebrow">{copy.introLabel || data.intro.label}</div>
-        <p className="cat-intro-body">
+        <div className="cat-intro-label ks-eyebrow" style={textStyle(copy.introLabelStyle)}>{copy.introLabel || data.intro.label}</div>
+        <p className="cat-intro-body" style={textStyle(copy.introBodyStyle)}>
           {copy.introBody
             ? applyYearSpan(copy.introBody)
             : data.intro.body.map((seg: IntroPart, i: number) =>
@@ -571,7 +599,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
                   <RowPullQuote
                     key={key}
                     pullQuote={data.pullQuote}
-                    copyOverride={{ text: copy.pullQuoteText, attr: copy.pullQuoteAttr }}
+                    copyOverride={{ text: copy.pullQuoteText, attr: copy.pullQuoteAttr, textStyle: copy.pullQuoteStyle, attrStyle: copy.pullQuoteAttrStyle }}
                   />
                 )
               default:
