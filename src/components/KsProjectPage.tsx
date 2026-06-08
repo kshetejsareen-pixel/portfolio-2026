@@ -175,12 +175,11 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
         )}
       </section>
 
-      <footer className="cat-footer">
-        <div>© Kshetej Sareen · MMXXVI</div>
-        <div className="cat-footer-center">
-          <Link href={`/${catId}`}>↑ Back to {catLabel}</Link>
+      <footer className="proj-footer">
+        <div className="cat-footer-copy">
+          <div>© Kshetej Sareen · 2026</div>
+          <div>info@kshetejsareen.com</div>
         </div>
-        <div className="cat-footer-right">info@kshetejsareen.com</div>
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />

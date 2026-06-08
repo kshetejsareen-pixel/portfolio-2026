@@ -4199,6 +4199,23 @@ a.info-touch-val:hover { color: var(--paper); }
   letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--mute);
 }
+.proj-footer {
+  position: relative;
+  background: #000;
+}
+.proj-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent 0px,
+    rgba(236, 232, 224, 0.12) 56px,
+    rgba(236, 232, 224, 0.12) calc(100% - 56px),
+    transparent 100%
+  );
+  pointer-events: none;
+}
 @media (max-width: 640px) {
   .proj-hero { height: 55vh; min-height: 280px; }
   .proj-gallery-grid { flex-direction: column; }
