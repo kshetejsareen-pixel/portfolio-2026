@@ -1071,7 +1071,7 @@ button, input, textarea, select { font: inherit; }
   padding-bottom: 0.2em;
 }
 .cat-hero-lower {
-  margin-top: 16px; display: flex; justify-content: space-between; align-items: flex-start;
+  margin-top: 16px; display: flex; align-items: flex-start;
 }
 .cat-hero-year {
   font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.18em;
@@ -1079,7 +1079,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-scroll-hint {
   display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right;
-  flex-shrink: 0;
+  flex-shrink: 0; margin-left: auto;
 }
 .cat-scroll-hint-label {
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
