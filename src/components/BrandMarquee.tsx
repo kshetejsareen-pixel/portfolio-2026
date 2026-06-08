@@ -17,7 +17,7 @@ const BRANDS = [
   'Meliá Hotels & Resorts',
   'Fiyavalhu Resort Maldives',
   'Edge Creekside Hotel',
-  'Jamie Oliver\'s',
+  "Jamie Oliver's",
   'MDH Spices',
   '93 Degrees Coffee Roasters',
   'RAVOH',
@@ -35,8 +35,9 @@ export function BrandMarquee() {
 
   return (
     <div className="brand-bar">
-      <div className="brand-bar-label">Trusted by</div>
-      <div className="brand-bar-divider" />
+      <div className="brand-bar-top">
+        <div className="brand-bar-label">Trusted by</div>
+      </div>
       <div className="brand-bar-track-wrap">
         <div className="brand-bar-track">
           {items.map((b, i) => (

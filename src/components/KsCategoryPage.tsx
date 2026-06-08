@@ -609,9 +609,10 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </section>
       )}
 
+      <div className="cat-brand-strip"><BrandMarquee /></div>
+
       {adminProjects !== null && (filteredProjects ?? adminProjects).length > 0 && (
       <>
-      <div className="cat-brand-strip"><BrandMarquee /></div>
       <section className="cat-projects" data-sr>
         <header className="cat-projects-header">
           <h2 className="cat-projects-title">
@@ -714,8 +715,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
           )
         })()}
       </section>
-      </>
-      )}
+      </>)}
 
       <footer className="cat-footer">
         <ExploreNav catId={catId} />
