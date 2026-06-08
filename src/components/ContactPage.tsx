@@ -69,6 +69,14 @@ const NOTES = [
   },
 ]
 
+function parseNotesCol(text: string): { label: string; value: string }[] {
+  return text.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+    const idx = l.indexOf(' — ')
+    if (idx === -1) return { label: l, value: '' }
+    return { label: l.slice(0, idx), value: l.slice(idx + 3) }
+  })
+}
+
 type Status = 'idle' | 'submitting' | 'sent' | 'error'
 
 function Chip({
@@ -113,10 +121,26 @@ export function ContactPage() {
       .catch(() => {})
   }, [])
 
-  const tickerStatus   = contactCopy.tickerStatus   ?? 'Open for bookings — May through Sept 2026'
-  const tickerLeadTime = contactCopy.tickerLeadTime ?? 'Lead time · 3–6 weeks'
-  const heroPara1      = contactCopy.heroPara1      ?? null
-  const heroPara2      = contactCopy.heroPara2      ?? null
+  const tickerStatus    = contactCopy.tickerStatus    ?? 'Open for bookings — May through Sept 2026'
+  const tickerLeadTime  = contactCopy.tickerLeadTime  ?? 'Lead time · 3–6 weeks'
+  const heroTitle       = contactCopy.heroTitle       ?? 'Say hello'
+  const heroPara1       = contactCopy.heroPara1       ?? null
+  const heroPara2       = contactCopy.heroPara2       ?? null
+  const inquiryHeading  = contactCopy.inquiryHeading  ?? 'Start with the project, not the form.'
+  const inquiryNote     = contactCopy.inquiryNote     ?? "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message."
+  const privacyText     = contactCopy.privacyText     ?? 'No mailing list. Your details stay between us.'
+  const directTitle     = contactCopy.directTitle     ?? 'Direct channels.'
+  const directDesc      = contactCopy.directDesc      ?? 'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.'
+
+  const directChannels = contactCopy.directChannels
+    ? contactCopy.directChannels.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+        const parts = l.split(' | ')
+        return { label: parts[0] ?? '', value: parts[1] ?? '', note: parts[2] ?? '', href: parts[3] || null }
+      })
+    : DIRECT
+
+  const leftNotes  = contactCopy.notesLeft  ? parseNotesCol(contactCopy.notesLeft)  : NOTES.map((n) => ({ label: n.label,  value: n.value  }))
+  const rightNotes = contactCopy.notesRight ? parseNotesCol(contactCopy.notesRight) : NOTES.map((n) => ({ label: n.label2, value: n.value2 }))
 
   const toggleType = (t: string) =>
     setProjectTypes((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t])
@@ -180,7 +204,7 @@ export function ContactPage() {
         <section className="contact-hero-v2">
           <div className="contact-hero-eyebrow ks-eyebrow">Contact</div>
           <h1 className="contact-hero-title">
-            Say hello<span className="contact-hero-period">.</span>
+            {heroTitle}<span className="contact-hero-period">.</span>
           </h1>
           <div className="contact-hero-cols">
             <p className="contact-hero-col">
@@ -198,13 +222,8 @@ export function ContactPage() {
         <section className="contact-inquiry" data-sr>
           <div className="contact-inquiry-left">
             <div className="contact-inquiry-label ks-eyebrow">01 · Project inquiry</div>
-            <h2 className="contact-inquiry-heading">
-              Start with the <em>project, not the form.</em>
-            </h2>
-            <p className="contact-inquiry-note">
-              The chips are optional — fill the ones you know.
-              Skip the rest. I&rsquo;ll figure it out from the message.
-            </p>
+            <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
+            <p className="contact-inquiry-note">{inquiryNote}</p>
           </div>
 
           {status === 'sent' ? (
@@ -311,9 +330,7 @@ export function ContactPage() {
 
               {/* Submit row */}
               <div className="contact-submit-row">
-                <span className="contact-privacy">
-                  No mailing list. Your details stay between us.
-                </span>
+                <span className="contact-privacy">{privacyText}</span>
                 <button
                   className="contact-submit-v2"
                   type="submit"
@@ -333,15 +350,12 @@ export function ContactPage() {
         <section className="contact-direct-v2">
           <div className="contact-direct-head">
             <h2 className="contact-direct-title">
-              Direct channels<span className="contact-hero-period">.</span>
+              {directTitle}
             </h2>
-            <p className="contact-direct-desc">
-              For returning collaborators, press inquiries, and walk-up
-              questions — the fastest way is straight to the line.
-            </p>
+            <p className="contact-direct-desc">{directDesc}</p>
           </div>
           <div className="contact-direct-grid">
-            {DIRECT.map((d) => (
+            {directChannels.map((d) => (
               <div key={d.label} className="contact-direct-cell">
                 <div className="contact-direct-cell-label ks-eyebrow">{d.label}</div>
                 {d.href ? (
@@ -368,27 +382,31 @@ export function ContactPage() {
         <section className="contact-notes" data-sr>
           <div className="contact-notes-label ks-eyebrow">02 · Working notes</div>
           <div className="contact-notes-table">
-            {NOTES.map((row, i) => (
-              <div key={i} className="contact-notes-row">
-                <div className="contact-notes-cell">
-                  <div className="contact-notes-key ks-eyebrow">{row.label}</div>
-                  <div className="contact-notes-val">{row.value}</div>
+            {leftNotes.map((left, i) => {
+              const right = rightNotes[i]
+              return (
+                <div key={i} className="contact-notes-row">
+                  <div className="contact-notes-cell">
+                    <div className="contact-notes-key ks-eyebrow">{left.label}</div>
+                    <div className="contact-notes-val">{left.value}</div>
+                  </div>
+                  <div className="contact-notes-cell contact-notes-cell--right">
+                    <div className="contact-notes-key ks-eyebrow">{right?.label}</div>
+                    <div className="contact-notes-val">{right?.value}</div>
+                  </div>
                 </div>
-                <div className="contact-notes-cell contact-notes-cell--right">
-                  <div className="contact-notes-key ks-eyebrow">{row.label2}</div>
-                  <div className="contact-notes-val">{row.value2}</div>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </section>
 
       </main>
 
       <footer className="cat-footer">
-        <div>© Kshetej Sareen · 2026</div>
-        <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
-        <div className="cat-footer-right">info@kshetejsareen.com</div>
+        <div className="cat-footer-copy">
+          <div>© Kshetej Sareen · 2026</div>
+          <div>info@kshetejsareen.com</div>
+        </div>
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />

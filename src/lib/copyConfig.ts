@@ -22,19 +22,37 @@ export interface CategoryCopy {
 }
 
 export interface InfoCopy {
-  heroIntro?: string      // hero paragraph
-  bioPara1?: string       // first biography paragraph
-  bioPara2?: string       // second biography paragraph
-  nowItems?: string       // newline-separated, one item per line
-  clients?: string        // "Name — Year" per line
-  press?: string          // "Name — Year" per line
+  heroIntro?: string
+  bioPara1?: string
+  bioPara2?: string
+  heroCap?: string           // photo caption, e.g. "Self · Studio · 2026"
+  practiceItems?: string     // "Label — N" per line
+  practiceNote?: string
+  nowItems?: string          // one item per line
+  clients?: string           // "Name — Year" per line
+  press?: string             // "Name — Year" per line
+  touchEmail?: string
+  touchEmailNote?: string
+  touchAppointment?: string
+  touchAppointmentNote?: string
+  touchSocial?: string
+  touchSocialNote?: string
 }
 
 export interface ContactCopy {
-  tickerStatus?: string   // left ticker text
-  tickerLeadTime?: string // right ticker text
-  heroPara1?: string      // first hero paragraph
-  heroPara2?: string      // second hero paragraph
+  tickerStatus?: string
+  tickerLeadTime?: string
+  heroTitle?: string
+  heroPara1?: string
+  heroPara2?: string
+  inquiryHeading?: string
+  inquiryNote?: string
+  privacyText?: string
+  directTitle?: string
+  directDesc?: string
+  directChannels?: string    // "Label | Value | Note | Href" per line
+  notesLeft?: string         // "Label — Value" per line (left column)
+  notesRight?: string        // "Label — Value" per line (right column)
 }
 
 export type CopyConfig = Record<string, Record<string, unknown>>

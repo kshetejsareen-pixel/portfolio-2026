@@ -1642,17 +1642,33 @@ function InfoCopyEditorPanel({
   onClose: () => void
 }) {
   const c = initial as InfoCopy
-  const [heroIntro, setHeroIntro] = useState(c.heroIntro ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.')
-  const [bioPara1, setBioPara1]   = useState(c.bioPara1  ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.')
-  const [bioPara2, setBioPara2]   = useState(c.bioPara2  ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.')
-  const [nowItems, setNowItems]   = useState(c.nowItems  ?? 'Residency — Kindred Studio, Brooklyn — through Aug 2026\nIn progress — The Fruit Table, vol. ii (Kyoto)\nAvailable — Bookings · May–Sept 2026\nPrint sales — Editions of 12 — by request')
-  const [clients, setClients]     = useState(c.clients   ?? 'Apartamento — 2021—\nCereal Magazine — 2022—\nKinfolk — 2023—\nThe New York Times — 2024—\nThe Gentlewoman — 2024\nAēsop — 2023, 2025\nLe Labo — 2024\nHermès — 2025')
-  const [press, setPress]         = useState(c.press     ?? "Pier 24 — group show — 2025\nAperture, vol. 246 — 2024\nFoam Talent — finalist — 2024\nBritish Journal of Photography — 2023\nIt's Nice That · profile — 2023")
+  const [heroIntro,           setHeroIntro]           = useState(c.heroIntro           ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.')
+  const [bioPara1,            setBioPara1]            = useState(c.bioPara1            ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.')
+  const [bioPara2,            setBioPara2]            = useState(c.bioPara2            ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.')
+  const [heroCap,             setHeroCap]             = useState(c.heroCap             ?? 'Self · Studio · 2026')
+  const [practiceItems,       setPracticeItems]       = useState(c.practiceItems       ?? 'Portraits — 24\nCulinary — 38\nSpaces — 19\nObjects — 12\nMotion — 7')
+  const [practiceNote,        setPracticeNote]        = useState(c.practiceNote        ?? 'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.')
+  const [nowItems,            setNowItems]            = useState(c.nowItems            ?? 'Residency — Kindred Studio, Brooklyn — through Aug 2026\nIn progress — The Fruit Table, vol. ii (Kyoto)\nAvailable — Bookings · May–Sept 2026\nPrint sales — Editions of 12 — by request')
+  const [clients,             setClients]             = useState(c.clients             ?? 'Apartamento — 2021—\nCereal Magazine — 2022—\nKinfolk — 2023—\nThe New York Times — 2024—\nThe Gentlewoman — 2024\nAēsop — 2023, 2025\nLe Labo — 2024\nHermès — 2025')
+  const [press,               setPress]               = useState(c.press               ?? "Pier 24 — group show — 2025\nAperture, vol. 246 — 2024\nFoam Talent — finalist — 2024\nBritish Journal of Photography — 2023\nIt's Nice That · profile — 2023")
+  const [touchEmail,          setTouchEmail]          = useState(c.touchEmail          ?? 'info@kshetejsareen.com')
+  const [touchEmailNote,      setTouchEmailNote]      = useState(c.touchEmailNote      ?? 'For commissions & prints')
+  const [touchAppointment,    setTouchAppointment]    = useState(c.touchAppointment    ?? 'New York · Bombay')
+  const [touchAppointmentNote,setTouchAppointmentNote]= useState(c.touchAppointmentNote ?? 'Studio visits welcome')
+  const [touchSocial,         setTouchSocial]         = useState(c.touchSocial         ?? '@kshetejsareen')
+  const [touchSocialNote,     setTouchSocialNote]     = useState(c.touchSocialNote     ?? 'Instagram')
   const [saving, setSaving] = useState(false)
 
   const handleSave = async () => {
     setSaving(true)
-    await onSave({ heroIntro, bioPara1, bioPara2, nowItems, clients, press })
+    await onSave({
+      heroIntro, bioPara1, bioPara2, heroCap,
+      practiceItems, practiceNote,
+      nowItems, clients, press,
+      touchEmail, touchEmailNote,
+      touchAppointment, touchAppointmentNote,
+      touchSocial, touchSocialNote,
+    })
     setSaving(false)
   }
 
@@ -1669,6 +1685,13 @@ function InfoCopyEditorPanel({
           <label className="adm-copy-label">Hero intro paragraph</label>
           <textarea className="adm-copy-textarea" rows={3} value={heroIntro} onChange={(e) => setHeroIntro(e.target.value)} />
         </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Photo caption
+            <span className="adm-copy-hint">Below the portrait image</span>
+          </label>
+          <input className="adm-copy-input" value={heroCap} onChange={(e) => setHeroCap(e.target.value)} />
+        </div>
 
         <div className="adm-copy-section-label">Biography</div>
         <div className="adm-copy-field">
@@ -1678,6 +1701,19 @@ function InfoCopyEditorPanel({
         <div className="adm-copy-field">
           <label className="adm-copy-label">Second paragraph</label>
           <textarea className="adm-copy-textarea" rows={3} value={bioPara2} onChange={(e) => setBioPara2(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Practice</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Practice items
+            <span className="adm-copy-hint">Category — frame count, one per line</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={5} value={practiceItems} onChange={(e) => setPracticeItems(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Practice note</label>
+          <input className="adm-copy-input" value={practiceNote} onChange={(e) => setPracticeNote(e.target.value)} />
         </div>
 
         <div className="adm-copy-section-label">Now</div>
@@ -1707,6 +1743,38 @@ function InfoCopyEditorPanel({
           <textarea className="adm-copy-textarea" rows={5} value={press} onChange={(e) => setPress(e.target.value)} />
         </div>
 
+        <div className="adm-copy-section-label">Get in touch</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Studio email</label>
+          <input className="adm-copy-input" value={touchEmail} onChange={(e) => setTouchEmail(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Email note
+            <span className="adm-copy-hint">Small line below the email</span>
+          </label>
+          <input className="adm-copy-input" value={touchEmailNote} onChange={(e) => setTouchEmailNote(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">By appointment (locations)</label>
+          <input className="adm-copy-input" value={touchAppointment} onChange={(e) => setTouchAppointment(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Appointment note</label>
+          <input className="adm-copy-input" value={touchAppointmentNote} onChange={(e) => setTouchAppointmentNote(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Social handle
+            <span className="adm-copy-hint">Links to instagram.com/handle</span>
+          </label>
+          <input className="adm-copy-input" value={touchSocial} onChange={(e) => setTouchSocial(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Social note</label>
+          <input className="adm-copy-input" value={touchSocialNote} onChange={(e) => setTouchSocialNote(e.target.value)} />
+        </div>
+
       </div>
       <div className="adm-copy-actions">
         <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
@@ -1728,15 +1796,30 @@ function ContactCopyEditorPanel({
   onClose: () => void
 }) {
   const c = initial as ContactCopy
-  const [tickerStatus,   setTickerStatus]   = useState(c.tickerStatus   ?? 'Open for bookings — May through Sept 2026')
-  const [tickerLeadTime, setTickerLeadTime] = useState(c.tickerLeadTime ?? 'Lead time · 3–6 weeks')
-  const [heroPara1, setHeroPara1]           = useState(c.heroPara1      ?? "For commissions, prints, and press — the form is the fastest route. Tell me a little about the project and I'll write back within two working days.")
-  const [heroPara2, setHeroPara2]           = useState(c.heroPara2      ?? "Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.")
+  const [tickerStatus,    setTickerStatus]    = useState(c.tickerStatus    ?? 'Open for bookings — May through Sept 2026')
+  const [tickerLeadTime,  setTickerLeadTime]  = useState(c.tickerLeadTime  ?? 'Lead time · 3–6 weeks')
+  const [heroTitle,       setHeroTitle]       = useState(c.heroTitle       ?? 'Say hello')
+  const [heroPara1,       setHeroPara1]       = useState(c.heroPara1       ?? "For commissions, prints, and press — the form is the fastest route. Tell me a little about the project and I'll write back within two working days.")
+  const [heroPara2,       setHeroPara2]       = useState(c.heroPara2       ?? "Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.")
+  const [inquiryHeading,  setInquiryHeading]  = useState(c.inquiryHeading  ?? 'Start with the project, not the form.')
+  const [inquiryNote,     setInquiryNote]     = useState(c.inquiryNote     ?? "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message.")
+  const [privacyText,     setPrivacyText]     = useState(c.privacyText     ?? 'No mailing list. Your details stay between us.')
+  const [directTitle,     setDirectTitle]     = useState(c.directTitle     ?? 'Direct channels.')
+  const [directDesc,      setDirectDesc]      = useState(c.directDesc      ?? 'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.')
+  const [directChannels,  setDirectChannels]  = useState(c.directChannels  ?? 'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 99995 67676 | Fastest response | https://wa.me/919999567676\nElsewhere | @kshetejsareen | Instagram | https://instagram.com/kshetejsareen\nNew York | Brooklyn, NY | By appointment · Mon–Fri |\nBombay | Bandra W, Mumbai | By appointment |\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com')
+  const [notesLeft,       setNotesLeft]       = useState(c.notesLeft       ?? 'Lead time — Commissions typically book 3–6 weeks out. Print orders ship within 10 working days.\nTravel — Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.\nImage use & press — Press kit and high-res files available on request from info@kshetejsareen.com.')
+  const [notesRight,      setNotesRight]      = useState(c.notesRight      ?? 'Day rates — Available on request once project scope is clear. Half-day, full-day, and multi-day rates.\nUsage & licensing — All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.\nPrints — Editions of 12, printed in studio on Hahnemühle Photo Rag. Signed, numbered, and stamped on verso.')
   const [saving, setSaving] = useState(false)
 
   const handleSave = async () => {
     setSaving(true)
-    await onSave({ tickerStatus, tickerLeadTime, heroPara1, heroPara2 })
+    await onSave({
+      tickerStatus, tickerLeadTime,
+      heroTitle, heroPara1, heroPara2,
+      inquiryHeading, inquiryNote, privacyText,
+      directTitle, directDesc, directChannels,
+      notesLeft, notesRight,
+    })
     setSaving(false)
   }
 
@@ -1766,12 +1849,66 @@ function ContactCopyEditorPanel({
 
         <div className="adm-copy-section-label">Hero</div>
         <div className="adm-copy-field">
+          <label className="adm-copy-label">Hero title</label>
+          <input className="adm-copy-input" value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="Say hello" />
+        </div>
+        <div className="adm-copy-field">
           <label className="adm-copy-label">First paragraph</label>
           <textarea className="adm-copy-textarea" rows={4} value={heroPara1} onChange={(e) => setHeroPara1(e.target.value)} />
         </div>
         <div className="adm-copy-field">
           <label className="adm-copy-label">Second paragraph</label>
           <textarea className="adm-copy-textarea" rows={4} value={heroPara2} onChange={(e) => setHeroPara2(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Project inquiry</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Section heading</label>
+          <input className="adm-copy-input" value={inquiryHeading} onChange={(e) => setInquiryHeading(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Section note</label>
+          <textarea className="adm-copy-textarea" rows={2} value={inquiryNote} onChange={(e) => setInquiryNote(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Privacy text
+            <span className="adm-copy-hint">Below the submit button</span>
+          </label>
+          <input className="adm-copy-input" value={privacyText} onChange={(e) => setPrivacyText(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Direct channels</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Section title</label>
+          <input className="adm-copy-input" value={directTitle} onChange={(e) => setDirectTitle(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Section description</label>
+          <textarea className="adm-copy-textarea" rows={2} value={directDesc} onChange={(e) => setDirectDesc(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Channel entries
+            <span className="adm-copy-hint">Label | Value | Note | URL, one per line. URL is optional.</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={7} value={directChannels} onChange={(e) => setDirectChannels(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Working notes</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Left column
+            <span className="adm-copy-hint">Label — Value, one per line</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={5} value={notesLeft} onChange={(e) => setNotesLeft(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Right column
+            <span className="adm-copy-hint">Label — Value, one per line</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={5} value={notesRight} onChange={(e) => setNotesRight(e.target.value)} />
         </div>
 
       </div>

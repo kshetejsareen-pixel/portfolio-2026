@@ -83,6 +83,22 @@ export function InfoPage() {
   const heroIntro = copy.heroIntro ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.'
   const bioPara1  = copy.bioPara1  ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.'
   const bioPara2  = copy.bioPara2  ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.'
+  const heroCap   = copy.heroCap   ?? 'Self · Studio · 2026'
+  const practiceNote = copy.practiceNote ?? 'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.'
+  const touchEmail           = copy.touchEmail           ?? 'info@kshetejsareen.com'
+  const touchEmailNote       = copy.touchEmailNote       ?? 'For commissions & prints'
+  const touchAppointment     = copy.touchAppointment     ?? 'New York · Bombay'
+  const touchAppointmentNote = copy.touchAppointmentNote ?? 'Studio visits welcome'
+  const touchSocial          = copy.touchSocial          ?? '@kshetejsareen'
+  const touchSocialNote      = copy.touchSocialNote      ?? 'Instagram'
+
+  const practiceItems = copy.practiceItems
+    ? copy.practiceItems.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+        const idx = l.lastIndexOf(' — ')
+        if (idx === -1) return { label: l, frames: 0 }
+        return { label: l.slice(0, idx), frames: parseInt(l.slice(idx + 3), 10) || 0 }
+      })
+    : DEFAULT_PRACTICE
 
   const nowItems = copy.nowItems
     ? copy.nowItems.split('\n').map((l) => l.trim()).filter(Boolean)
@@ -141,7 +157,7 @@ export function InfoPage() {
                 </div>
               )}
             </div>
-            <div className="info-hero-cap ks-eyebrow">Self · Studio · 2026</div>
+            <div className="info-hero-cap ks-eyebrow">{heroCap}</div>
           </div>
 
           <div className="info-hero-text-col">
@@ -181,17 +197,14 @@ export function InfoPage() {
               </div>
               <div className="info-quad-rule" />
               <ul className="info-practice-list">
-                {DEFAULT_PRACTICE.map((p) => (
+                {practiceItems.map((p) => (
                   <li key={p.label} className="info-practice-item">
                     <span className="info-practice-label">{p.label}</span>
                     <span className="info-practice-frames">{p.frames}&thinsp;frames</span>
                   </li>
                 ))}
               </ul>
-              <p className="info-practice-note">
-                Selected frames live in the category index — Portraits, Culinary,
-                Spaces, Objects, Motion.
-              </p>
+              <p className="info-practice-note">{practiceNote}</p>
             </div>
 
             {/* 02 Now */}
@@ -260,27 +273,27 @@ export function InfoPage() {
           <div className="info-touch-cols">
             <div className="info-touch-col">
               <div className="info-touch-col-label">Studio</div>
-              <a href="mailto:info@kshetejsareen.com" className="info-touch-val">
-                info@kshetejsareen.com
+              <a href={`mailto:${touchEmail}`} className="info-touch-val">
+                {touchEmail}
               </a>
-              <div className="info-touch-sub">For commissions &amp; prints</div>
+              <div className="info-touch-sub">{touchEmailNote}</div>
             </div>
             <div className="info-touch-col">
               <div className="info-touch-col-label">By appointment</div>
-              <div className="info-touch-val">New York · Bombay</div>
-              <div className="info-touch-sub">Studio visits welcome</div>
+              <div className="info-touch-val">{touchAppointment}</div>
+              <div className="info-touch-sub">{touchAppointmentNote}</div>
             </div>
             <div className="info-touch-col">
               <div className="info-touch-col-label">Elsewhere</div>
               <a
-                href="https://instagram.com/kshetejsareen"
+                href={`https://instagram.com/${touchSocial.replace(/^@/, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="info-touch-val"
               >
-                @kshetejsareen
+                {touchSocial}
               </a>
-              <div className="info-touch-sub">Instagram</div>
+              <div className="info-touch-sub">{touchSocialNote}</div>
             </div>
           </div>
         </section>
@@ -288,9 +301,10 @@ export function InfoPage() {
       </main>
 
       <footer className="cat-footer">
-        <div>© Kshetej Sareen · 2026</div>
-        <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
-        <div className="cat-footer-right">info@kshetejsareen.com</div>
+        <div className="cat-footer-copy">
+          <div>© Kshetej Sareen · 2026</div>
+          <div>info@kshetejsareen.com</div>
+        </div>
       </footer>
 
       <KsMenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
