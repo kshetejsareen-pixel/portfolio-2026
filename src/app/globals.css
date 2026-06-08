@@ -180,7 +180,7 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   align-items: center;
   width: max-content;
-  animation: ks-marquee 90s linear infinite;
+  animation: ks-marquee 100s linear infinite;
 }
 
 .brand-bar-track:hover {
