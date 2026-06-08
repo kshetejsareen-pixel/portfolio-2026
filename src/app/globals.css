@@ -3261,7 +3261,7 @@ a.info-touch-val:hover { color: var(--paper); }
 
 .adm-copy-pubid {
   font-size: 9px;
-  color: #333;
+  color: rgba(255,255,255,0.25);
   letter-spacing: 0.08em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3272,14 +3272,14 @@ a.info-touch-val:hover { color: var(--paper); }
   margin: 0 14px 2px;
   padding: 12px 14px;
   background: #0c0c0c;
-  border: 1px solid #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.07);
 }
 
 .adm-copy-format-title {
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #333;
+  color: rgba(255,255,255,0.4);
   margin-bottom: 8px;
 }
 
@@ -3337,14 +3337,14 @@ a.info-touch-val:hover { color: var(--paper); }
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #555;
+  color: rgba(255,255,255,0.7);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .adm-copy-hint {
-  color: #333;
+  color: rgba(255,255,255,0.35);
   font-size: 8px;
   letter-spacing: 0.06em;
   text-transform: none;
@@ -3364,7 +3364,8 @@ a.info-touch-val:hover { color: var(--paper); }
   outline: none;
   transition: border-color 150ms;
 }
-.adm-copy-input:focus { border-color: #444; }
+.adm-copy-input::placeholder { color: rgba(255,255,255,0.2); }
+.adm-copy-input:focus { border-color: rgba(255,255,255,0.3); }
 
 .adm-style-row {
   display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap;
@@ -3372,27 +3373,27 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-style-group { display: flex; gap: 3px; }
 .adm-style-btn {
   padding: 2px 7px; font-size: 10px; border-radius: 3px;
-  border: 1px solid #333; background: #1a1a1a; color: #555;
+  border: 1px solid rgba(255,255,255,0.15); background: #1a1a1a; color: rgba(255,255,255,0.45);
   cursor: pointer; letter-spacing: 0.04em; transition: all 120ms;
 }
-.adm-style-btn.active { background: #2a2a2a; color: #ccc; border-color: #555; }
-.adm-style-btn:hover { color: #aaa; border-color: #444; }
+.adm-style-btn.active { background: #2a2a2a; color: #fff; border-color: rgba(255,255,255,0.5); }
+.adm-style-btn:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.3); }
 .adm-style-i { font-style: italic; font-size: 11px; }
 .adm-style-b { font-weight: 700; font-size: 11px; }
 .adm-style-size { display: flex; align-items: center; gap: 3px; }
 .adm-style-size-input {
   width: 44px; padding: 2px 5px; font-size: 10px;
-  border: 1px solid #333; background: #1a1a1a; color: #aaa;
+  border: 1px solid rgba(255,255,255,0.15); background: #1a1a1a; color: #fff;
   border-radius: 3px; text-align: right;
 }
-.adm-style-size-input:focus { border-color: #444; outline: none; }
-.adm-style-size-unit { font-size: 9px; color: #444; }
+.adm-style-size-input:focus { border-color: rgba(255,255,255,0.3); outline: none; }
+.adm-style-size-unit { font-size: 9px; color: rgba(255,255,255,0.4); }
 
 .adm-copy-actions {
   display: flex;
   gap: 8px;
   padding: 14px;
-  border-top: 1px solid #1e1e1e;
+  border-top: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 
@@ -3400,8 +3401,8 @@ a.info-touch-val:hover { color: var(--paper); }
   flex: 1;
   padding: 10px;
   background: transparent;
-  border: 1px solid #222;
-  color: #555;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.14em;
@@ -3409,7 +3410,7 @@ a.info-touch-val:hover { color: var(--paper); }
   cursor: pointer;
   transition: color 150ms, border-color 150ms;
 }
-.adm-copy-cancel:hover { color: #888; border-color: #444; }
+.adm-copy-cancel:hover { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); }
 
 .adm-copy-save {
   flex: 2;
@@ -3503,9 +3504,9 @@ a.info-touch-val:hover { color: var(--paper); }
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #555;
+  color: rgba(255,255,255,0.6);
   padding: 12px 0 4px;
-  border-bottom: 1px solid #1e1e1e;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   margin-bottom: 4px;
 }
 
@@ -3522,24 +3523,24 @@ a.info-touch-val:hover { color: var(--paper); }
   line-height: 1.5;
   box-sizing: border-box;
 }
-.adm-copy-textarea:focus { outline: none; border-color: #444; }
-.adm-copy-textarea::placeholder { color: #444; }
+.adm-copy-textarea:focus { outline: none; border-color: rgba(255,255,255,0.3); }
+.adm-copy-textarea::placeholder { color: rgba(255,255,255,0.2); }
 
 .adm-page-copy-btn {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #666;
+  color: rgba(255,255,255,0.5);
   background: transparent;
-  border: 1px solid #2a2a2a;
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 3px;
   padding: 4px 10px;
   cursor: pointer;
   transition: color 150ms, border-color 150ms;
   margin-left: auto;
 }
-.adm-page-copy-btn:hover { color: #aaa; border-color: #444; }
-.adm-page-copy-btn.active { color: #ccc; border-color: #555; background: #1a1a1a; }
+.adm-page-copy-btn:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.3); }
+.adm-page-copy-btn.active { color: #fff; border-color: rgba(255,255,255,0.5); background: #1a1a1a; }
 
 /* ═══════════════════════════════════════════════════════════════
    ADMIN — Projects section (category pages)

@@ -5,6 +5,10 @@ import { getLandingSlots, GALLERY_SLOTS, PAGES, type Slot } from '@/lib/slots'
 import { categories } from '@/lib/categories'
 import { PROJECT_TAGS } from '@/lib/tags'
 import { FocalPointEditor } from '@/components/FocalPointEditor'
+import {
+  culinaryData, spacesData, portraitsData, objectsData, motionData,
+  type IntroPart,
+} from '@/lib/categoryData'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -788,7 +792,7 @@ export function AdminPanel() {
         <PageCopyEditorPanel
           key={rightPanel.categoryId}
           categoryId={rightPanel.categoryId}
-          initial={copyCfg[rightPanel.categoryId] ?? {}}
+          initial={{ ...(CATEGORY_DEFAULTS[rightPanel.categoryId] ?? {}), ...copyCfg[rightPanel.categoryId] }}
           onSave={async (copy) => {
             await fetch('/api/admin/copy', {
               method: 'PATCH',
@@ -1363,6 +1367,18 @@ function FolderBrowserPanel({
 
 // ─── PageCopyEditorPanel ──────────────────────────────────────────────────────
 
+function serializeBody(parts: IntroPart[]): string {
+  return parts.map((p) => (typeof p === 'string' ? p : p.it)).join('')
+}
+
+const CATEGORY_DEFAULTS: Record<string, CategoryCopy> = {
+  culinary:  { heroTitle: culinaryData.cat.name,  introLabel: culinaryData.intro.label,  introBody: serializeBody(culinaryData.intro.body),  pullQuoteText: culinaryData.pullQuote.text,  pullQuoteAttr: culinaryData.pullQuote.attr  },
+  spaces:    { heroTitle: spacesData.cat.name,    introLabel: spacesData.intro.label,    introBody: serializeBody(spacesData.intro.body),    pullQuoteText: spacesData.pullQuote.text,    pullQuoteAttr: spacesData.pullQuote.attr    },
+  portraits: { heroTitle: portraitsData.cat.name, introLabel: portraitsData.intro.label, introBody: serializeBody(portraitsData.intro.body), pullQuoteText: portraitsData.pullQuote.text, pullQuoteAttr: portraitsData.pullQuote.attr },
+  objects:   { heroTitle: objectsData.cat.name,   introLabel: objectsData.intro.label,   introBody: serializeBody(objectsData.intro.body),   pullQuoteText: objectsData.pullQuote.text,   pullQuoteAttr: objectsData.pullQuote.attr   },
+  motion:    { heroTitle: motionData.cat.name,    introLabel: motionData.intro.label,    introBody: serializeBody(motionData.intro.body),    pullQuoteText: motionData.pullQuote.text,    pullQuoteAttr: motionData.pullQuote.attr    },
+}
+
 const FONT_VAR: Record<NonNullable<TextStyle['font']>, string> = {
   serif: 'var(--font-serif)',
   mono:  'var(--font-mono)',
@@ -1464,7 +1480,7 @@ function PageCopyEditorPanel({
             className="adm-copy-input"
             value={copy.heroTitle ?? ''}
             onChange={set('heroTitle')}
-            placeholder={`e.g. ${label}`}
+            placeholder={label}
           />
           <StyleControls value={copy.heroTitleStyle} onChange={setStyle('heroTitleStyle')} />
         </div>
@@ -1480,7 +1496,7 @@ function PageCopyEditorPanel({
             className="adm-copy-input"
             value={copy.introLabel ?? ''}
             onChange={set('introLabel')}
-            placeholder="e.g. On the table"
+            placeholder="On the work"
           />
           <StyleControls value={copy.introLabelStyle} onChange={setStyle('introLabelStyle')} />
         </div>
@@ -1495,7 +1511,7 @@ function PageCopyEditorPanel({
             value={copy.introBody ?? ''}
             onChange={set('introBody')}
             rows={5}
-            placeholder="Describe the work in a few sentences…"
+            placeholder="Paragraph text for the category intro…"
           />
           <StyleControls value={copy.introBodyStyle} onChange={setStyle('introBodyStyle')} />
         </div>
@@ -1523,7 +1539,7 @@ function PageCopyEditorPanel({
             className="adm-copy-input"
             value={copy.pullQuoteAttr ?? ''}
             onChange={set('pullQuoteAttr')}
-            placeholder="e.g. — Kshetej Sareen, 2025"
+            placeholder="Studio note · 2025"
           />
           <StyleControls value={copy.pullQuoteAttrStyle} onChange={setStyle('pullQuoteAttrStyle')} />
         </div>
@@ -1539,7 +1555,7 @@ function PageCopyEditorPanel({
             className="adm-copy-input"
             value={copy.projectsSectionTitle ?? ''}
             onChange={set('projectsSectionTitle')}
-            placeholder="e.g. Selected shoots"
+            placeholder="Selected Projects"
           />
         </div>
       </div>
