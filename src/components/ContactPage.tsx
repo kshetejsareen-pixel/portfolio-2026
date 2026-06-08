@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import type { ContactCopy } from '@/lib/copyConfig'
 
 const PROJECT_TYPES = ['Editorial', 'Commercial', 'Personal', 'Print Sale', 'Press']
 const TIMELINES = ['This month', '1–3 months', '3+ months', 'Open / flexible']
@@ -87,6 +88,7 @@ function Chip({
 export function ContactPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [contactCopy, setContactCopy] = useState<ContactCopy>({})
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -103,6 +105,18 @@ export function ContactPage() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    fetch('/api/copy')
+      .then((r) => r.json())
+      .then((d) => { if (d.copy?.contact) setContactCopy(d.copy.contact as ContactCopy) })
+      .catch(() => {})
+  }, [])
+
+  const tickerStatus   = contactCopy.tickerStatus   ?? 'Open for bookings — May through Sept 2026'
+  const tickerLeadTime = contactCopy.tickerLeadTime ?? 'Lead time · 3–6 weeks'
+  const heroPara1      = contactCopy.heroPara1      ?? null
+  const heroPara2      = contactCopy.heroPara2      ?? null
 
   const toggleType = (t: string) =>
     setProjectTypes((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t])
@@ -155,9 +169,9 @@ export function ContactPage() {
       <div className="contact-ticker">
         <span className="contact-ticker-left">
           <span className="contact-ticker-dot" />
-          Open for bookings — May through Sept 2026
+          {tickerStatus}
         </span>
-        <span className="contact-ticker-right">Lead time · 3–6 weeks</span>
+        <span className="contact-ticker-right">{tickerLeadTime}</span>
       </div>
 
       <main className="contact-main-v2">
@@ -170,12 +184,10 @@ export function ContactPage() {
           </h1>
           <div className="contact-hero-cols">
             <p className="contact-hero-col">
-              For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}
-              Tell me a little about the project and I&rsquo;ll write back within two working days.
+              {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
             </p>
             <p className="contact-hero-col">
-              Returning collaborators and editors, you have the studio direct line below.
-              Working between New York and Bombay, expect a thoughtful (slightly slow) reply.
+              {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
             </p>
           </div>
         </section>
@@ -374,7 +386,7 @@ export function ContactPage() {
       </main>
 
       <footer className="cat-footer">
-        <div>© Kshetej Sareen · MMXXVI</div>
+        <div>© Kshetej Sareen · 2026</div>
         <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
         <div className="cat-footer-right">info@kshetejsareen.com</div>
       </footer>

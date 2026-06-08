@@ -9,6 +9,7 @@ import {
   culinaryData, spacesData, portraitsData, objectsData, motionData,
   type IntroPart,
 } from '@/lib/categoryData'
+import type { InfoCopy, ContactCopy } from '@/lib/copyConfig'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -146,7 +147,7 @@ export function AdminPanel() {
   const [projects, setProjects]         = useState<Record<string, AdminProject[]>>({})
 
   // Page copy
-  const [copyCfg, setCopyCfg]           = useState<Record<string, CategoryCopy>>({})
+  const [copyCfg, setCopyCfg]           = useState<Record<string, Record<string, unknown>>>({})
 
   // Category order
   const [catOrder, setCatOrder] = useState<string[]>(['culinary', 'spaces', 'portraits', 'objects', 'motion'])
@@ -520,11 +521,11 @@ export function AdminPanel() {
       <main className="adm-slots-panel">
         <div className="adm-slots-head">
           <div className="adm-slots-title">{activePage}</div>
-          {activePage !== 'Landing' && CAT_IDS.includes(activeCatId) && (
+          {activePage !== 'Landing' && (CAT_IDS.includes(activeCatId) || activePage === 'Info' || activePage === 'Contact') && (
             <button
-              className={`adm-page-copy-btn${rightPanel.mode === 'page-copy' ? ' active' : ''}`}
+              className={`adm-page-copy-btn${rightPanel.mode === 'page-copy' && rightPanel.categoryId === activeCatId ? ' active' : ''}`}
               onClick={() => setRightPanel(
-                rightPanel.mode === 'page-copy'
+                rightPanel.mode === 'page-copy' && rightPanel.categoryId === activeCatId
                   ? { mode: 'library' }
                   : { mode: 'page-copy', categoryId: activeCatId }
               )}
@@ -696,6 +697,18 @@ export function AdminPanel() {
               />
             )
           }
+          if (pageSlots.length === 0) {
+            return (
+              <div className="adm-slots-scroll">
+                <div className="adm-cat-section">
+                  <div className="adm-cat-section-head">
+                    <span className="adm-cat-section-title">No image slots</span>
+                    <span className="adm-cat-section-desc">Use &quot;Edit page copy&quot; above to manage text content for this page</span>
+                  </div>
+                </div>
+              </div>
+            )
+          }
           return (
             <div className="adm-slots-scroll adm-slots-scroll--cat">
               {heroSlots.length > 0 && (
@@ -792,7 +805,11 @@ export function AdminPanel() {
         <PageCopyEditorPanel
           key={rightPanel.categoryId}
           categoryId={rightPanel.categoryId}
-          initial={{ ...(CATEGORY_DEFAULTS[rightPanel.categoryId] ?? {}), ...copyCfg[rightPanel.categoryId] }}
+          initial={
+            CAT_IDS.includes(rightPanel.categoryId)
+              ? ({ ...(CATEGORY_DEFAULTS[rightPanel.categoryId] ?? {}), ...(copyCfg[rightPanel.categoryId] ?? {}) } as Record<string, unknown>)
+              : (copyCfg[rightPanel.categoryId] ?? {})
+          }
           onSave={async (copy) => {
             await fetch('/api/admin/copy', {
               method: 'PATCH',
@@ -933,8 +950,8 @@ function SlotCard({
         ) : (
           <div className="adm-slot-hint">{!assignment && !assigningThis ? 'Click to select, then pick from library' : slot.hint}</div>
         )}
-        {assignment?.width && assignment?.height && (
-          <div className="adm-slot-dims">{assignment.width} × {assignment.height}px</div>
+        {getFrameDims(slot.id) && (
+          <div className="adm-slot-dims">{getFrameDims(slot.id)}</div>
         )}
         {/* Row 1: primary action + clear */}
         <div className="adm-slot-actions">
@@ -1379,6 +1396,38 @@ const CATEGORY_DEFAULTS: Record<string, CategoryCopy> = {
   motion:    { heroTitle: motionData.cat.name,    introLabel: motionData.intro.label,    introBody: serializeBody(motionData.intro.body),    pullQuoteText: motionData.pullQuote.text,    pullQuoteAttr: motionData.pullQuote.attr    },
 }
 
+// Reference frame dimensions at 1440 × 900 desktop viewport
+// (content width = 1440 − 2 × 56px padding = 1328px)
+const SLOT_FRAME_DIMS: Record<number, string> = {
+  0:  '1440 × 810',   // full-bleed, 16:9
+  1:  '810 × 1080',   // asym large, 3:4
+  2:  '506 × 506',    // asym small, 1:1
+  3:  '506 × 506',    // asym small, 1:1
+  4:  '435 × 580',    // three-up, 3:4
+  5:  '435 × 580',
+  6:  '435 × 580',
+  7:  '435 × 580',
+  8:  '435 × 580',
+  9:  '435 × 580',
+  10: '1440 × 617',   // full-bleed pano, 21:9
+  11: '658 × 658',    // diptych, 1:1
+  12: '658 × 658',
+  13: '658 × 370',    // duo, 16:9
+  14: '658 × 370',
+  15: '881 × 1321',   // offset portrait, 2:3
+  16: '1440 × 810',   // full-bleed, 16:9
+}
+
+function getFrameDims(slotId: string): string {
+  if (slotId.endsWith('-hero'))   return '1440 × 900 px'
+  if (slotId === 'info-portrait') return '440 × 550 px'
+  if (slotId.startsWith('landing-')) return 'full-bleed'
+  const m = slotId.match(/-(\d+)$/)
+  if (!m) return ''
+  const d = SLOT_FRAME_DIMS[parseInt(m[1])]
+  return d ? `${d} px` : ''
+}
+
 const FONT_VAR: Record<NonNullable<TextStyle['font']>, string> = {
   serif: 'var(--font-serif)',
   mono:  'var(--font-mono)',
@@ -1439,8 +1488,21 @@ function PageCopyEditorPanel({
   categoryId, initial, onSave, onClose,
 }: {
   categoryId: string
+  initial: Record<string, unknown>
+  onSave: (copy: Record<string, unknown>) => Promise<void>
+  onClose: () => void
+}) {
+  if (categoryId === 'info')    return <InfoCopyEditorPanel    initial={initial} onSave={onSave} onClose={onClose} />
+  if (categoryId === 'contact') return <ContactCopyEditorPanel initial={initial} onSave={onSave} onClose={onClose} />
+  return <CategoryCopyEditorPanel categoryId={categoryId} initial={initial as CategoryCopy} onSave={onSave} onClose={onClose} />
+}
+
+function CategoryCopyEditorPanel({
+  categoryId, initial, onSave, onClose,
+}: {
+  categoryId: string
   initial: CategoryCopy
-  onSave: (copy: CategoryCopy) => Promise<void>
+  onSave: (copy: Record<string, unknown>) => Promise<void>
   onClose: () => void
 }) {
   const [copy, setCopy]   = useState<CategoryCopy>(initial)
@@ -1455,7 +1517,7 @@ function PageCopyEditorPanel({
 
   const handleSave = async () => {
     setSaving(true)
-    await onSave(copy)
+    await onSave(copy as Record<string, unknown>)
     setSaving(false)
   }
 
@@ -1560,6 +1622,159 @@ function PageCopyEditorPanel({
         </div>
       </div>
 
+      <div className="adm-copy-actions">
+        <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
+        <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
+          {saving ? 'Saving…' : 'Save copy →'}
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+// ─── InfoCopyEditorPanel ──────────────────────────────────────────────────────
+
+function InfoCopyEditorPanel({
+  initial, onSave, onClose,
+}: {
+  initial: Record<string, unknown>
+  onSave: (copy: Record<string, unknown>) => Promise<void>
+  onClose: () => void
+}) {
+  const c = initial as InfoCopy
+  const [heroIntro, setHeroIntro] = useState(c.heroIntro ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.')
+  const [bioPara1, setBioPara1]   = useState(c.bioPara1  ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.')
+  const [bioPara2, setBioPara2]   = useState(c.bioPara2  ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.')
+  const [nowItems, setNowItems]   = useState(c.nowItems  ?? 'Residency — Kindred Studio, Brooklyn — through Aug 2026\nIn progress — The Fruit Table, vol. ii (Kyoto)\nAvailable — Bookings · May–Sept 2026\nPrint sales — Editions of 12 — by request')
+  const [clients, setClients]     = useState(c.clients   ?? 'Apartamento — 2021—\nCereal Magazine — 2022—\nKinfolk — 2023—\nThe New York Times — 2024—\nThe Gentlewoman — 2024\nAēsop — 2023, 2025\nLe Labo — 2024\nHermès — 2025')
+  const [press, setPress]         = useState(c.press     ?? "Pier 24 — group show — 2025\nAperture, vol. 246 — 2024\nFoam Talent — finalist — 2024\nBritish Journal of Photography — 2023\nIt's Nice That · profile — 2023")
+  const [saving, setSaving] = useState(false)
+
+  const handleSave = async () => {
+    setSaving(true)
+    await onSave({ heroIntro, bioPara1, bioPara2, nowItems, clients, press })
+    setSaving(false)
+  }
+
+  return (
+    <aside className="adm-library adm-copy-editor">
+      <div className="adm-library-head">
+        <div className="adm-library-title">Page copy · Info</div>
+        <button className="adm-folder-cancel" onClick={onClose}>← Back</button>
+      </div>
+      <div className="adm-copy-fields">
+
+        <div className="adm-copy-section-label">Hero</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Hero intro paragraph</label>
+          <textarea className="adm-copy-textarea" rows={3} value={heroIntro} onChange={(e) => setHeroIntro(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Biography</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">First paragraph</label>
+          <textarea className="adm-copy-textarea" rows={4} value={bioPara1} onChange={(e) => setBioPara1(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Second paragraph</label>
+          <textarea className="adm-copy-textarea" rows={3} value={bioPara2} onChange={(e) => setBioPara2(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Now</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Current items
+            <span className="adm-copy-hint">One item per line</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={5} value={nowItems} onChange={(e) => setNowItems(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Selected clients</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Clients
+            <span className="adm-copy-hint">Name — Year, one per line</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={8} value={clients} onChange={(e) => setClients(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Press &amp; exhibitions</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Press
+            <span className="adm-copy-hint">Name — Year, one per line</span>
+          </label>
+          <textarea className="adm-copy-textarea" rows={5} value={press} onChange={(e) => setPress(e.target.value)} />
+        </div>
+
+      </div>
+      <div className="adm-copy-actions">
+        <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
+        <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
+          {saving ? 'Saving…' : 'Save copy →'}
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+// ─── ContactCopyEditorPanel ───────────────────────────────────────────────────
+
+function ContactCopyEditorPanel({
+  initial, onSave, onClose,
+}: {
+  initial: Record<string, unknown>
+  onSave: (copy: Record<string, unknown>) => Promise<void>
+  onClose: () => void
+}) {
+  const c = initial as ContactCopy
+  const [tickerStatus,   setTickerStatus]   = useState(c.tickerStatus   ?? 'Open for bookings — May through Sept 2026')
+  const [tickerLeadTime, setTickerLeadTime] = useState(c.tickerLeadTime ?? 'Lead time · 3–6 weeks')
+  const [heroPara1, setHeroPara1]           = useState(c.heroPara1      ?? "For commissions, prints, and press — the form is the fastest route. Tell me a little about the project and I'll write back within two working days.")
+  const [heroPara2, setHeroPara2]           = useState(c.heroPara2      ?? "Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.")
+  const [saving, setSaving] = useState(false)
+
+  const handleSave = async () => {
+    setSaving(true)
+    await onSave({ tickerStatus, tickerLeadTime, heroPara1, heroPara2 })
+    setSaving(false)
+  }
+
+  return (
+    <aside className="adm-library adm-copy-editor">
+      <div className="adm-library-head">
+        <div className="adm-library-title">Page copy · Contact</div>
+        <button className="adm-folder-cancel" onClick={onClose}>← Back</button>
+      </div>
+      <div className="adm-copy-fields">
+
+        <div className="adm-copy-section-label">Availability ticker</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Status text
+            <span className="adm-copy-hint">Left side of the ticker bar</span>
+          </label>
+          <input className="adm-copy-input" value={tickerStatus} onChange={(e) => setTickerStatus(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">
+            Lead time text
+            <span className="adm-copy-hint">Right side of the ticker bar</span>
+          </label>
+          <input className="adm-copy-input" value={tickerLeadTime} onChange={(e) => setTickerLeadTime(e.target.value)} />
+        </div>
+
+        <div className="adm-copy-section-label">Hero</div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">First paragraph</label>
+          <textarea className="adm-copy-textarea" rows={4} value={heroPara1} onChange={(e) => setHeroPara1(e.target.value)} />
+        </div>
+        <div className="adm-copy-field">
+          <label className="adm-copy-label">Second paragraph</label>
+          <textarea className="adm-copy-textarea" rows={4} value={heroPara2} onChange={(e) => setHeroPara2(e.target.value)} />
+        </div>
+
+      </div>
       <div className="adm-copy-actions">
         <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
         <button className="adm-copy-save" onClick={handleSave} disabled={saving}>

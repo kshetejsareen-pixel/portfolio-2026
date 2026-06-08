@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { readCopyConfig, writeCopyConfig, type CategoryCopy } from '@/lib/copyConfig'
+import { readCopyConfig, writeCopyConfig } from '@/lib/copyConfig'
 
 export async function GET() {
   const config = await readCopyConfig()
@@ -7,7 +7,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-  const { categoryId, updates }: { categoryId: string; updates: CategoryCopy } = await req.json()
+  const { categoryId, updates }: { categoryId: string; updates: Record<string, unknown> } = await req.json()
 
   if (!categoryId) {
     return NextResponse.json({ error: 'categoryId required' }, { status: 400 })

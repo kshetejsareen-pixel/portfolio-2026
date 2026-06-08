@@ -21,7 +21,23 @@ export interface CategoryCopy {
   pullQuoteAttrStyle?: TextStyle
 }
 
-export type CopyConfig = Record<string, CategoryCopy>
+export interface InfoCopy {
+  heroIntro?: string      // hero paragraph
+  bioPara1?: string       // first biography paragraph
+  bioPara2?: string       // second biography paragraph
+  nowItems?: string       // newline-separated, one item per line
+  clients?: string        // "Name — Year" per line
+  press?: string          // "Name — Year" per line
+}
+
+export interface ContactCopy {
+  tickerStatus?: string   // left ticker text
+  tickerLeadTime?: string // right ticker text
+  heroPara1?: string      // first hero paragraph
+  heroPara2?: string      // second hero paragraph
+}
+
+export type CopyConfig = Record<string, Record<string, unknown>>
 
 const PUBLIC_ID = 'ks-copy-config'
 

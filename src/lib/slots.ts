@@ -91,4 +91,4 @@ export const GALLERY_SLOTS: Slot[] = [
   ...INFO_SLOTS,
 ]
 
-export const PAGES = ['Landing', 'Culinary', 'Spaces', 'Portraits', 'Objects', 'Motion', 'Info']
+export const PAGES = ['Landing', 'Culinary', 'Spaces', 'Portraits', 'Objects', 'Motion', 'Info', 'Contact']

@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import type { InfoCopy } from '@/lib/copyConfig'
 
-const PRACTICE = [
+const DEFAULT_PRACTICE = [
   { label: 'Portraits', frames: 24 },
   { label: 'Culinary', frames: 38 },
   { label: 'Spaces', frames: 19 },
@@ -12,14 +13,14 @@ const PRACTICE = [
   { label: 'Motion', frames: 7 },
 ]
 
-const NOW = [
+const DEFAULT_NOW = [
   'Residency — Kindred Studio, Brooklyn — through Aug 2026',
   'In progress — The Fruit Table, vol. ii (Kyoto)',
   'Available — Bookings · May–Sept 2026',
   'Print sales — Editions of 12 — by request',
 ]
 
-const CLIENTS = [
+const DEFAULT_CLIENTS = [
   { name: 'Apartamento', year: '2021—' },
   { name: 'Cereal Magazine', year: '2022—' },
   { name: 'Kinfolk', year: '2023—' },
@@ -30,7 +31,7 @@ const CLIENTS = [
   { name: 'Hermès', year: '2025' },
 ]
 
-const PRESS = [
+const DEFAULT_PRESS = [
   { name: 'Pier 24 — group show', year: '2025' },
   { name: 'Aperture, vol. 246', year: '2024' },
   { name: 'Foam Talent — finalist', year: '2024' },
@@ -38,9 +39,22 @@ const PRESS = [
   { name: "It's Nice That · profile", year: '2023' },
 ]
 
+function parseNameYear(text: string): { name: string; year: string }[] {
+  return text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => {
+      const idx = l.lastIndexOf(' — ')
+      if (idx === -1) return { name: l, year: '' }
+      return { name: l.slice(0, idx), year: l.slice(idx + 3) }
+    })
+}
+
 export function InfoPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [copy, setCopy] = useState<InfoCopy>({})
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -48,6 +62,29 @@ export function InfoPage() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    fetch('/api/copy')
+      .then((r) => r.json())
+      .then((d) => { if (d.copy?.info) setCopy(d.copy.info as InfoCopy) })
+      .catch(() => {})
+  }, [])
+
+  const heroIntro = copy.heroIntro ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.'
+  const bioPara1  = copy.bioPara1  ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.'
+  const bioPara2  = copy.bioPara2  ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.'
+
+  const nowItems = copy.nowItems
+    ? copy.nowItems.split('\n').map((l) => l.trim()).filter(Boolean)
+    : DEFAULT_NOW
+
+  const clients = copy.clients
+    ? parseNameYear(copy.clients)
+    : DEFAULT_CLIENTS
+
+  const press = copy.press
+    ? parseNameYear(copy.press)
+    : DEFAULT_PRESS
 
   return (
     <div className="ks-page-root">
@@ -90,11 +127,7 @@ export function InfoPage() {
               Kshetej<br />
               <span className="info-hero-name-last">Sareen<span className="info-hero-dot">.</span></span>
             </h1>
-            <p className="info-hero-intro">
-              Independent photographer working between{' '}
-              <em>New York and Bombay.</em>{' '}
-              Portraits, interiors, and the quiet objects in between.
-            </p>
+            <p className="info-hero-intro">{heroIntro}</p>
           </div>
         </section>
 
@@ -102,18 +135,8 @@ export function InfoPage() {
         <section className="info-bio" data-sr>
           <div className="info-bio-label ks-eyebrow">Biography</div>
           <div className="info-bio-body">
-            <p className="info-bio-para">
-              Kshetej Sareen is a photographer whose work moves between studio
-              portraits and the small, particular objects of everyday life —{' '}
-              <em>vessels, linens, fruit on a table, hands at work.</em> Trained
-              as an architect, his frames lean toward the still, the patient, the
-              carefully lit.
-            </p>
-            <p className="info-bio-para">
-              He keeps two studios — one in Brooklyn, one in Bombay — and works
-              on commission for editorial, hospitality, and book projects.
-              Available worldwide and currently booking for 2026.
-            </p>
+            <p className="info-bio-para">{bioPara1}</p>
+            <p className="info-bio-para">{bioPara2}</p>
           </div>
         </section>
 
@@ -133,7 +156,7 @@ export function InfoPage() {
               </div>
               <div className="info-quad-rule" />
               <ul className="info-practice-list">
-                {PRACTICE.map((p) => (
+                {DEFAULT_PRACTICE.map((p) => (
                   <li key={p.label} className="info-practice-item">
                     <span className="info-practice-label">{p.label}</span>
                     <span className="info-practice-frames">{p.frames}&thinsp;frames</span>
@@ -156,8 +179,8 @@ export function InfoPage() {
               </div>
               <div className="info-quad-rule" />
               <ul className="info-now-list">
-                {NOW.map((item) => (
-                  <li key={item} className="info-now-item">{item}</li>
+                {nowItems.map((item, i) => (
+                  <li key={i} className="info-now-item">{item}</li>
                 ))}
               </ul>
             </div>
@@ -172,7 +195,7 @@ export function InfoPage() {
               </div>
               <div className="info-quad-rule" />
               <ul className="info-clients-list">
-                {CLIENTS.map((c) => (
+                {clients.map((c) => (
                   <li key={c.name} className="info-client-item">
                     <span className="info-client-name">{c.name}</span>
                     <span className="info-client-year">{c.year}</span>
@@ -191,7 +214,7 @@ export function InfoPage() {
               </div>
               <div className="info-quad-rule" />
               <ul className="info-clients-list">
-                {PRESS.map((p) => (
+                {press.map((p) => (
                   <li key={p.name} className="info-client-item">
                     <span className="info-client-name">{p.name}</span>
                     <span className="info-client-year">{p.year}</span>
@@ -240,7 +263,7 @@ export function InfoPage() {
       </main>
 
       <footer className="cat-footer">
-        <div>© Kshetej Sareen · MMXXVI</div>
+        <div>© Kshetej Sareen · 2026</div>
         <div className="cat-footer-center"><Link href="/">↑ Back to index</Link></div>
         <div className="cat-footer-right">info@kshetejsareen.com</div>
       </footer>
