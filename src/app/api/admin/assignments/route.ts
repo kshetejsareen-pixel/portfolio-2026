@@ -22,7 +22,7 @@ function thumbUrl(publicId: string, angle?: number, flipH?: boolean, flipV?: boo
 export async function GET() {
   try {
     const store = await getAllAssignments()
-    const assignments: Record<string, { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number; angle?: number; flipH?: boolean; flipV?: boolean; title?: string; location?: string; year?: string; camera?: string }> = {}
+    const assignments: Record<string, { publicId: string; url: string; thumbnailUrl: string; focalX?: number; focalY?: number; angle?: number; flipH?: boolean; flipV?: boolean; title?: string; location?: string; year?: string; camera?: string; width?: number; height?: number }> = {}
 
     for (const [slotId, data] of Object.entries(store)) {
       assignments[slotId] = {
@@ -38,6 +38,8 @@ export async function GET() {
         location:     data.location,
         year:         data.year,
         camera:       data.camera,
+        width:        data.width,
+        height:       data.height,
       }
     }
 

@@ -29,6 +29,8 @@ interface Assignment {
   location?: string
   year?: string
   camera?: string
+  width?: number
+  height?: number
 }
 
 interface ImageCopy {
@@ -176,7 +178,7 @@ export function AdminPanel() {
     const mapped: Record<string, Assignment> = {}
     for (const [id, asgn] of Object.entries(data.assignments ?? {})) {
       const a = asgn as Assignment
-      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY, angle: a.angle, flipH: a.flipH, flipV: a.flipV, title: a.title, location: a.location, year: a.year, camera: a.camera }
+      mapped[id] = { publicId: a.publicId, url: a.url, thumbnailUrl: a.thumbnailUrl, focalX: a.focalX, focalY: a.focalY, angle: a.angle, flipH: a.flipH, flipV: a.flipV, title: a.title, location: a.location, year: a.year, camera: a.camera, width: a.width, height: a.height }
     }
     setAssignments(mapped)
   }, [])
@@ -914,6 +916,9 @@ function SlotCard({
           </div>
         ) : (
           <div className="adm-slot-hint">{!assignment && !assigningThis ? 'Click to select, then pick from library' : slot.hint}</div>
+        )}
+        {assignment?.width && assignment?.height && (
+          <div className="adm-slot-dims">{assignment.width} × {assignment.height}px</div>
         )}
         {/* Row 1: primary action + clear */}
         <div className="adm-slot-actions">

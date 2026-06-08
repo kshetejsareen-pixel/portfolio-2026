@@ -36,8 +36,9 @@ export async function POST(req: Request) {
       })
       .catch(() => {})
 
-    // Fetch existing metadata (best-effort — falls back to caller-supplied values)
+    // Fetch existing metadata + dimensions (best-effort — falls back to caller-supplied values)
     let resolvedTitle = title, resolvedLocation = location, resolvedYear = year, resolvedCamera = camera
+    let width: number | undefined, height: number | undefined
     try {
       const meta = await cloudinary.api.resource(publicId, { image_metadata: false })
       const ctx = meta.context?.custom ?? {}
@@ -45,6 +46,8 @@ export async function POST(req: Request) {
       resolvedLocation = ctx.ks_location ?? location
       resolvedYear     = ctx.ks_year     ?? year
       resolvedCamera   = ctx.ks_camera   ?? camera
+      if (meta.width)  width  = meta.width
+      if (meta.height) height = meta.height
     } catch { /* use defaults */ }
 
     // Write to store — this is the authoritative assignment record
@@ -56,6 +59,8 @@ export async function POST(req: Request) {
       location:  resolvedLocation,
       year:      resolvedYear,
       camera:    resolvedCamera,
+      width,
+      height,
     })
 
     return NextResponse.json({ ok: true })

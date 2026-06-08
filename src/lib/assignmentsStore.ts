@@ -10,6 +10,8 @@ export interface StoredAssignment {
   location: string
   year: string
   camera: string
+  width?: number
+  height?: number
   focalX?: number
   focalY?: number
   angle?: 0 | 90 | 180 | 270

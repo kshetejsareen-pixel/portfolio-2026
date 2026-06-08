@@ -2955,10 +2955,17 @@ a.info-touch-val:hover { color: var(--paper); }
   font-size: 9px;
   color: #6a9;
   letter-spacing: 0.06em;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.adm-slot-dims {
+  font-size: 9px;
+  color: #888;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
 }
 
 .adm-slot-actions {
