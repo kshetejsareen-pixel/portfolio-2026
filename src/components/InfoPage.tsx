@@ -51,10 +51,13 @@ function parseNameYear(text: string): { name: string; year: string }[] {
     })
 }
 
+interface PortraitData { url: string; focalX?: number; focalY?: number }
+
 export function InfoPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [copy, setCopy] = useState<InfoCopy>({})
+  const [portrait, setPortrait] = useState<PortraitData | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -67,6 +70,13 @@ export function InfoPage() {
     fetch('/api/copy')
       .then((r) => r.json())
       .then((d) => { if (d.copy?.info) setCopy(d.copy.info as InfoCopy) })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/info-portrait')
+      .then((r) => r.json())
+      .then((d) => { if (d.portrait) setPortrait(d.portrait) })
       .catch(() => {})
   }, [])
 
@@ -110,11 +120,26 @@ export function InfoPage() {
         <section className="info-hero">
           <div className="info-hero-photo-col">
             <div className="info-hero-photo-wrap">
-              <div className="info-hero-photo-inner">
-                <div className="info-photo-slot-label">Portrait · 4 : 5</div>
-                <div className="info-photo-slot-cta">Drop your image here</div>
-                <div className="info-photo-slot-hint">Drag any photo onto this slot to preview</div>
-              </div>
+              {portrait ? (
+                <div className="info-hero-photo-inner info-hero-photo-inner--filled">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={portrait.url}
+                    alt="Kshetej Sareen"
+                    className="info-hero-img"
+                    style={{
+                      objectPosition: portrait.focalX != null && portrait.focalY != null
+                        ? `${portrait.focalX * 100}% ${portrait.focalY * 100}%`
+                        : 'center top',
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="info-hero-photo-inner">
+                  <div className="info-photo-slot-label">Portrait · 4 : 5</div>
+                  <div className="info-photo-slot-cta">Assign image in admin</div>
+                </div>
+              )}
             </div>
             <div className="info-hero-cap ks-eyebrow">Self · Studio · 2026</div>
           </div>

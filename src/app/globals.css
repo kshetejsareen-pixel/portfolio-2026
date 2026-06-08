@@ -2176,6 +2176,18 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
   text-align: center;
   padding: 32px;
   box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+.info-hero-photo-inner--filled {
+  padding: 0;
+  background: #111;
+}
+.info-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .info-photo-slot-label {
   font-family: var(--font-mono);
