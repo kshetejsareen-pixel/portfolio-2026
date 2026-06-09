@@ -95,8 +95,7 @@ type RightPanel =
   | { mode: 'library' }
   | { mode: 'copy-editor'; slotId: string; publicId: string; initial: ImageCopy }
   | { mode: 'focal-point'; slotId: string; imageUrl: string; focalX?: number; focalY?: number }
-  | { mode: 'folder-browser'; categoryId: string }
-  | { mode: 'page-copy'; categoryId: string }
+  | { mode: 'folder-browser'; categoryId: string; initialPath?: string }
   | { mode: 'project-images'; categoryId: string; project: AdminProject }
   | { mode: 'project-cover-focal'; categoryId: string; project: AdminProject }
   | { mode: 'project-edit'; categoryId: string; project: AdminProject }
@@ -260,6 +259,50 @@ export function AdminPanel() {
     fetchProjects()
     fetchCopyCfg()
   }, [fetchImages, fetchAssignments, fetchConfig, fetchProjects, fetchCopyCfg])
+
+  // ── Inline copy draft state ────────────────────────────────────────────────
+  const [draftCopy, setDraftCopy]   = useState<Record<string, unknown>>({})
+  const [copyDirty, setCopyDirty]   = useState(false)
+  const [copySaving, setCopySaving] = useState(false)
+
+  useEffect(() => {
+    const defaults: Record<string, unknown> =
+      CAT_IDS.includes(activeCatId) ? (CATEGORY_DEFAULTS[activeCatId] ?? {}) as Record<string, unknown>
+      : activeCatId === 'info'      ? INFO_COPY_DEFAULTS
+      : activeCatId === 'contact'   ? CONTACT_COPY_DEFAULTS
+      : {}
+    setDraftCopy({ ...defaults, ...(copyCfg[activeCatId] ?? {}) })
+    setCopyDirty(false)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePage, copyCfg])
+
+  const setDraftField = (key: string, value: unknown) => {
+    setDraftCopy((prev) => ({ ...prev, [key]: value }))
+    setCopyDirty(true)
+  }
+
+  const saveCopy = async () => {
+    setCopySaving(true)
+    await fetch('/api/admin/copy', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categoryId: activeCatId, updates: draftCopy }),
+    })
+    setCopyCfg((prev) => ({ ...prev, [activeCatId]: draftCopy }))
+    setCopyDirty(false)
+    setCopySaving(false)
+    showToast('Copy saved')
+  }
+
+  const discardCopy = () => {
+    const defaults: Record<string, unknown> =
+      CAT_IDS.includes(activeCatId) ? (CATEGORY_DEFAULTS[activeCatId] ?? {}) as Record<string, unknown>
+      : activeCatId === 'info'      ? INFO_COPY_DEFAULTS
+      : activeCatId === 'contact'   ? CONTACT_COPY_DEFAULTS
+      : {}
+    setDraftCopy({ ...defaults, ...(copyCfg[activeCatId] ?? {}) })
+    setCopyDirty(false)
+  }
 
   // ── Search debounce ────────────────────────────────────────────────────────
   const handleSearch = (q: string) => {
@@ -528,18 +571,6 @@ export function AdminPanel() {
       <main className="adm-slots-panel">
         <div className="adm-slots-head">
           <div className="adm-slots-title">{activePage}</div>
-          {activePage !== 'Landing' && (CAT_IDS.includes(activeCatId) || activePage === 'Info' || activePage === 'Contact') && (
-            <button
-              className={`adm-page-copy-btn${rightPanel.mode === 'page-copy' && rightPanel.categoryId === activeCatId ? ' active' : ''}`}
-              onClick={() => setRightPanel(
-                rightPanel.mode === 'page-copy' && rightPanel.categoryId === activeCatId
-                  ? { mode: 'library' }
-                  : { mode: 'page-copy', categoryId: activeCatId }
-              )}
-            >
-              Edit page copy
-            </button>
-          )}
           {selectedSlot && (
             <div className="adm-selecting-badge">
               Selecting for: <strong>{selectedSlot.label}</strong>
@@ -548,31 +579,14 @@ export function AdminPanel() {
           )}
         </div>
 
-        {/* Projects section — category pages only */}
-        {activePage !== 'Landing' && CAT_IDS.includes(activeCatId) && (
-          <ProjectsSection
-            categoryId={activeCatId}
-            projects={projects[activeCatId] ?? []}
-            onAdd={() => setRightPanel({ mode: 'folder-browser', categoryId: activeCatId })}
-            onRemove={async (projectId) => {
-              await fetch('/api/admin/projects', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ categoryId: activeCatId, projectId }),
-              })
-              await fetchProjects()
-              showToast('Project removed')
-            }}
-            onManageImages={(project) =>
-              setRightPanel({ mode: 'project-images', categoryId: activeCatId, project })
-            }
-            onSetCoverFocal={(project) =>
-              setRightPanel({ mode: 'project-cover-focal', categoryId: activeCatId, project })
-            }
-            onMoveUp={(projectId) => moveProject(activeCatId, projectId, 'up')}
-            onMoveDown={(projectId) => moveProject(activeCatId, projectId, 'down')}
-            onEdit={(project) => setRightPanel({ mode: 'project-edit', categoryId: activeCatId, project })}
-          />
+        {copyDirty && (
+          <div className="adm-copy-save-bar">
+            <span className="adm-copy-save-bar-msg">Unsaved copy changes</span>
+            <button className="adm-copy-save-bar-discard" onClick={discardCopy}>Discard</button>
+            <button className="adm-copy-save-bar-btn" onClick={saveCopy} disabled={copySaving}>
+              {copySaving ? 'Saving…' : 'Save →'}
+            </button>
+          </div>
         )}
 
         {/* Slot grid */}
@@ -708,6 +722,124 @@ export function AdminPanel() {
               </div>
             )
           }
+          // ── Helpers for inline copy fields ─────────────────────────────────
+          const d  = (k: string) => (draftCopy[k] as string) ?? ''
+          const ds = (k: string) => (draftCopy[k] as TextStyle | undefined)
+          const sf = (k: string) => (v: string)     => setDraftField(k, v)
+          const ss = (k: string) => (v: TextStyle)  => setDraftField(k, v)
+
+          // ── Info page ───────────────────────────────────────────────────────
+          if (activeCatId === 'info') {
+            const portraitSlot = pageSlots.find((s) => s.id === 'info-portrait')
+            return (
+              <div className="adm-slots-scroll adm-slots-scroll--cat">
+                <InlineCopyDivider title="Hero" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Hero eyebrow" hint="Small label above the name" value={d('heroEyebrow')} onChange={sf('heroEyebrow')} placeholder="Info · A working biography" />
+                  <InlineCopyField label="Hero intro paragraph" value={d('heroIntro')} onChange={sf('heroIntro')} multiline rows={3} />
+                </div>
+                {portraitSlot && (
+                  <div className="adm-cat-section">
+                    <div className="adm-cat-section-head">
+                      <span className="adm-cat-section-title">Portrait photo</span>
+                      <span className="adm-cat-section-desc">4:5 · appears left of name in hero</span>
+                    </div>
+                    <div className="adm-slots-grid">{renderCard(portraitSlot)}</div>
+                  </div>
+                )}
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Photo caption" hint="Appears below portrait" value={d('heroCap')} onChange={sf('heroCap')} placeholder="Self · Studio · 2026" />
+                </div>
+
+                <InlineCopyDivider title="Biography" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section heading" value={d('bioHeading')} onChange={sf('bioHeading')} placeholder="Biography" />
+                  <InlineCopyField label="First paragraph" value={d('bioPara1')} onChange={sf('bioPara1')} multiline rows={4} />
+                  <InlineCopyField label="Second paragraph" value={d('bioPara2')} onChange={sf('bioPara2')} multiline rows={3} />
+                </div>
+
+                <InlineCopyDivider title="Practice" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section heading" value={d('practiceHeading')} onChange={sf('practiceHeading')} placeholder="Practice, categories of work" />
+                  <InlineCopyField label="Category frame counts" hint="Category — N, one per line" value={d('practiceItems')} onChange={sf('practiceItems')} multiline rows={5} placeholder="Portraits — 24&#10;Culinary — 38" />
+                  <InlineCopyField label="Section note" value={d('practiceNote')} onChange={sf('practiceNote')} />
+                </div>
+
+                <InlineCopyDivider title="Now" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section heading" value={d('nowHeading')} onChange={sf('nowHeading')} placeholder="Now, current" />
+                  <InlineCopyField label="Current items" hint="One item per line" value={d('nowItems')} onChange={sf('nowItems')} multiline rows={4} />
+                </div>
+
+                <InlineCopyDivider title="Selected clients" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section heading" value={d('clientsHeading')} onChange={sf('clientsHeading')} placeholder="Selected clients, recent" />
+                  <InlineCopyField label="Clients" hint="Name — Year, one per line" value={d('clients')} onChange={sf('clients')} multiline rows={8} />
+                </div>
+
+                <InlineCopyDivider title="Press & exhibitions" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section heading" value={d('pressHeading')} onChange={sf('pressHeading')} placeholder="Press & exhibitions, selected" />
+                  <InlineCopyField label="Press items" hint="Name — Year, one per line" value={d('press')} onChange={sf('press')} multiline rows={5} />
+                </div>
+
+                <InlineCopyDivider title="Get in touch" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section heading" value={d('touchHeading')} onChange={sf('touchHeading')} placeholder="Get in touch" />
+                  <InlineCopyField label="Studio email" value={d('touchEmail')} onChange={sf('touchEmail')} />
+                  <InlineCopyField label="Email note" value={d('touchEmailNote')} onChange={sf('touchEmailNote')} />
+                  <InlineCopyField label="By appointment (locations)" value={d('touchAppointment')} onChange={sf('touchAppointment')} />
+                  <InlineCopyField label="Appointment note" value={d('touchAppointmentNote')} onChange={sf('touchAppointmentNote')} />
+                  <InlineCopyField label="Social handle" hint="Links to instagram.com/handle" value={d('touchSocial')} onChange={sf('touchSocial')} />
+                  <InlineCopyField label="Social note" value={d('touchSocialNote')} onChange={sf('touchSocialNote')} />
+                </div>
+              </div>
+            )
+          }
+
+          // ── Contact page ────────────────────────────────────────────────────
+          if (activeCatId === 'contact') {
+            return (
+              <div className="adm-slots-scroll adm-slots-scroll--cat">
+                <InlineCopyDivider title="Availability ticker" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Status text" hint="Left side of ticker bar" value={d('tickerStatus')} onChange={sf('tickerStatus')} />
+                  <InlineCopyField label="Lead time text" hint="Right side of ticker bar" value={d('tickerLeadTime')} onChange={sf('tickerLeadTime')} />
+                </div>
+
+                <InlineCopyDivider title="Hero" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Hero title" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder="Say hello" />
+                  <InlineCopyField label="First paragraph" value={d('heroPara1')} onChange={sf('heroPara1')} multiline rows={3} />
+                  <InlineCopyField label="Second paragraph" value={d('heroPara2')} onChange={sf('heroPara2')} multiline rows={3} />
+                </div>
+
+                <InlineCopyDivider title="Project inquiry form" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section eyebrow" hint="Visible heading above the form" value={d('inquiryEyebrow')} onChange={sf('inquiryEyebrow')} placeholder="01 · Project inquiry" />
+                  <InlineCopyField label="Form heading" value={d('inquiryHeading')} onChange={sf('inquiryHeading')} />
+                  <InlineCopyField label="Form note" value={d('inquiryNote')} onChange={sf('inquiryNote')} multiline rows={2} />
+                  <InlineCopyField label="Privacy text" hint="Below the submit button" value={d('privacyText')} onChange={sf('privacyText')} />
+                </div>
+
+                <InlineCopyDivider title="Direct channels" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section title" value={d('directTitle')} onChange={sf('directTitle')} />
+                  <InlineCopyField label="Section description" value={d('directDesc')} onChange={sf('directDesc')} multiline rows={2} />
+                  <InlineCopyField label="Channel entries" hint="Label | Value | Note | URL, one per line" value={d('directChannels')} onChange={sf('directChannels')} multiline rows={7} />
+                </div>
+
+                <InlineCopyDivider title="Working notes" />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Section eyebrow" hint="Visible heading above the table" value={d('notesEyebrow')} onChange={sf('notesEyebrow')} placeholder="02 · Working notes" />
+                  <InlineCopyField label="Left column" hint="Label — Value, one per line" value={d('notesLeft')} onChange={sf('notesLeft')} multiline rows={5} />
+                  <InlineCopyField label="Right column" hint="Label — Value, one per line" value={d('notesRight')} onChange={sf('notesRight')} multiline rows={5} />
+                </div>
+              </div>
+            )
+          }
+
+          // ── Category page ───────────────────────────────────────────────────
           return (
             <div className="adm-slots-scroll adm-slots-scroll--cat">
               {heroSlots.length > 0 && (
@@ -721,6 +853,13 @@ export function AdminPanel() {
                   </div>
                 </div>
               )}
+              <div className="adm-inline-copy-group">
+                <InlineCopyField label="Category title" hint="Large text over the hero banner" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder={activePage} withStyle styleValue={ds('heroTitleStyle')} onStyleChange={ss('heroTitleStyle')} />
+              </div>
+              <div className="adm-inline-copy-group">
+                <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
+                <InlineCopyField label="Intro body" value={d('introBody')} onChange={sf('introBody')} multiline rows={4} placeholder="Paragraph text for the category intro…" withStyle styleValue={ds('introBodyStyle')} onStyleChange={ss('introBodyStyle')} />
+              </div>
               <div className="adm-cat-section">
                 <div className="adm-cat-section-head">
                   <span className="adm-cat-section-title">Gallery Frames</span>
@@ -730,6 +869,39 @@ export function AdminPanel() {
                   {gallerySlots.map((slot) => renderCard(slot))}
                 </div>
               </div>
+              <div className="adm-inline-copy-group">
+                <InlineCopyField label="Pull quote text" hint="Appears mid-gallery after slot 10" value={d('pullQuoteText')} onChange={sf('pullQuoteText')} multiline rows={3} placeholder="A short, memorable quote or statement…" withStyle styleValue={ds('pullQuoteStyle')} onStyleChange={ss('pullQuoteStyle')} />
+                <InlineCopyField label="Pull quote attribution" value={d('pullQuoteAttr')} onChange={sf('pullQuoteAttr')} placeholder="Studio note · 2025" withStyle styleValue={ds('pullQuoteAttrStyle')} onStyleChange={ss('pullQuoteAttrStyle')} />
+              </div>
+              <div className="adm-inline-copy-group">
+                <InlineCopyField label="Projects section heading" hint="Overrides 'Selected Projects'" value={d('projectsSectionTitle')} onChange={sf('projectsSectionTitle')} placeholder="Selected Projects" />
+              </div>
+              {CAT_IDS.includes(activeCatId) && (
+                <ProjectsSection
+                  categoryId={activeCatId}
+                  projects={projects[activeCatId] ?? []}
+                  onAdd={() => setRightPanel({ mode: 'folder-browser', categoryId: activeCatId })}
+                  onAddFromPath={(folderPath) => setRightPanel({ mode: 'folder-browser', categoryId: activeCatId, initialPath: folderPath })}
+                  onRemove={async (projectId) => {
+                    await fetch('/api/admin/projects', {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ categoryId: activeCatId, projectId }),
+                    })
+                    await fetchProjects()
+                    showToast('Project removed')
+                  }}
+                  onManageImages={(project) =>
+                    setRightPanel({ mode: 'project-images', categoryId: activeCatId, project })
+                  }
+                  onSetCoverFocal={(project) =>
+                    setRightPanel({ mode: 'project-cover-focal', categoryId: activeCatId, project })
+                  }
+                  onMoveUp={(projectId) => moveProject(activeCatId, projectId, 'up')}
+                  onMoveDown={(projectId) => moveProject(activeCatId, projectId, 'down')}
+                  onEdit={(project) => setRightPanel({ mode: 'project-edit', categoryId: activeCatId, project })}
+                />
+              )}
             </div>
           )
         })()}
@@ -787,7 +959,9 @@ export function AdminPanel() {
         />
       ) : rightPanel.mode === 'folder-browser' ? (
         <FolderBrowserPanel
+          key={rightPanel.initialPath ?? ''}
           categoryId={rightPanel.categoryId}
+          initialPath={rightPanel.initialPath}
           onAdd={async (project) => {
             await fetch('/api/admin/projects', {
               method: 'POST',
@@ -799,26 +973,6 @@ export function AdminPanel() {
             setRightPanel({ mode: 'library' })
           }}
           onCancel={() => setRightPanel({ mode: 'library' })}
-        />
-      ) : rightPanel.mode === 'page-copy' ? (
-        <PageCopyEditorPanel
-          key={rightPanel.categoryId}
-          categoryId={rightPanel.categoryId}
-          initial={
-            CAT_IDS.includes(rightPanel.categoryId)
-              ? ({ ...(CATEGORY_DEFAULTS[rightPanel.categoryId] ?? {}), ...(copyCfg[rightPanel.categoryId] ?? {}) } as Record<string, unknown>)
-              : (copyCfg[rightPanel.categoryId] ?? {})
-          }
-          onSave={async (copy) => {
-            await fetch('/api/admin/copy', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ categoryId: rightPanel.categoryId, updates: copy }),
-            })
-            setCopyCfg((prev) => ({ ...prev, [rightPanel.categoryId]: copy }))
-            showToast('Page copy saved')
-          }}
-          onClose={() => setRightPanel({ mode: 'library' })}
         />
       ) : rightPanel.mode === 'project-edit' ? (
         <ProjectEditPanel
@@ -1084,12 +1238,78 @@ function CopyEditorPanel({
 
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
 
+function extractCloudinaryPath(input: string): string {
+  const trimmed = input.trim()
+  // Handle full Cloudinary console URLs like:
+  // https://console.cloudinary.com/console/dsouvrzlr/media_library/folders/portraits/2024
+  const match = trimmed.match(/media_library\/folders\/(.+)/)
+  if (match) return match[1].replace(/\/$/, '')
+  // Handle plain paths
+  return trimmed.replace(/^\/|\/$/g, '')
+}
+
+// ─── Inline copy primitives ───────────────────────────────────────────────────
+
+function InlineCopyDivider({ title }: { title: string }) {
+  return (
+    <div className="adm-inline-divider">
+      <span className="adm-inline-divider-label">{title}</span>
+    </div>
+  )
+}
+
+function InlineCopyField({
+  label, hint, value, onChange, multiline, rows, placeholder,
+  withStyle, styleValue, onStyleChange,
+}: {
+  label: string
+  hint?: string
+  value: string
+  onChange: (v: string) => void
+  multiline?: boolean
+  rows?: number
+  placeholder?: string
+  withStyle?: boolean
+  styleValue?: TextStyle
+  onStyleChange?: (s: TextStyle) => void
+}) {
+  return (
+    <div className="adm-inline-field">
+      <label className="adm-inline-label">
+        {label}
+        {hint && <span className="adm-inline-hint">{hint}</span>}
+      </label>
+      {multiline ? (
+        <textarea
+          className="adm-inline-textarea"
+          rows={rows ?? 3}
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      ) : (
+        <input
+          className="adm-inline-input"
+          type="text"
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
+      {withStyle && onStyleChange && (
+        <StyleControls value={styleValue} onChange={onStyleChange} />
+      )}
+    </div>
+  )
+}
+
 function ProjectsSection({
-  categoryId, projects, onAdd, onRemove, onManageImages, onSetCoverFocal, onMoveUp, onMoveDown, onEdit,
+  categoryId, projects, onAdd, onAddFromPath, onRemove, onManageImages, onSetCoverFocal, onMoveUp, onMoveDown, onEdit,
 }: {
   categoryId: string
   projects: AdminProject[]
   onAdd: () => void
+  onAddFromPath: (path: string) => void
   onRemove: (id: string) => void
   onManageImages: (project: AdminProject) => void
   onSetCoverFocal: (project: AdminProject) => void
@@ -1098,6 +1318,7 @@ function ProjectsSection({
   onEdit: (project: AdminProject) => void
 }) {
   const [filterTag, setFilterTag] = useState<string | null>(null)
+  const [pathInput, setPathInput] = useState('')
 
   const usedTagIds = [...new Set(projects.flatMap((p) => p.tags ?? []))]
   const usedTags = PROJECT_TAGS.filter((t) => usedTagIds.includes(t.id))
@@ -1111,7 +1332,32 @@ function ProjectsSection({
           <span className="adm-projects-count">{projects.length}</span>
         </div>
         <button className="adm-projects-add-btn" onClick={onAdd}>
-          + Add from Cloudinary folder
+          + Browse folders
+        </button>
+      </div>
+      <div className="adm-projects-path-row">
+        <input
+          className="adm-projects-path-input"
+          type="text"
+          placeholder="Paste Cloudinary folder path or URL to add project…"
+          value={pathInput}
+          onChange={(e) => setPathInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const p = extractCloudinaryPath(pathInput)
+              if (p) { onAddFromPath(p); setPathInput('') }
+            }
+          }}
+        />
+        <button
+          className="adm-projects-path-go"
+          disabled={!pathInput.trim()}
+          onClick={() => {
+            const p = extractCloudinaryPath(pathInput)
+            if (p) { onAddFromPath(p); setPathInput('') }
+          }}
+        >
+          Go →
         </button>
       </div>
 
@@ -1207,13 +1453,14 @@ function ProjectsSection({
 // ─── FolderBrowserPanel ───────────────────────────────────────────────────────
 
 function FolderBrowserPanel({
-  categoryId, onAdd, onCancel,
+  categoryId, onAdd, onCancel, initialPath,
 }: {
   categoryId: string
   onAdd: (project: Omit<AdminProject, 'id'>) => Promise<void>
   onCancel: () => void
+  initialPath?: string
 }) {
-  const [path, setPath]               = useState('')
+  const [path, setPath]               = useState(initialPath ?? '')
   const [folders, setFolders]         = useState<CloudinaryFolder[]>([])
   const [loading, setLoading]         = useState(false)
   const [selectedFolder, setSelectedFolder] = useState<CloudinaryFolder | null>(null)
@@ -1232,7 +1479,7 @@ function FolderBrowserPanel({
     setLoading(false)
   }, [])
 
-  useEffect(() => { loadFolders('') }, [loadFolders])
+  useEffect(() => { loadFolders(initialPath ?? '') }, [loadFolders, initialPath])
 
   const navigateTo = (p: string, folderInfo?: CloudinaryFolder) => {
     setPath(p)
@@ -1390,8 +1637,6 @@ function FolderBrowserPanel({
   )
 }
 
-// ─── PageCopyEditorPanel ──────────────────────────────────────────────────────
-
 function serializeBody(parts: IntroPart[]): string {
   return parts.map((p) => (typeof p === 'string' ? p : p.it)).join('')
 }
@@ -1402,6 +1647,49 @@ const CATEGORY_DEFAULTS: Record<string, CategoryCopy> = {
   portraits: { heroTitle: portraitsData.cat.name, introLabel: portraitsData.intro.label, introBody: serializeBody(portraitsData.intro.body), pullQuoteText: portraitsData.pullQuote.text, pullQuoteAttr: portraitsData.pullQuote.attr },
   objects:   { heroTitle: objectsData.cat.name,   introLabel: objectsData.intro.label,   introBody: serializeBody(objectsData.intro.body),   pullQuoteText: objectsData.pullQuote.text,   pullQuoteAttr: objectsData.pullQuote.attr   },
   motion:    { heroTitle: motionData.cat.name,    introLabel: motionData.intro.label,    introBody: serializeBody(motionData.intro.body),    pullQuoteText: motionData.pullQuote.text,    pullQuoteAttr: motionData.pullQuote.attr    },
+}
+
+const INFO_COPY_DEFAULTS: Record<string, unknown> = {
+  heroEyebrow:          'Info · A working biography',
+  heroIntro:            'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.',
+  bioPara1:             'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.',
+  bioPara2:             'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.',
+  heroCap:              'Self · Studio · 2026',
+  bioHeading:           'Biography',
+  practiceHeading:      'Practice, categories of work',
+  practiceItems:        'Portraits — 24\nCulinary — 38\nSpaces — 19\nObjects — 12\nMotion — 7',
+  practiceNote:         'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.',
+  nowHeading:           'Now, current',
+  nowItems:             'Residency — Kindred Studio, Brooklyn — through Aug 2026\nIn progress — The Fruit Table, vol. ii (Kyoto)\nAvailable — Bookings · May–Sept 2026\nPrint sales — Editions of 12 — by request',
+  clientsHeading:       'Selected clients, recent',
+  clients:              'Apartamento — 2021—\nCereal Magazine — 2022—\nKinfolk — 2023—\nThe New York Times — 2024—\nThe Gentlewoman — 2024\nAēsop — 2023, 2025\nLe Labo — 2024\nHermès — 2025',
+  pressHeading:         'Press & exhibitions, selected',
+  press:                "Pier 24 — group show — 2025\nAperture, vol. 246 — 2024\nFoam Talent — finalist — 2024\nBritish Journal of Photography — 2023\nIt's Nice That · profile — 2023",
+  touchHeading:         'Get in touch',
+  touchEmail:           'info@kshetejsareen.com',
+  touchEmailNote:       'For commissions & prints',
+  touchAppointment:     'New York · Bombay',
+  touchAppointmentNote: 'Studio visits welcome',
+  touchSocial:          '@kshetejsareen',
+  touchSocialNote:      'Instagram',
+}
+
+const CONTACT_COPY_DEFAULTS: Record<string, unknown> = {
+  tickerStatus:    'Open for bookings — May through Sept 2026',
+  tickerLeadTime:  'Lead time · 3–6 weeks',
+  heroTitle:       'Say hello',
+  heroPara1:       "For commissions, prints, and press — the form is the fastest route. Tell me a little about the project and I'll write back within two working days.",
+  heroPara2:       "Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.",
+  inquiryEyebrow:  '01 · Project inquiry',
+  inquiryHeading:  'Start with the project, not the form.',
+  inquiryNote:     "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message.",
+  privacyText:     'No mailing list. Your details stay between us.',
+  directTitle:     'Direct channels.',
+  directDesc:      'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.',
+  directChannels:  'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 99995 67676 | Fastest response | https://wa.me/919999567676\nElsewhere | @kshetejsareen | Instagram | https://instagram.com/kshetejsareen\nNew York | Brooklyn, NY | By appointment · Mon–Fri |\nBombay | Bandra W, Mumbai | By appointment |\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com',
+  notesEyebrow:    '02 · Working notes',
+  notesLeft:       'Lead time — Commissions typically book 3–6 weeks out. Print orders ship within 10 working days.\nTravel — Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.\nImage use & press — Press kit and high-res files available on request from info@kshetejsareen.com.',
+  notesRight:      'Day rates — Available on request once project scope is clear. Half-day, full-day, and multi-day rates.\nUsage & licensing — All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.\nPrints — Editions of 12, printed in studio on Hahnemühle Photo Rag. Signed, numbered, and stamped on verso.',
 }
 
 // Reference frame dimensions at 1440 × 900 desktop viewport
@@ -1491,445 +1779,6 @@ function StyleControls({
     </div>
   )
 }
-
-function PageCopyEditorPanel({
-  categoryId, initial, onSave, onClose,
-}: {
-  categoryId: string
-  initial: Record<string, unknown>
-  onSave: (copy: Record<string, unknown>) => Promise<void>
-  onClose: () => void
-}) {
-  if (categoryId === 'info')    return <InfoCopyEditorPanel    initial={initial} onSave={onSave} onClose={onClose} />
-  if (categoryId === 'contact') return <ContactCopyEditorPanel initial={initial} onSave={onSave} onClose={onClose} />
-  return <CategoryCopyEditorPanel categoryId={categoryId} initial={initial as CategoryCopy} onSave={onSave} onClose={onClose} />
-}
-
-function CategoryCopyEditorPanel({
-  categoryId, initial, onSave, onClose,
-}: {
-  categoryId: string
-  initial: CategoryCopy
-  onSave: (copy: Record<string, unknown>) => Promise<void>
-  onClose: () => void
-}) {
-  const [copy, setCopy]   = useState<CategoryCopy>(initial)
-  const [saving, setSaving] = useState(false)
-
-  const set = (k: keyof CategoryCopy) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => setCopy((prev) => ({ ...prev, [k]: e.target.value }))
-
-  const setStyle = (k: keyof CategoryCopy) => (s: TextStyle) =>
-    setCopy((prev) => ({ ...prev, [k]: s }))
-
-  const handleSave = async () => {
-    setSaving(true)
-    await onSave(copy as Record<string, unknown>)
-    setSaving(false)
-  }
-
-  const label = categoryId.charAt(0).toUpperCase() + categoryId.slice(1)
-
-  return (
-    <aside className="adm-library adm-copy-editor">
-      <div className="adm-library-head">
-        <div className="adm-library-title">Page copy · {label}</div>
-        <button className="adm-folder-cancel" onClick={onClose}>← Back</button>
-      </div>
-
-      <div className="adm-copy-fields">
-        <div className="adm-copy-section-label">Hero</div>
-
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Hero title
-            <span className="adm-copy-hint">Overrides the category name in the hero</span>
-          </label>
-          <input
-            className="adm-copy-input"
-            value={copy.heroTitle ?? ''}
-            onChange={set('heroTitle')}
-            placeholder={label}
-          />
-          <StyleControls value={copy.heroTitleStyle} onChange={setStyle('heroTitleStyle')} />
-        </div>
-
-        <div className="adm-copy-section-label">Intro</div>
-
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Intro label
-            <span className="adm-copy-hint">Small eyebrow above the intro paragraph</span>
-          </label>
-          <input
-            className="adm-copy-input"
-            value={copy.introLabel ?? ''}
-            onChange={set('introLabel')}
-            placeholder="On the work"
-          />
-          <StyleControls value={copy.introLabelStyle} onChange={setStyle('introLabelStyle')} />
-        </div>
-
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Intro body
-            <span className="adm-copy-hint">Main paragraph text</span>
-          </label>
-          <textarea
-            className="adm-copy-textarea"
-            value={copy.introBody ?? ''}
-            onChange={set('introBody')}
-            rows={5}
-            placeholder="Paragraph text for the category intro…"
-          />
-          <StyleControls value={copy.introBodyStyle} onChange={setStyle('introBodyStyle')} />
-        </div>
-
-        <div className="adm-copy-section-label">Pull quote</div>
-
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Quote text</label>
-          <textarea
-            className="adm-copy-textarea"
-            value={copy.pullQuoteText ?? ''}
-            onChange={set('pullQuoteText')}
-            rows={3}
-            placeholder="A short, memorable quote or statement…"
-          />
-          <StyleControls value={copy.pullQuoteStyle} onChange={setStyle('pullQuoteStyle')} />
-        </div>
-
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Attribution
-            <span className="adm-copy-hint">Who said it, or a source</span>
-          </label>
-          <input
-            className="adm-copy-input"
-            value={copy.pullQuoteAttr ?? ''}
-            onChange={set('pullQuoteAttr')}
-            placeholder="Studio note · 2025"
-          />
-          <StyleControls value={copy.pullQuoteAttrStyle} onChange={setStyle('pullQuoteAttrStyle')} />
-        </div>
-
-        <div className="adm-copy-section-label">Projects section</div>
-
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Section title
-            <span className="adm-copy-hint">Overrides &quot;Selected Projects&quot;</span>
-          </label>
-          <input
-            className="adm-copy-input"
-            value={copy.projectsSectionTitle ?? ''}
-            onChange={set('projectsSectionTitle')}
-            placeholder="Selected Projects"
-          />
-        </div>
-      </div>
-
-      <div className="adm-copy-actions">
-        <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
-        <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving…' : 'Save copy →'}
-        </button>
-      </div>
-    </aside>
-  )
-}
-
-// ─── InfoCopyEditorPanel ──────────────────────────────────────────────────────
-
-function InfoCopyEditorPanel({
-  initial, onSave, onClose,
-}: {
-  initial: Record<string, unknown>
-  onSave: (copy: Record<string, unknown>) => Promise<void>
-  onClose: () => void
-}) {
-  const c = initial as InfoCopy
-  const [heroIntro,           setHeroIntro]           = useState(c.heroIntro           ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.')
-  const [bioPara1,            setBioPara1]            = useState(c.bioPara1            ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.')
-  const [bioPara2,            setBioPara2]            = useState(c.bioPara2            ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.')
-  const [heroCap,             setHeroCap]             = useState(c.heroCap             ?? 'Self · Studio · 2026')
-  const [practiceItems,       setPracticeItems]       = useState(c.practiceItems       ?? 'Portraits — 24\nCulinary — 38\nSpaces — 19\nObjects — 12\nMotion — 7')
-  const [practiceNote,        setPracticeNote]        = useState(c.practiceNote        ?? 'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.')
-  const [nowItems,            setNowItems]            = useState(c.nowItems            ?? 'Residency — Kindred Studio, Brooklyn — through Aug 2026\nIn progress — The Fruit Table, vol. ii (Kyoto)\nAvailable — Bookings · May–Sept 2026\nPrint sales — Editions of 12 — by request')
-  const [clients,             setClients]             = useState(c.clients             ?? 'Apartamento — 2021—\nCereal Magazine — 2022—\nKinfolk — 2023—\nThe New York Times — 2024—\nThe Gentlewoman — 2024\nAēsop — 2023, 2025\nLe Labo — 2024\nHermès — 2025')
-  const [press,               setPress]               = useState(c.press               ?? "Pier 24 — group show — 2025\nAperture, vol. 246 — 2024\nFoam Talent — finalist — 2024\nBritish Journal of Photography — 2023\nIt's Nice That · profile — 2023")
-  const [touchEmail,          setTouchEmail]          = useState(c.touchEmail          ?? 'info@kshetejsareen.com')
-  const [touchEmailNote,      setTouchEmailNote]      = useState(c.touchEmailNote      ?? 'For commissions & prints')
-  const [touchAppointment,    setTouchAppointment]    = useState(c.touchAppointment    ?? 'New York · Bombay')
-  const [touchAppointmentNote,setTouchAppointmentNote]= useState(c.touchAppointmentNote ?? 'Studio visits welcome')
-  const [touchSocial,         setTouchSocial]         = useState(c.touchSocial         ?? '@kshetejsareen')
-  const [touchSocialNote,     setTouchSocialNote]     = useState(c.touchSocialNote     ?? 'Instagram')
-  const [saving, setSaving] = useState(false)
-
-  const handleSave = async () => {
-    setSaving(true)
-    await onSave({
-      heroIntro, bioPara1, bioPara2, heroCap,
-      practiceItems, practiceNote,
-      nowItems, clients, press,
-      touchEmail, touchEmailNote,
-      touchAppointment, touchAppointmentNote,
-      touchSocial, touchSocialNote,
-    })
-    setSaving(false)
-  }
-
-  return (
-    <aside className="adm-library adm-copy-editor">
-      <div className="adm-library-head">
-        <div className="adm-library-title">Page copy · Info</div>
-        <button className="adm-folder-cancel" onClick={onClose}>← Back</button>
-      </div>
-      <div className="adm-copy-fields">
-
-        <div className="adm-copy-section-label">Hero</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Hero intro paragraph</label>
-          <textarea className="adm-copy-textarea" rows={3} value={heroIntro} onChange={(e) => setHeroIntro(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Photo caption
-            <span className="adm-copy-hint">Below the portrait image</span>
-          </label>
-          <input className="adm-copy-input" value={heroCap} onChange={(e) => setHeroCap(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Biography</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">First paragraph</label>
-          <textarea className="adm-copy-textarea" rows={4} value={bioPara1} onChange={(e) => setBioPara1(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Second paragraph</label>
-          <textarea className="adm-copy-textarea" rows={3} value={bioPara2} onChange={(e) => setBioPara2(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Practice</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Practice items
-            <span className="adm-copy-hint">Category — frame count, one per line</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={5} value={practiceItems} onChange={(e) => setPracticeItems(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Practice note</label>
-          <input className="adm-copy-input" value={practiceNote} onChange={(e) => setPracticeNote(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Now</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Current items
-            <span className="adm-copy-hint">One item per line</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={5} value={nowItems} onChange={(e) => setNowItems(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Selected clients</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Clients
-            <span className="adm-copy-hint">Name — Year, one per line</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={8} value={clients} onChange={(e) => setClients(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Press &amp; exhibitions</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Press
-            <span className="adm-copy-hint">Name — Year, one per line</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={5} value={press} onChange={(e) => setPress(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Get in touch</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Studio email</label>
-          <input className="adm-copy-input" value={touchEmail} onChange={(e) => setTouchEmail(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Email note
-            <span className="adm-copy-hint">Small line below the email</span>
-          </label>
-          <input className="adm-copy-input" value={touchEmailNote} onChange={(e) => setTouchEmailNote(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">By appointment (locations)</label>
-          <input className="adm-copy-input" value={touchAppointment} onChange={(e) => setTouchAppointment(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Appointment note</label>
-          <input className="adm-copy-input" value={touchAppointmentNote} onChange={(e) => setTouchAppointmentNote(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Social handle
-            <span className="adm-copy-hint">Links to instagram.com/handle</span>
-          </label>
-          <input className="adm-copy-input" value={touchSocial} onChange={(e) => setTouchSocial(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Social note</label>
-          <input className="adm-copy-input" value={touchSocialNote} onChange={(e) => setTouchSocialNote(e.target.value)} />
-        </div>
-
-      </div>
-      <div className="adm-copy-actions">
-        <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
-        <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving…' : 'Save copy →'}
-        </button>
-      </div>
-    </aside>
-  )
-}
-
-// ─── ContactCopyEditorPanel ───────────────────────────────────────────────────
-
-function ContactCopyEditorPanel({
-  initial, onSave, onClose,
-}: {
-  initial: Record<string, unknown>
-  onSave: (copy: Record<string, unknown>) => Promise<void>
-  onClose: () => void
-}) {
-  const c = initial as ContactCopy
-  const [tickerStatus,    setTickerStatus]    = useState(c.tickerStatus    ?? 'Open for bookings — May through Sept 2026')
-  const [tickerLeadTime,  setTickerLeadTime]  = useState(c.tickerLeadTime  ?? 'Lead time · 3–6 weeks')
-  const [heroTitle,       setHeroTitle]       = useState(c.heroTitle       ?? 'Say hello')
-  const [heroPara1,       setHeroPara1]       = useState(c.heroPara1       ?? "For commissions, prints, and press — the form is the fastest route. Tell me a little about the project and I'll write back within two working days.")
-  const [heroPara2,       setHeroPara2]       = useState(c.heroPara2       ?? "Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.")
-  const [inquiryHeading,  setInquiryHeading]  = useState(c.inquiryHeading  ?? 'Start with the project, not the form.')
-  const [inquiryNote,     setInquiryNote]     = useState(c.inquiryNote     ?? "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message.")
-  const [privacyText,     setPrivacyText]     = useState(c.privacyText     ?? 'No mailing list. Your details stay between us.')
-  const [directTitle,     setDirectTitle]     = useState(c.directTitle     ?? 'Direct channels.')
-  const [directDesc,      setDirectDesc]      = useState(c.directDesc      ?? 'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.')
-  const [directChannels,  setDirectChannels]  = useState(c.directChannels  ?? 'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 99995 67676 | Fastest response | https://wa.me/919999567676\nElsewhere | @kshetejsareen | Instagram | https://instagram.com/kshetejsareen\nNew York | Brooklyn, NY | By appointment · Mon–Fri |\nBombay | Bandra W, Mumbai | By appointment |\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com')
-  const [notesLeft,       setNotesLeft]       = useState(c.notesLeft       ?? 'Lead time — Commissions typically book 3–6 weeks out. Print orders ship within 10 working days.\nTravel — Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.\nImage use & press — Press kit and high-res files available on request from info@kshetejsareen.com.')
-  const [notesRight,      setNotesRight]      = useState(c.notesRight      ?? 'Day rates — Available on request once project scope is clear. Half-day, full-day, and multi-day rates.\nUsage & licensing — All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.\nPrints — Editions of 12, printed in studio on Hahnemühle Photo Rag. Signed, numbered, and stamped on verso.')
-  const [saving, setSaving] = useState(false)
-
-  const handleSave = async () => {
-    setSaving(true)
-    await onSave({
-      tickerStatus, tickerLeadTime,
-      heroTitle, heroPara1, heroPara2,
-      inquiryHeading, inquiryNote, privacyText,
-      directTitle, directDesc, directChannels,
-      notesLeft, notesRight,
-    })
-    setSaving(false)
-  }
-
-  return (
-    <aside className="adm-library adm-copy-editor">
-      <div className="adm-library-head">
-        <div className="adm-library-title">Page copy · Contact</div>
-        <button className="adm-folder-cancel" onClick={onClose}>← Back</button>
-      </div>
-      <div className="adm-copy-fields">
-
-        <div className="adm-copy-section-label">Availability ticker</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Status text
-            <span className="adm-copy-hint">Left side of the ticker bar</span>
-          </label>
-          <input className="adm-copy-input" value={tickerStatus} onChange={(e) => setTickerStatus(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Lead time text
-            <span className="adm-copy-hint">Right side of the ticker bar</span>
-          </label>
-          <input className="adm-copy-input" value={tickerLeadTime} onChange={(e) => setTickerLeadTime(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Hero</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Hero title</label>
-          <input className="adm-copy-input" value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="Say hello" />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">First paragraph</label>
-          <textarea className="adm-copy-textarea" rows={4} value={heroPara1} onChange={(e) => setHeroPara1(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Second paragraph</label>
-          <textarea className="adm-copy-textarea" rows={4} value={heroPara2} onChange={(e) => setHeroPara2(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Project inquiry</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Section heading</label>
-          <input className="adm-copy-input" value={inquiryHeading} onChange={(e) => setInquiryHeading(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Section note</label>
-          <textarea className="adm-copy-textarea" rows={2} value={inquiryNote} onChange={(e) => setInquiryNote(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Privacy text
-            <span className="adm-copy-hint">Below the submit button</span>
-          </label>
-          <input className="adm-copy-input" value={privacyText} onChange={(e) => setPrivacyText(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Direct channels</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Section title</label>
-          <input className="adm-copy-input" value={directTitle} onChange={(e) => setDirectTitle(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">Section description</label>
-          <textarea className="adm-copy-textarea" rows={2} value={directDesc} onChange={(e) => setDirectDesc(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Channel entries
-            <span className="adm-copy-hint">Label | Value | Note | URL, one per line. URL is optional.</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={7} value={directChannels} onChange={(e) => setDirectChannels(e.target.value)} />
-        </div>
-
-        <div className="adm-copy-section-label">Working notes</div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Left column
-            <span className="adm-copy-hint">Label — Value, one per line</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={5} value={notesLeft} onChange={(e) => setNotesLeft(e.target.value)} />
-        </div>
-        <div className="adm-copy-field">
-          <label className="adm-copy-label">
-            Right column
-            <span className="adm-copy-hint">Label — Value, one per line</span>
-          </label>
-          <textarea className="adm-copy-textarea" rows={5} value={notesRight} onChange={(e) => setNotesRight(e.target.value)} />
-        </div>
-
-      </div>
-      <div className="adm-copy-actions">
-        <button className="adm-copy-cancel" onClick={onClose}>Cancel</button>
-        <button className="adm-copy-save" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving…' : 'Save copy →'}
-        </button>
-      </div>
-    </aside>
-  )
-}
-
 // ─── ProjectImagesPanel ───────────────────────────────────────────────────────
 
 function ProjectImagesPanel({

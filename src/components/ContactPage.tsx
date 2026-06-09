@@ -126,6 +126,7 @@ export function ContactPage() {
   const heroTitle       = contactCopy.heroTitle       ?? 'Say hello'
   const heroPara1       = contactCopy.heroPara1       ?? null
   const heroPara2       = contactCopy.heroPara2       ?? null
+  const inquiryEyebrow  = contactCopy.inquiryEyebrow  ?? '01 · Project inquiry'
   const inquiryHeading  = contactCopy.inquiryHeading  ?? 'Start with the project, not the form.'
   const inquiryNote     = contactCopy.inquiryNote     ?? "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message."
   const privacyText     = contactCopy.privacyText     ?? 'No mailing list. Your details stay between us.'
@@ -139,6 +140,7 @@ export function ContactPage() {
       })
     : DIRECT
 
+  const notesEyebrow = contactCopy.notesEyebrow ?? '02 · Working notes'
   const leftNotes  = contactCopy.notesLeft  ? parseNotesCol(contactCopy.notesLeft)  : NOTES.map((n) => ({ label: n.label,  value: n.value  }))
   const rightNotes = contactCopy.notesRight ? parseNotesCol(contactCopy.notesRight) : NOTES.map((n) => ({ label: n.label2, value: n.value2 }))
 
@@ -221,7 +223,7 @@ export function ContactPage() {
         {/* ── Form ── */}
         <section className="contact-inquiry" data-sr>
           <div className="contact-inquiry-left">
-            <div className="contact-inquiry-label ks-eyebrow">01 · Project inquiry</div>
+            <div className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</div>
             <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
             <p className="contact-inquiry-note">{inquiryNote}</p>
           </div>
@@ -380,7 +382,7 @@ export function ContactPage() {
 
         {/* ── Working notes ── */}
         <section className="contact-notes" data-sr>
-          <div className="contact-notes-label ks-eyebrow">02 · Working notes</div>
+          <div className="contact-notes-label ks-eyebrow">{notesEyebrow}</div>
           <div className="contact-notes-table">
             {leftNotes.map((left, i) => {
               const right = rightNotes[i]

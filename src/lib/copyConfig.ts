@@ -22,15 +22,22 @@ export interface CategoryCopy {
 }
 
 export interface InfoCopy {
+  heroEyebrow?: string
   heroIntro?: string
   bioPara1?: string
   bioPara2?: string
-  heroCap?: string           // photo caption, e.g. "Self · Studio · 2026"
+  heroCap?: string
+  bioHeading?: string
+  practiceHeading?: string
   practiceItems?: string     // "Label — N" per line
   practiceNote?: string
+  nowHeading?: string
   nowItems?: string          // one item per line
+  clientsHeading?: string
   clients?: string           // "Name — Year" per line
+  pressHeading?: string
   press?: string             // "Name — Year" per line
+  touchHeading?: string
   touchEmail?: string
   touchEmailNote?: string
   touchAppointment?: string
@@ -45,12 +52,14 @@ export interface ContactCopy {
   heroTitle?: string
   heroPara1?: string
   heroPara2?: string
+  inquiryEyebrow?: string
   inquiryHeading?: string
   inquiryNote?: string
   privacyText?: string
   directTitle?: string
   directDesc?: string
   directChannels?: string    // "Label | Value | Note | Href" per line
+  notesEyebrow?: string
   notesLeft?: string         // "Label — Value" per line (left column)
   notesRight?: string        // "Label — Value" per line (right column)
 }

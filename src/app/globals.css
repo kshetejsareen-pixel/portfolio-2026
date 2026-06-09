@@ -3591,33 +3591,145 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-copy-textarea:focus { outline: none; border-color: rgba(255,255,255,0.3); }
 .adm-copy-textarea::placeholder { color: rgba(255,255,255,0.2); }
 
-.adm-page-copy-btn {
-  font-size: 10px;
+/* ── Inline copy save bar ───────────────────────────────────── */
+.adm-copy-save-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  background: #1a1500;
+  border-bottom: 1px solid #3a2e10;
+  flex-shrink: 0;
+}
+
+.adm-copy-save-bar-msg {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d4a84b;
+  flex: 1;
+}
+
+.adm-copy-save-bar-btn {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #111;
+  background: #d4a84b;
+  border: none;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.adm-copy-save-bar-btn:hover:not(:disabled) { background: #e8c870; }
+.adm-copy-save-bar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.adm-copy-save-bar-discard {
+  font-family: var(--font-mono);
+  font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
+  color: #555;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 3px;
+  border: 1px solid #2a2a2a;
   padding: 4px 10px;
   cursor: pointer;
   transition: color 150ms, border-color 150ms;
-  margin-left: auto;
 }
-.adm-page-copy-btn:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.3); }
-.adm-page-copy-btn.active { color: #fff; border-color: rgba(255,255,255,0.5); background: #1a1a1a; }
+.adm-copy-save-bar-discard:hover { color: #aaa; border-color: #444; }
+
+/* ── Inline copy sections (embedded in slot scroll area) ────── */
+.adm-inline-divider {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px 8px;
+  background: #0a0a0a;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #181818;
+}
+
+.adm-inline-divider-label {
+  font-size: 8px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #d4a84b;
+}
+
+.adm-inline-copy-group {
+  padding: 12px 16px;
+  background: #0f0f0f;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adm-inline-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adm-inline-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #666;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.adm-inline-hint {
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: #383838;
+  font-family: var(--font-mono);
+}
+
+.adm-inline-input {
+  background: #111;
+  border: 1px solid #222;
+  color: #ccc;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 6px 8px;
+  outline: none;
+  transition: border-color 150ms;
+  width: 100%;
+  box-sizing: border-box;
+}
+.adm-inline-input::placeholder { color: #2a2a2a; }
+.adm-inline-input:focus { border-color: #3a2e10; }
+
+.adm-inline-textarea {
+  background: #111;
+  border: 1px solid #222;
+  color: #ccc;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  padding: 6px 8px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 150ms;
+  width: 100%;
+  box-sizing: border-box;
+}
+.adm-inline-textarea::placeholder { color: #2a2a2a; }
+.adm-inline-textarea:focus { border-color: #3a2e10; }
 
 /* ═══════════════════════════════════════════════════════════════
    ADMIN — Projects section (category pages)
 ═══════════════════════════════════════════════════════════════ */
 
 .adm-projects-section {
-  flex-shrink: 0;
-  border-bottom: 1px solid #1e1e1e;
+  border-top: 1px solid #1e1e1e;
   background: #0f0f0f;
-  max-height: 260px;
-  display: flex;
-  flex-direction: column;
 }
 
 .adm-projects-head {
@@ -3661,6 +3773,46 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-projects-add-btn:hover { color: #e8c870; border-color: #6a5020; }
 
+.adm-projects-path-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #181818;
+  background: #0d0d0d;
+}
+
+.adm-projects-path-input {
+  flex: 1;
+  background: #111;
+  border: 1px solid #252525;
+  color: #bbb;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  padding: 5px 8px;
+  outline: none;
+  transition: border-color 150ms;
+}
+.adm-projects-path-input::placeholder { color: #333; }
+.adm-projects-path-input:focus { border-color: #3a2e10; }
+
+.adm-projects-path-go {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d4a84b;
+  background: transparent;
+  border: 1px solid #3a2e10;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms, border-color 150ms;
+}
+.adm-projects-path-go:hover { color: #e8c870; border-color: #6a5020; }
+.adm-projects-path-go:disabled { opacity: 0.3; cursor: not-allowed; }
+
 .adm-projects-empty {
   padding: 16px;
   font-size: 10px;
@@ -3668,10 +3820,7 @@ a.info-touch-val:hover { color: var(--paper); }
   letter-spacing: 0.08em;
 }
 
-.adm-projects-list {
-  overflow-y: auto;
-  flex: 1;
-}
+.adm-projects-list {}
 
 .adm-project-row {
   display: flex;

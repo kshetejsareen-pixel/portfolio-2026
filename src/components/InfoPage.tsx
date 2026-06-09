@@ -80,11 +80,18 @@ export function InfoPage() {
       .catch(() => {})
   }, [])
 
+  const heroEyebrow = copy.heroEyebrow ?? 'Info · A working biography'
   const heroIntro = copy.heroIntro ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.'
   const bioPara1  = copy.bioPara1  ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.'
   const bioPara2  = copy.bioPara2  ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.'
   const heroCap   = copy.heroCap   ?? 'Self · Studio · 2026'
-  const practiceNote = copy.practiceNote ?? 'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.'
+  const bioHeading      = copy.bioHeading      ?? 'Biography'
+  const practiceHeading = copy.practiceHeading ?? 'Practice, categories of work'
+  const practiceNote    = copy.practiceNote    ?? 'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.'
+  const nowHeading      = copy.nowHeading      ?? 'Now, current'
+  const clientsHeading  = copy.clientsHeading  ?? 'Selected clients, recent'
+  const pressHeading    = copy.pressHeading    ?? 'Press & exhibitions, selected'
+  const touchHeading    = copy.touchHeading    ?? 'Get in touch'
   const touchEmail           = copy.touchEmail           ?? 'info@kshetejsareen.com'
   const touchEmailNote       = copy.touchEmailNote       ?? 'For commissions & prints'
   const touchAppointment     = copy.touchAppointment     ?? 'New York · Bombay'
@@ -162,7 +169,7 @@ export function InfoPage() {
 
           <div className="info-hero-text-col">
             <div className="info-hero-eyebrow ks-eyebrow">
-              Info · A working biography
+              {heroEyebrow}
             </div>
             <h1 className="info-hero-name">
               Kshetej<br />
@@ -174,7 +181,7 @@ export function InfoPage() {
 
         {/* ── Biography ── */}
         <section className="info-bio" data-sr>
-          <div className="info-bio-label ks-eyebrow">Biography</div>
+          <div className="info-bio-label ks-eyebrow">{bioHeading}</div>
           <div className="info-bio-body">
             <p className="info-bio-para">{bioPara1}</p>
             <p className="info-bio-para">{bioPara2}</p>
@@ -192,7 +199,7 @@ export function InfoPage() {
               <div className="info-quad-head">
                 <span className="info-quad-n">01</span>
                 <h2 className="info-quad-title">
-                  Practice, <em>categories of work</em>
+                  {practiceHeading}
                 </h2>
               </div>
               <div className="info-quad-rule" />
@@ -211,9 +218,7 @@ export function InfoPage() {
             <div className="info-quad-cell">
               <div className="info-quad-head">
                 <span className="info-quad-n">02</span>
-                <h2 className="info-quad-title">
-                  Now, <em>current</em>
-                </h2>
+                <h2 className="info-quad-title">{nowHeading}</h2>
               </div>
               <div className="info-quad-rule" />
               <ul className="info-now-list">
@@ -227,9 +232,7 @@ export function InfoPage() {
             <div className="info-quad-cell">
               <div className="info-quad-head">
                 <span className="info-quad-n">03</span>
-                <h2 className="info-quad-title">
-                  Selected clients, <em>recent</em>
-                </h2>
+                <h2 className="info-quad-title">{clientsHeading}</h2>
               </div>
               <div className="info-quad-rule" />
               <ul className="info-clients-list">
@@ -246,9 +249,7 @@ export function InfoPage() {
             <div className="info-quad-cell">
               <div className="info-quad-head">
                 <span className="info-quad-n">04</span>
-                <h2 className="info-quad-title">
-                  Press &amp; exhibitions, <em>selected</em>
-                </h2>
+                <h2 className="info-quad-title">{pressHeading}</h2>
               </div>
               <div className="info-quad-rule" />
               <ul className="info-clients-list">
@@ -268,7 +269,7 @@ export function InfoPage() {
         <section className="info-touch" data-sr>
           <div className="info-touch-rule" />
           <h2 className="info-touch-heading">
-            Get in touch<span className="info-touch-period">.</span>
+            {touchHeading}<span className="info-touch-period">.</span>
           </h2>
           <div className="info-touch-cols">
             <div className="info-touch-col">
