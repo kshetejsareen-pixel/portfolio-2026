@@ -190,7 +190,6 @@ export function InfoPage() {
 
         {/* ── Get in touch ── */}
         <section className="info-touch" data-sr>
-          <div className="info-touch-rule" />
           <h2 className="info-touch-heading">
             {touchHeading}<span className="info-touch-period">.</span>
           </h2>
