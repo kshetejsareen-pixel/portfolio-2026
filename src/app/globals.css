@@ -2698,7 +2698,6 @@ a.info-touch-val:hover { color: var(--paper); }
 
 /* Frame count controls — Landing page only */
 .adm-frame-counts {
-  flex-shrink: 0;
   border-bottom: 1px solid #1e1e1e;
   padding: 16px 20px;
   background: #0f0f0f;
@@ -3022,6 +3021,41 @@ a.info-touch-val:hover { color: var(--paper); }
   overflow: hidden;
   background: #0f0f0f;
 }
+
+.adm-library--collapsed {
+  justify-content: center;
+  align-items: center;
+  border-left: 1px solid #1e1e1e;
+}
+
+.adm-library-show-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #555;
+  background: transparent;
+  border: 1px solid #222;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+}
+.adm-library-show-btn:hover { color: #aaa; border-color: #555; }
+
+.adm-library-close-btn {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #444;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  align-self: flex-start;
+  transition: color 150ms;
+}
+.adm-library-close-btn:hover { color: #888; }
 
 .adm-library-head {
   padding: 14px 14px 10px;

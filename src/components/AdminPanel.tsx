@@ -158,6 +158,7 @@ export function AdminPanel() {
   const [activePage, setActivePage]     = useState('Landing')
   const [assigningSlotId, setAssigningSlotId] = useState<string | null>(null)
   const [rightPanel, setRightPanel]     = useState<RightPanel>({ mode: 'library' })
+  const [libraryOpen, setLibraryOpen]   = useState(false)
   const [toast, setToast]               = useState('')
 
   // Derived
@@ -541,63 +542,6 @@ export function AdminPanel() {
           )}
         </div>
 
-        {/* Category order — Landing only */}
-        {activePage === 'Landing' && (
-          <div className="adm-frame-counts">
-            <div className="adm-frame-counts-title">
-              Category order
-              {orderSaving && <span className="adm-count-saving"> saving…</span>}
-            </div>
-            <div className="adm-frame-counts-table">
-              {catOrder.map((id, i) => {
-                const cat = LANDING_CATS.find((c) => c.id === id)
-                if (!cat) return null
-                return (
-                  <div key={id} className="adm-frame-row">
-                    <div className="adm-frame-row-label">
-                      <span className="adm-cat-order-n">{String(i + 1).padStart(2, '0')}</span>
-                      {cat.label}
-                    </div>
-                    <div className="adm-frame-row-controls">
-                      <button className="adm-count-btn" onClick={() => moveCat(id, 'up')}   disabled={i === 0 || orderSaving}>↑</button>
-                      <button className="adm-count-btn" onClick={() => moveCat(id, 'down')} disabled={i === catOrder.length - 1 || orderSaving}>↓</button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-            <div className="adm-frame-counts-note">
-              Order applies to the landing page carousel and the navigation menu.
-            </div>
-          </div>
-        )}
-
-        {/* Frame count controls — Landing only */}
-        {activePage === 'Landing' && (
-          <div className="adm-frame-counts">
-            <div className="adm-frame-counts-title">Landing page · frames per category</div>
-            <div className="adm-frame-counts-table">
-              {landingGroups.map((g) => (
-                <div key={g.id} className="adm-frame-row">
-                  <div className="adm-frame-row-label">{g.label}</div>
-                  <div className="adm-frame-row-fill">
-                    {g.filled}/{g.count} assigned
-                    {g.filled < g.count && <span className="adm-frame-row-warn"> · {g.count - g.filled} empty</span>}
-                  </div>
-                  <div className="adm-frame-row-controls">
-                    <button className="adm-count-btn" onClick={() => updateCount(g.id, -1)} disabled={g.count <= 1 || configSaving === g.id}>−</button>
-                    <span className={`adm-count-val${configSaving === g.id ? ' saving' : ''}`}>{g.count}</span>
-                    <button className="adm-count-btn" onClick={() => updateCount(g.id, +1)} disabled={g.count >= MAX_FRAMES || configSaving === g.id}>+</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="adm-frame-counts-note">
-              Changes take effect immediately. Reducing count hides slots — assignments are preserved if you increase it again.
-            </div>
-          </div>
-        )}
-
         {/* Projects section — category pages only */}
         {activePage !== 'Landing' && CAT_IDS.includes(activeCatId) && (
           <ProjectsSection
@@ -628,6 +572,55 @@ export function AdminPanel() {
         {/* Slot grid */}
         {activePage === 'Landing' ? (
           <div className="adm-slots-scroll">
+            <div className="adm-frame-counts">
+              <div className="adm-frame-counts-title">
+                Category order
+                {orderSaving && <span className="adm-count-saving"> saving…</span>}
+              </div>
+              <div className="adm-frame-counts-table">
+                {catOrder.map((id, i) => {
+                  const cat = LANDING_CATS.find((c) => c.id === id)
+                  if (!cat) return null
+                  return (
+                    <div key={id} className="adm-frame-row">
+                      <div className="adm-frame-row-label">
+                        <span className="adm-cat-order-n">{String(i + 1).padStart(2, '0')}</span>
+                        {cat.label}
+                      </div>
+                      <div className="adm-frame-row-controls">
+                        <button className="adm-count-btn" onClick={() => moveCat(id, 'up')}   disabled={i === 0 || orderSaving}>↑</button>
+                        <button className="adm-count-btn" onClick={() => moveCat(id, 'down')} disabled={i === catOrder.length - 1 || orderSaving}>↓</button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="adm-frame-counts-note">
+                Order applies to the landing page carousel and the navigation menu.
+              </div>
+            </div>
+            <div className="adm-frame-counts">
+              <div className="adm-frame-counts-title">Landing page · frames per category</div>
+              <div className="adm-frame-counts-table">
+                {landingGroups.map((g) => (
+                  <div key={g.id} className="adm-frame-row">
+                    <div className="adm-frame-row-label">{g.label}</div>
+                    <div className="adm-frame-row-fill">
+                      {g.filled}/{g.count} assigned
+                      {g.filled < g.count && <span className="adm-frame-row-warn"> · {g.count - g.filled} empty</span>}
+                    </div>
+                    <div className="adm-frame-row-controls">
+                      <button className="adm-count-btn" onClick={() => updateCount(g.id, -1)} disabled={g.count <= 1 || configSaving === g.id}>−</button>
+                      <span className={`adm-count-val${configSaving === g.id ? ' saving' : ''}`}>{g.count}</span>
+                      <button className="adm-count-btn" onClick={() => updateCount(g.id, +1)} disabled={g.count >= MAX_FRAMES || configSaving === g.id}>+</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="adm-frame-counts-note">
+                Changes take effect immediately. Reducing count hides slots — assignments are preserved if you increase it again.
+              </div>
+            </div>
             {landingGroups.map((g) => (
               <div key={g.id} className="adm-cat-group">
                 <div className="adm-cat-group-head">
@@ -883,7 +876,7 @@ export function AdminPanel() {
           }}
           onCancel={() => setRightPanel({ mode: 'library' })}
         />
-      ) : (
+      ) : libraryOpen ? (
         <LibraryPanel
           images={images}
           nextCursor={nextCursor}
@@ -898,7 +891,14 @@ export function AdminPanel() {
           onSelectImage={assignImage}
           onAssignUrl={assignByPublicId}
           onLoadMore={() => fetchImages(searchQ, nextCursor ?? undefined, libraryFolder)}
+          onClose={() => setLibraryOpen(false)}
         />
+      ) : (
+        <aside className="adm-library adm-library--collapsed">
+          <button className="adm-library-show-btn" onClick={() => setLibraryOpen(true)}>
+            Cloudinary Library →
+          </button>
+        </aside>
       )}
 
       {toast && <div className="adm-toast">{toast}</div>}
@@ -2142,7 +2142,7 @@ function ProjectEditPanel({
 
 function LibraryPanel({
   images, nextCursor, loadingImages, error, searchQ, selectedSlot, assigning,
-  currentFolder, onSearch, onFolderChange, onSelectImage, onAssignUrl, onLoadMore,
+  currentFolder, onSearch, onFolderChange, onSelectImage, onAssignUrl, onLoadMore, onClose,
 }: {
   images: CloudinaryImage[]
   nextCursor: string | null
@@ -2157,6 +2157,7 @@ function LibraryPanel({
   onSelectImage: (img: CloudinaryImage) => void
   onAssignUrl: (url: string) => Promise<void>
   onLoadMore: () => void
+  onClose: () => void
 }) {
   const [urlInput, setUrlInput] = useState('')
   const [folders, setFolders] = useState<{ name: string; path: string; imageCount: number }[]>([])
@@ -2178,6 +2179,7 @@ function LibraryPanel({
     <aside className="adm-library">
       <div className="adm-library-head">
         <div className="adm-library-title">Cloudinary Library</div>
+        <button className="adm-library-close-btn" onClick={onClose}>Hide ×</button>
         <input
           className="adm-library-search"
           type="search"
