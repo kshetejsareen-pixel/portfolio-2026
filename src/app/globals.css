@@ -1424,7 +1424,7 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-footer-nav-eyebrow {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 16px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(236, 232, 224, 0.38);
