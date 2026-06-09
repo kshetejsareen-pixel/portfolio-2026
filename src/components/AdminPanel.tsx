@@ -2160,27 +2160,81 @@ const DEFAULT_SANS  = 'Inter'
 
 type FontRole = 'serif' | 'mono' | 'sans'
 
-const FONT_USE_CASES: Record<FontRole, { label: string; example: string; size: string; italic?: boolean; tracking?: string }[]> = {
+type FontUseCase = {
+  page: string
+  label: string
+  css: string
+  example: string
+  size: string
+  italic?: boolean
+  tracking?: string
+}
+
+const FONT_USE_CASES: Record<FontRole, FontUseCase[]> = {
   serif: [
-    { label: 'Category hero title',     example: 'Culinary.',                                              size: '~90px',  italic: false },
-    { label: 'Contact hero',            example: 'Say hello.',                                             size: '~80px',  italic: false },
-    { label: 'Get in touch heading',    example: 'Get in touch.',                                          size: '~48px',  italic: true  },
-    { label: 'Pull quote',              example: '"Light is the subject. Everything else is context."',    size: '40px',   italic: true  },
-    { label: 'Intro body',              example: 'A quieter approach to food photography — work made over weeks, not hours.', size: '18px', italic: false },
-    { label: 'Landing tagline',         example: 'Works in progress',                                     size: '~40px',  italic: true  },
+    // Landing
+    { page: 'Landing',  label: 'Photographer name',          css: '.ks-name',                   example: 'Kshetej Sareen',                                          size: '55–90px'   },
+    { page: 'Landing',  label: 'Background counter numeral', css: '.ks-counter',                example: '02',                                                      size: '300px',    italic: true },
+    // Menu
+    { page: 'Menu',     label: 'Category name',              css: '.ks-menu-cat-name',          example: 'Culinary',                                                size: '28–48px'   },
+    // Category pages
+    { page: 'Category', label: 'Hero title',                 css: '.cat-hero-title',            example: 'Culinary.',                                               size: '72–220px', italic: true },
+    { page: 'Category', label: 'Intro body text',            css: '.cat-intro-body',            example: 'A quieter approach to food photography — work made over weeks, not hours.', size: '24–36px' },
+    { page: 'Category', label: 'Pull quote',                 css: '.cat-pull-quote-text',       example: '"Light is the subject. Everything else is context."',      size: '28–56px',  italic: true },
+    { page: 'Category', label: 'Row count numeral',          css: '.cat-row-ct-num',            example: '01',                                                      size: '40px',     italic: true },
+    { page: 'Category', label: 'Projects section heading',   css: '.cat-projects-title',        example: 'Selected work.',                                          size: '48–96px'   },
+    { page: 'Category', label: 'Project card title',         css: '.cat-project-title',         example: 'Marriott Mumbai',                                         size: '26–40px'   },
+    // Info page
+    { page: 'Info',     label: 'Hero name',                  css: '.info-hero-name',            example: 'Kshetej Sareen',                                          size: '64–112px'  },
+    { page: 'Info',     label: 'Hero intro paragraph',       css: '.info-hero-intro',           example: 'Independent photographer working between New York and Bombay.',             size: '17–22px'  },
+    { page: 'Info',     label: 'Biography paragraphs',       css: '.info-bio-para',             example: 'The work begins before the camera is raised.',            size: '18–26px'   },
+    { page: 'Info',     label: 'Portrait slot call-to-action', css: '.info-photo-slot-cta',     example: 'Add portrait photo',                                      size: '18–26px'   },
+    // Contact page
+    { page: 'Contact',  label: 'Hero title',                 css: '.contact-hero-title',        example: 'Say hello.',                                              size: '80–180px', italic: true },
+    { page: 'Contact',  label: 'Inquiry section heading',    css: '.contact-inquiry-heading',   example: 'Project inquiry.',                                        size: '28–42px'   },
+    { page: 'Contact',  label: 'Direct channels heading',    css: '.contact-direct-title',      example: 'Direct.',                                                 size: '48–88px',  italic: true },
+    { page: 'Contact',  label: 'Direct channel values',      css: '.contact-direct-cell-value', example: 'kshetejsareen@gmail.com',                                 size: '18–26px'   },
+    { page: 'Contact',  label: 'Working notes text',         css: '.contact-notes-val',         example: 'Response time: 24–48h',                                   size: '14–16px'   },
+    { page: 'Contact',  label: 'Form text input',            css: '.contact-input-v2',          example: 'Your name here',                                          size: '16px',     italic: true },
+    { page: 'Contact',  label: 'Confirmation heading',       css: '.contact-sent-mark',         example: '✓',                                                       size: '48px'      },
+    // Project pages
+    { page: 'Project',  label: 'Project hero title',         css: '.proj-hero-title',           example: 'Marriott Mumbai',                                         size: '36–88px',  italic: true },
   ],
   mono: [
-    { label: 'Eyebrow labels',          example: 'On the work',                        size: '15px', tracking: '0.22em' },
-    { label: 'Navigation & explore',    example: 'Culinary · Spaces · Objects · Motion', size: '22px', tracking: '0.18em' },
-    { label: 'Section eyebrows',        example: '01 · Project inquiry',               size: '15px', tracking: '0.20em' },
-    { label: 'Image metadata',          example: '2024 · New York · Canon EOS R5',     size: '13px', tracking: '0.12em' },
-    { label: 'Captions & credits',      example: 'Self · Studio · 2026',               size: '13px', tracking: '0.20em' },
-    { label: 'Frame counts',            example: '24 frames · 38 assigned',             size: '13px', tracking: '0.18em' },
+    // All pages
+    { page: 'All',      label: 'KS wordmark',                css: '.ks-wordmark-ks',            example: 'KS',                                                      size: '17px',  tracking: '0.22em' },
+    { page: 'All',      label: 'Top nav links',              css: '.ks-top-nav a',              example: 'CULINARY · INFO · CONTACT',                               size: '15px',  tracking: '0.22em' },
+    { page: 'All',      label: 'Menu open button',           css: '.ks-menu-btn',               example: 'MENU +',                                                  size: '15px',  tracking: '0.22em' },
+    // Menu overlay
+    { page: 'Menu',     label: 'Menu eyebrow',               css: '.ks-menu-eyebrow',           example: 'EXPLORE',                                                 size: '12px',  tracking: '0.28em' },
+    { page: 'Menu',     label: 'Category numbers',           css: '.ks-menu-cat-n',             example: '01 · 02 · 03',                                            size: '12px',  tracking: '0.22em' },
+    { page: 'Menu',     label: 'Utility links',              css: '.ks-menu-link',              example: 'INFO · CONTACT',                                          size: '12px',  tracking: '0.22em' },
+    // Landing
+    { page: 'Landing',  label: 'Brand bar label',            css: '.brand-bar-label',           example: 'TRUSTED BY',                                              size: '16px',  tracking: '0.18em' },
+    { page: 'Landing',  label: 'Brand bar client names',     css: '.brand-bar-item',            example: 'MARRIOTT HOTELS & RESORTS',                               size: '16px',  tracking: '0.18em' },
+    // Category pages
+    { page: 'Category', label: 'Section eyebrow',            css: '.ks-eyebrow',                example: 'ON THE WORK',                                             size: '12px',  tracking: '0.22em' },
+    { page: 'Category', label: 'Meta / stats eyebrow',       css: '.ks-meta .ks-eyebrow',       example: 'CULINARY · 2021–24',                                      size: '15px',  tracking: '0.22em' },
+    { page: 'Category', label: 'Hero year range',            css: '.cat-hero-year',             example: '2021–2024',                                               size: '22px',  tracking: '0.18em' },
+    { page: 'Category', label: 'Photo captions',             css: '.cat-cap',                   example: 'Studio · 2024 · Canon EOS R5',                            size: '13px',  tracking: '0.12em' },
+    { page: 'Category', label: 'Pull quote attribution',     css: '.cat-pull-quote-attr',       example: '— K.S.',                                                  size: '15px',  tracking: '0.22em' },
+    { page: 'Category', label: 'Project frames count',       css: '.cat-project-frames',        example: '14 frames',                                               size: '13px',  tracking: '0.18em' },
+    { page: 'Category', label: 'Project metadata',           css: '.cat-project-meta',          example: 'New York · 2023',                                         size: '13px',  tracking: '0.18em' },
+    { page: 'Category', label: 'Footer eyebrow',             css: '.cat-footer-nav-eyebrow',    example: 'EXPLORE',                                                 size: '16px',  tracking: '0.22em' },
+    { page: 'Category', label: 'Footer nav links',           css: '.cat-footer-nav-link',       example: 'CULINARY · SPACES · PORTRAITS',                           size: '16px',  tracking: '0.22em' },
+    { page: 'Category', label: 'Footer copyright',           css: '.cat-footer-copy',           example: '© 2026 KSHETEJ SAREEN',                                   size: '12px',  tracking: '0.12em' },
+    // Contact page
+    { page: 'Contact',  label: 'Form field labels',          css: '.contact-field-label',       example: 'FULL NAME',                                               size: '12px',  tracking: '0.22em' },
+    { page: 'Contact',  label: 'Submit button',              css: '.contact-submit-v2',         example: 'SEND INQUIRY →',                                          size: '13px',  tracking: '0.22em' },
+    // Project pages
+    { page: 'Project',  label: 'Project hero stats',         css: '.proj-hero-stats',           example: '12 frames · 2023 · New York',                             size: '12px',  tracking: '0.2em'  },
   ],
   sans: [
-    { label: 'Body text',               example: 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.', size: '16px' },
-    { label: 'Form inputs & labels',    example: 'Full name · you@studio.com',          size: '15px' },
-    { label: 'Navigation & buttons',    example: 'Menu +  ·  KS  ·  Send inquiry →',   size: '14px' },
+    { page: 'All',      label: 'Default body text',          css: 'body',                       example: 'Independent photographer working between New York and Bombay. Portraits, interiors, objects.', size: '16px (base)' },
+    { page: 'Category', label: 'Project description',        css: '.cat-project-desc',          example: 'A focused study of natural light in contemporary interiors.',                                   size: '18px'        },
+    { page: 'Contact',  label: 'Form text inputs',           css: '.contact-input',             example: 'Full name · you@studio.com',                              size: '16px'        },
+    { page: 'Contact',  label: 'Subline / supporting copy',  css: '.contact-subline',           example: 'Currently taking select commissions for 2026.',           size: '15px'        },
+    { page: 'Contact',  label: 'Privacy & legal note',       css: '.contact-privacy',           example: 'Your details will not be shared with third parties.',     size: '11px'        },
   ],
 }
 
@@ -2252,11 +2306,13 @@ function FontsPanel({
 
         <div className="adm-fonts-cases">
           {FONT_USE_CASES[role].map((uc) => (
-            <div key={uc.label} className="adm-fonts-case">
+            <div key={`${uc.page}-${uc.label}`} className="adm-fonts-case">
               <div className="adm-fonts-case-meta">
+                <span className="adm-fonts-case-page">{uc.page}</span>
                 <span className="adm-fonts-case-label">{uc.label}</span>
-                <span className="adm-fonts-case-size">{uc.size}{uc.tracking ? ` · ${uc.tracking} tracking` : ''}</span>
+                <span className="adm-fonts-case-size">{uc.size}{uc.tracking ? ` · ${uc.tracking}` : ''}</span>
               </div>
+              <span className="adm-fonts-case-css">{uc.css}</span>
               <div
                 className="adm-fonts-case-example"
                 style={{
