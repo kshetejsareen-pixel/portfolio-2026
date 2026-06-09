@@ -145,7 +145,7 @@ export function InfoPage() {
                     className="info-hero-img"
                     style={{
                       objectPosition: portrait.focalX != null && portrait.focalY != null
-                        ? `${portrait.focalX * 100}% ${portrait.focalY * 100}%`
+                        ? `${portrait.focalX}% ${portrait.focalY}%`
                         : 'center top',
                     }}
                   />
