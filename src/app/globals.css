@@ -1480,7 +1480,7 @@ button, input, textarea, select { font: inherit; }
       transparent 100%
     );
   }
-  .cat-footer-nav-link { font-size: 13px; }
+  .cat-footer-nav-link { font-size: 16px; }
   .cat-footer-nav-cats { gap: 20px; }
 }
 
