@@ -10,6 +10,8 @@ import {
   type IntroPart,
 } from '@/lib/categoryData'
 import type { InfoCopy, ContactCopy } from '@/lib/copyConfig'
+import type { FontConfig } from '@/lib/fontConfig'
+import { GFONTS, applyFontConfig } from '@/components/FontLoader'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -258,7 +260,11 @@ export function AdminPanel() {
     fetchConfig()
     fetchProjects()
     fetchCopyCfg()
+    fetch('/api/admin/fonts').then((r) => r.json()).then((d) => { if (d.config) setFontConfig(d.config) })
   }, [fetchImages, fetchAssignments, fetchConfig, fetchProjects, fetchCopyCfg])
+
+  // ── Font config state ──────────────────────────────────────────────────────
+  const [fontConfig, setFontConfig] = useState<FontConfig>({})
 
   // ── Inline copy draft state ────────────────────────────────────────────────
   const [draftCopy, setDraftCopy]   = useState<Record<string, unknown>>({})
@@ -715,6 +721,27 @@ export function AdminPanel() {
           const ds = (k: string) => (draftCopy[k] as TextStyle | undefined)
           const sf = (k: string) => (v: string)     => setDraftField(k, v)
           const ss = (k: string) => (v: TextStyle)  => setDraftField(k, v)
+
+          // ── Fonts page ──────────────────────────────────────────────────────
+          if (activeCatId === 'fonts') {
+            return (
+              <div className="adm-slots-scroll">
+                <FontsPanel
+                  config={fontConfig}
+                  onSave={async (cfg) => {
+                    await fetch('/api/admin/fonts', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(cfg),
+                    })
+                    setFontConfig(cfg)
+                    applyFontConfig(cfg)
+                    showToast('Fonts saved')
+                  }}
+                />
+              </div>
+            )
+          }
 
           // ── Info page ───────────────────────────────────────────────────────
           if (activeCatId === 'info') {
@@ -2118,5 +2145,167 @@ function LibraryPanel({
         <button className="adm-load-more" onClick={onLoadMore}>Load more</button>
       )}
     </aside>
+  )
+}
+
+// ─── FontsPanel ───────────────────────────────────────────────────────────────
+
+const SERIF_OPTIONS = ['Bodoni Moda', 'Cormorant Garamond', 'Playfair Display', 'IM Fell English', 'Libre Baskerville', 'Lora']
+const MONO_OPTIONS  = ['JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'Space Mono', 'Courier Prime']
+const SANS_OPTIONS  = ['Inter', 'DM Sans', 'Outfit', 'Plus Jakarta Sans']
+
+const DEFAULT_SERIF = 'Bodoni Moda'
+const DEFAULT_MONO  = 'JetBrains Mono'
+const DEFAULT_SANS  = 'Inter'
+
+type FontRole = 'serif' | 'mono' | 'sans'
+
+const FONT_USE_CASES: Record<FontRole, { label: string; example: string; size: string; italic?: boolean; tracking?: string }[]> = {
+  serif: [
+    { label: 'Category hero title',     example: 'Culinary.',                                              size: '~90px',  italic: false },
+    { label: 'Contact hero',            example: 'Say hello.',                                             size: '~80px',  italic: false },
+    { label: 'Get in touch heading',    example: 'Get in touch.',                                          size: '~48px',  italic: true  },
+    { label: 'Pull quote',              example: '"Light is the subject. Everything else is context."',    size: '40px',   italic: true  },
+    { label: 'Intro body',              example: 'A quieter approach to food photography — work made over weeks, not hours.', size: '18px', italic: false },
+    { label: 'Landing tagline',         example: 'Works in progress',                                     size: '~40px',  italic: true  },
+  ],
+  mono: [
+    { label: 'Eyebrow labels',          example: 'On the work',                        size: '15px', tracking: '0.22em' },
+    { label: 'Navigation & explore',    example: 'Culinary · Spaces · Objects · Motion', size: '22px', tracking: '0.18em' },
+    { label: 'Section eyebrows',        example: '01 · Project inquiry',               size: '15px', tracking: '0.20em' },
+    { label: 'Image metadata',          example: '2024 · New York · Canon EOS R5',     size: '13px', tracking: '0.12em' },
+    { label: 'Captions & credits',      example: 'Self · Studio · 2026',               size: '13px', tracking: '0.20em' },
+    { label: 'Frame counts',            example: '24 frames · 38 assigned',             size: '13px', tracking: '0.18em' },
+  ],
+  sans: [
+    { label: 'Body text',               example: 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.', size: '16px' },
+    { label: 'Form inputs & labels',    example: 'Full name · you@studio.com',          size: '15px' },
+    { label: 'Navigation & buttons',    example: 'Menu +  ·  KS  ·  Send inquiry →',   size: '14px' },
+  ],
+}
+
+function FontsPanel({
+  config, onSave,
+}: {
+  config: FontConfig
+  onSave: (cfg: FontConfig) => Promise<void>
+}) {
+  const [draft, setDraft]   = useState<FontConfig>(config)
+  const [saving, setSaving] = useState(false)
+  const [loaded, setLoaded] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    const allFonts = [...SERIF_OPTIONS, ...MONO_OPTIONS, ...SANS_OPTIONS]
+    const toLoad = allFonts.filter((f) => GFONTS[f])
+    const href = `https://fonts.googleapis.com/css2?${toLoad.map((f) => `family=${GFONTS[f]}`).join('&')}&display=swap`
+    if (!document.querySelector('link[data-ks-font-panel]')) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = href
+      link.setAttribute('data-ks-font-panel', '1')
+      document.head.appendChild(link)
+      link.onload = () => setLoaded(new Set(toLoad))
+    } else {
+      setLoaded(new Set(toLoad))
+    }
+  }, [])
+
+  useEffect(() => { setDraft(config) }, [config])
+
+  const dirty = JSON.stringify(draft) !== JSON.stringify(config)
+
+  const handleSave = async () => {
+    setSaving(true)
+    await onSave(draft)
+    setSaving(false)
+  }
+
+  const active = (role: FontRole) =>
+    role === 'serif' ? (draft.serifFamily ?? DEFAULT_SERIF)
+    : role === 'mono' ? (draft.monoFamily ?? DEFAULT_MONO)
+    : (draft.sansFamily ?? DEFAULT_SANS)
+
+  const setFont = (role: FontRole, family: string) =>
+    setDraft((prev) => ({
+      ...prev,
+      ...(role === 'serif' ? { serifFamily: family }
+        : role === 'mono'  ? { monoFamily:  family }
+        : { sansFamily: family }),
+    }))
+
+  const fallback = (role: FontRole) =>
+    role === 'serif' ? `'Bodoni 72', serif`
+    : role === 'mono' ? `'Fira Code', monospace`
+    : `system-ui, sans-serif`
+
+  const isLoaded = (f: string) =>
+    loaded.has(f) || f === DEFAULT_SERIF || f === DEFAULT_MONO || f === DEFAULT_SANS
+
+  const renderBlock = (role: FontRole, title: string, options: string[]) => {
+    const current = active(role)
+    return (
+      <div className="adm-fonts-block">
+        <div className="adm-fonts-block-head">
+          <span className="adm-fonts-role">{title}</span>
+          <span className="adm-fonts-current">{current}</span>
+        </div>
+
+        <div className="adm-fonts-cases">
+          {FONT_USE_CASES[role].map((uc) => (
+            <div key={uc.label} className="adm-fonts-case">
+              <div className="adm-fonts-case-meta">
+                <span className="adm-fonts-case-label">{uc.label}</span>
+                <span className="adm-fonts-case-size">{uc.size}{uc.tracking ? ` · ${uc.tracking} tracking` : ''}</span>
+              </div>
+              <div
+                className="adm-fonts-case-example"
+                style={{
+                  fontFamily:    isLoaded(current) ? `'${current}', ${fallback(role)}` : fallback(role),
+                  fontStyle:     uc.italic ? 'italic' : 'normal',
+                  letterSpacing: uc.tracking,
+                }}
+              >
+                {uc.example}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="adm-fonts-options">
+          <span className="adm-fonts-options-label">Change to</span>
+          <div className="adm-fonts-pills">
+            {options.map((f) => (
+              <button
+                key={f}
+                className={`adm-fonts-pill${current === f ? ' active' : ''}`}
+                onClick={() => setFont(role, f)}
+                style={{ fontFamily: isLoaded(f) ? `'${f}', ${fallback(role)}` : fallback(role) }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="adm-fonts-panel">
+      <div className="adm-fonts-toolbar">
+        <span className="adm-fonts-toolbar-title">Typography</span>
+        {dirty && (
+          <>
+            <button className="adm-fonts-discard" onClick={() => setDraft(config)}>Discard</button>
+            <button className="adm-fonts-save" onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving…' : 'Save fonts →'}
+            </button>
+          </>
+        )}
+      </div>
+      {renderBlock('serif', 'Serif', SERIF_OPTIONS)}
+      {renderBlock('mono',  'Mono',  MONO_OPTIONS)}
+      {renderBlock('sans',  'Sans',  SANS_OPTIONS)}
+    </div>
   )
 }
