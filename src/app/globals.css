@@ -2569,13 +2569,16 @@ a.info-touch-val:hover { color: var(--paper); }
 
 .adm-root {
   display: grid;
-  grid-template-columns: 180px 1fr 280px;
+  grid-template-columns: 180px 1fr;
   grid-template-rows: 100vh;
   height: 100vh;
   overflow: hidden;
   background: #0c0c0c;
   color: #e8e8e0;
   font-family: var(--font-mono);
+}
+.adm-root--panel-open {
+  grid-template-columns: 180px 1fr 280px;
 }
 
 /* Sidebar */
@@ -3022,25 +3025,44 @@ a.info-touch-val:hover { color: var(--paper); }
   background: #0f0f0f;
 }
 
-.adm-library--collapsed {
-  justify-content: center;
-  align-items: center;
-  border-left: 1px solid #1e1e1e;
+.adm-lib-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: rgba(0, 0, 0, 0.5);
 }
 
-.adm-library-show-btn {
+.adm-lib-overlay {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.6);
+}
+.adm-lib-overlay .adm-library {
+  flex: 1;
+  overflow: hidden;
+}
+
+.adm-lib-btn {
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #555;
   background: transparent;
   border: 1px solid #222;
-  padding: 10px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   transition: color 150ms, border-color 150ms;
+  margin-bottom: 8px;
 }
-.adm-library-show-btn:hover { color: #aaa; border-color: #555; }
+.adm-lib-btn:hover { color: #aaa; border-color: #555; }
+.adm-lib-btn--active { color: #aaa; border-color: #555; }
 
 .adm-library-close-btn {
   font-family: var(--font-mono);

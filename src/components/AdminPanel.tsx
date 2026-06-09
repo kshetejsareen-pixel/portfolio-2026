@@ -480,7 +480,7 @@ export function AdminPanel() {
   })
 
   return (
-    <div className="adm-root">
+    <div className={`adm-root${rightPanel.mode !== 'library' ? ' adm-root--panel-open' : ''}`}>
 
       {/* ── Sidebar ─────────────────────────────────────────────────────── */}
       <aside className="adm-sidebar">
@@ -506,6 +506,12 @@ export function AdminPanel() {
           ))}
         </nav>
         <div className="adm-sidebar-foot">
+          <button
+            className={`adm-lib-btn${libraryOpen ? ' adm-lib-btn--active' : ''}`}
+            onClick={() => setLibraryOpen((v) => !v)}
+          >
+            {libraryOpen ? 'Close library' : 'Library'}
+          </button>
           <button
             className="adm-logout"
             onClick={async () => {
@@ -876,29 +882,31 @@ export function AdminPanel() {
           }}
           onCancel={() => setRightPanel({ mode: 'library' })}
         />
-      ) : libraryOpen ? (
-        <LibraryPanel
-          images={images}
-          nextCursor={nextCursor}
-          loadingImages={loadingImages}
-          error={libraryError}
-          searchQ={searchQ}
-          selectedSlot={selectedSlot}
-          assigning={assigningSlotId !== null}
-          currentFolder={libraryFolder}
-          onSearch={handleSearch}
-          onFolderChange={handleFolderChange}
-          onSelectImage={assignImage}
-          onAssignUrl={assignByPublicId}
-          onLoadMore={() => fetchImages(searchQ, nextCursor ?? undefined, libraryFolder)}
-          onClose={() => setLibraryOpen(false)}
-        />
-      ) : (
-        <aside className="adm-library adm-library--collapsed">
-          <button className="adm-library-show-btn" onClick={() => setLibraryOpen(true)}>
-            Cloudinary Library →
-          </button>
-        </aside>
+      ) : null}
+
+      {/* ── Cloudinary library — floating overlay ───────────────────────── */}
+      {libraryOpen && (
+        <>
+          <div className="adm-lib-backdrop" onClick={() => setLibraryOpen(false)} />
+          <div className="adm-lib-overlay">
+            <LibraryPanel
+              images={images}
+              nextCursor={nextCursor}
+              loadingImages={loadingImages}
+              error={libraryError}
+              searchQ={searchQ}
+              selectedSlot={selectedSlot}
+              assigning={assigningSlotId !== null}
+              currentFolder={libraryFolder}
+              onSearch={handleSearch}
+              onFolderChange={handleFolderChange}
+              onSelectImage={assignImage}
+              onAssignUrl={assignByPublicId}
+              onLoadMore={() => fetchImages(searchQ, nextCursor ?? undefined, libraryFolder)}
+              onClose={() => setLibraryOpen(false)}
+            />
+          </div>
+        </>
       )}
 
       {toast && <div className="adm-toast">{toast}</div>}
