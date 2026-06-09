@@ -710,18 +710,6 @@ export function AdminPanel() {
               />
             )
           }
-          if (pageSlots.length === 0) {
-            return (
-              <div className="adm-slots-scroll">
-                <div className="adm-cat-section">
-                  <div className="adm-cat-section-head">
-                    <span className="adm-cat-section-title">No image slots</span>
-                    <span className="adm-cat-section-desc">Use &quot;Edit page copy&quot; above to manage text content for this page</span>
-                  </div>
-                </div>
-              </div>
-            )
-          }
           // ── Helpers for inline copy fields ─────────────────────────────────
           const d  = (k: string) => (draftCopy[k] as string) ?? ''
           const ds = (k: string) => (draftCopy[k] as TextStyle | undefined)
@@ -834,6 +822,19 @@ export function AdminPanel() {
                   <InlineCopyField label="Section eyebrow" hint="Visible heading above the table" value={d('notesEyebrow')} onChange={sf('notesEyebrow')} placeholder="02 · Working notes" />
                   <InlineCopyField label="Left column" hint="Label — Value, one per line" value={d('notesLeft')} onChange={sf('notesLeft')} multiline rows={5} />
                   <InlineCopyField label="Right column" hint="Label — Value, one per line" value={d('notesRight')} onChange={sf('notesRight')} multiline rows={5} />
+                </div>
+              </div>
+            )
+          }
+
+          if (pageSlots.length === 0) {
+            return (
+              <div className="adm-slots-scroll">
+                <div className="adm-cat-section">
+                  <div className="adm-cat-section-head">
+                    <span className="adm-cat-section-title">No image slots</span>
+                    <span className="adm-cat-section-desc">No image slots defined for this page</span>
+                  </div>
                 </div>
               </div>
             )
