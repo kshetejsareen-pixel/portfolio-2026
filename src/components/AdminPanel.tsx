@@ -746,31 +746,6 @@ export function AdminPanel() {
                   <InlineCopyField label="Second paragraph" value={d('bioPara2')} onChange={sf('bioPara2')} multiline rows={3} />
                 </div>
 
-                <InlineCopyDivider title="Practice" />
-                <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Section heading" value={d('practiceHeading')} onChange={sf('practiceHeading')} placeholder="Practice, categories of work" />
-                  <InlineCopyField label="Category frame counts" hint="Category — N, one per line" value={d('practiceItems')} onChange={sf('practiceItems')} multiline rows={5} placeholder="Portraits — 24&#10;Culinary — 38" />
-                  <InlineCopyField label="Section note" value={d('practiceNote')} onChange={sf('practiceNote')} />
-                </div>
-
-                <InlineCopyDivider title="Now" />
-                <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Section heading" value={d('nowHeading')} onChange={sf('nowHeading')} placeholder="Now, current" />
-                  <InlineCopyField label="Current items" hint="One item per line" value={d('nowItems')} onChange={sf('nowItems')} multiline rows={4} />
-                </div>
-
-                <InlineCopyDivider title="Selected clients" />
-                <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Section heading" value={d('clientsHeading')} onChange={sf('clientsHeading')} placeholder="Selected clients, recent" />
-                  <InlineCopyField label="Clients" hint="Name — Year, one per line" value={d('clients')} onChange={sf('clients')} multiline rows={8} />
-                </div>
-
-                <InlineCopyDivider title="Press & exhibitions" />
-                <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Section heading" value={d('pressHeading')} onChange={sf('pressHeading')} placeholder="Press & exhibitions, selected" />
-                  <InlineCopyField label="Press items" hint="Name — Year, one per line" value={d('press')} onChange={sf('press')} multiline rows={5} />
-                </div>
-
                 <InlineCopyDivider title="Get in touch" />
                 <div className="adm-inline-copy-group">
                   <InlineCopyField label="Section heading" value={d('touchHeading')} onChange={sf('touchHeading')} placeholder="Get in touch" />
