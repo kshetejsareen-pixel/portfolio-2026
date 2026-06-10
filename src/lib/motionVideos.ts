@@ -1,5 +1,4 @@
 import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
-
 export interface MotionVideo {
   id: string
   youtubeId: string

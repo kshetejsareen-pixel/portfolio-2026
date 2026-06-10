@@ -13,7 +13,7 @@ import type { InfoCopy, ContactCopy } from '@/lib/copyConfig'
 import type { FontConfig } from '@/lib/fontConfig'
 import { GFONTS, applyFontConfig } from '@/components/FontLoader'
 import type { MotionVideo } from '@/lib/motionVideos'
-import { extractYouTubeId } from '@/lib/motionVideos'
+import { extractYouTubeId } from '@/lib/youtubeUtils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
