@@ -12,6 +12,8 @@ import {
 import type { InfoCopy, ContactCopy } from '@/lib/copyConfig'
 import type { FontConfig } from '@/lib/fontConfig'
 import { GFONTS, applyFontConfig } from '@/components/FontLoader'
+import type { MotionVideo } from '@/lib/motionVideos'
+import { extractYouTubeId } from '@/lib/motionVideos'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -261,10 +263,14 @@ export function AdminPanel() {
     fetchProjects()
     fetchCopyCfg()
     fetch('/api/admin/fonts').then((r) => r.json()).then((d) => { if (d.config) setFontConfig(d.config) })
+    fetch('/api/admin/motion-videos').then((r) => r.json()).then((d) => { if (d.videos) setMotionVideos(d.videos) })
   }, [fetchImages, fetchAssignments, fetchConfig, fetchProjects, fetchCopyCfg])
 
   // ── Font config state ──────────────────────────────────────────────────────
   const [fontConfig, setFontConfig] = useState<FontConfig>({})
+
+  // ── Motion videos state ────────────────────────────────────────────────────
+  const [motionVideos, setMotionVideos] = useState<MotionVideo[]>([])
 
   // ── Inline copy draft state ────────────────────────────────────────────────
   const [draftCopy, setDraftCopy]   = useState<Record<string, unknown>>({})
@@ -838,6 +844,66 @@ export function AdminPanel() {
                     <span className="adm-cat-section-desc">No image slots defined for this page</span>
                   </div>
                 </div>
+              </div>
+            )
+          }
+
+          // ── Motion page (videos) ────────────────────────────────────────────
+          if (activeCatId === 'motion') {
+            const heroSlot = pageSlots.find((s) => s.id === 'motion-hero')
+            return (
+              <div className="adm-slots-scroll adm-slots-scroll--cat">
+                {heroSlot && (
+                  <div className="adm-cat-section">
+                    <div className="adm-cat-section-head">
+                      <span className="adm-cat-section-title">Hero Banner</span>
+                      <span className="adm-cat-section-desc">Full-bleed background behind the Motion title</span>
+                    </div>
+                    <div className="adm-slots-grid">{renderCard(heroSlot)}</div>
+                  </div>
+                )}
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Category title" hint="Large text over the hero banner" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder="Motion" withStyle styleValue={ds('heroTitleStyle')} onStyleChange={ss('heroTitleStyle')} />
+                </div>
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
+                  <InlineCopyField label="Intro body" value={d('introBody')} onChange={sf('introBody')} multiline rows={4} placeholder="Paragraph text for the motion intro…" withStyle styleValue={ds('introBodyStyle')} onStyleChange={ss('introBodyStyle')} />
+                </div>
+                <MotionVideosPanel
+                  videos={motionVideos}
+                  onChange={async (updated) => {
+                    setMotionVideos(updated)
+                    await fetch('/api/admin/motion-videos', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ videos: updated }),
+                    })
+                    showToast('Videos saved')
+                  }}
+                />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Projects section heading" hint="Overrides 'Selected Projects'" value={d('projectsSectionTitle')} onChange={sf('projectsSectionTitle')} placeholder="Selected Projects" />
+                </div>
+                <ProjectsSection
+                  categoryId="motion"
+                  projects={projects['motion'] ?? []}
+                  onAdd={() => setRightPanel({ mode: 'folder-browser', categoryId: 'motion' })}
+                  onAddFromPath={(folderPath) => setRightPanel({ mode: 'folder-browser', categoryId: 'motion', initialPath: folderPath })}
+                  onRemove={async (projectId) => {
+                    await fetch('/api/admin/projects', {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ categoryId: 'motion', projectId }),
+                    })
+                    await fetchProjects()
+                    showToast('Project removed')
+                  }}
+                  onManageImages={(project) => setRightPanel({ mode: 'project-images', categoryId: 'motion', project })}
+                  onSetCoverFocal={(project) => setRightPanel({ mode: 'project-cover-focal', categoryId: 'motion', project })}
+                  onMoveUp={(projectId) => moveProject('motion', projectId, 'up')}
+                  onMoveDown={(projectId) => moveProject('motion', projectId, 'down')}
+                  onEdit={(project) => setRightPanel({ mode: 'project-edit', categoryId: 'motion', project })}
+                />
               </div>
             )
           }
@@ -2145,6 +2211,107 @@ function LibraryPanel({
         <button className="adm-load-more" onClick={onLoadMore}>Load more</button>
       )}
     </aside>
+  )
+}
+
+// ─── MotionVideosPanel ────────────────────────────────────────────────────────
+
+function MotionVideosPanel({
+  videos,
+  onChange,
+}: {
+  videos: MotionVideo[]
+  onChange: (updated: MotionVideo[]) => Promise<void>
+}) {
+  const [urlInput, setUrlInput]       = useState('')
+  const [titleInput, setTitleInput]   = useState('')
+  const [yearInput, setYearInput]     = useState('')
+  const [locInput, setLocInput]       = useState('')
+  const [addError, setAddError]       = useState('')
+  const [saving, setSaving]           = useState(false)
+
+  const handleAdd = async () => {
+    const ytId = extractYouTubeId(urlInput)
+    if (!ytId) { setAddError('Could not find a YouTube video ID in that URL.'); return }
+    setAddError('')
+    const newVideo: MotionVideo = {
+      id: `mv-${Date.now()}`,
+      youtubeId: ytId,
+      title: titleInput.trim(),
+      year: yearInput.trim() || undefined,
+      location: locInput.trim() || undefined,
+    }
+    setSaving(true)
+    await onChange([...videos, newVideo])
+    setSaving(false)
+    setUrlInput(''); setTitleInput(''); setYearInput(''); setLocInput('')
+  }
+
+  const handleRemove = async (id: string) => {
+    await onChange(videos.filter((v) => v.id !== id))
+  }
+
+  const moveVideo = async (id: string, dir: 'up' | 'down') => {
+    const arr = [...videos]
+    const idx = arr.findIndex((v) => v.id === id)
+    if (idx < 0) return
+    const swap = dir === 'up' ? idx - 1 : idx + 1
+    if (swap < 0 || swap >= arr.length) return
+    ;[arr[idx], arr[swap]] = [arr[swap], arr[idx]]
+    await onChange(arr)
+  }
+
+  return (
+    <div className="adm-motion-videos">
+      <div className="adm-motion-videos-head">
+        <span className="adm-motion-videos-title">Videos</span>
+        <span className="adm-motion-videos-count">{videos.length} video{videos.length !== 1 ? 's' : ''}</span>
+      </div>
+
+      {/* Add new video */}
+      <div className="adm-motion-add">
+        <input
+          className="adm-motion-input"
+          placeholder="YouTube URL or video ID"
+          value={urlInput}
+          onChange={(e) => { setUrlInput(e.target.value); setAddError('') }}
+        />
+        <div className="adm-motion-add-row">
+          <input className="adm-motion-input adm-motion-input--sm" placeholder="Title" value={titleInput} onChange={(e) => setTitleInput(e.target.value)} />
+          <input className="adm-motion-input adm-motion-input--xs" placeholder="Year" value={yearInput} onChange={(e) => setYearInput(e.target.value)} />
+          <input className="adm-motion-input adm-motion-input--sm" placeholder="Location" value={locInput} onChange={(e) => setLocInput(e.target.value)} />
+        </div>
+        {addError && <span className="adm-motion-error">{addError}</span>}
+        <button className="adm-motion-add-btn" onClick={handleAdd} disabled={!urlInput.trim() || saving}>
+          {saving ? 'Saving…' : 'Add video →'}
+        </button>
+      </div>
+
+      {/* Video list */}
+      {videos.length > 0 && (
+        <div className="adm-motion-list">
+          {videos.map((v, i) => (
+            <div key={v.id} className="adm-motion-item">
+              <img
+                className="adm-motion-thumb"
+                src={`https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg`}
+                alt={v.title || v.youtubeId}
+              />
+              <div className="adm-motion-item-info">
+                <span className="adm-motion-item-title">{v.title || <em style={{ opacity: 0.4 }}>Untitled</em>}</span>
+                <span className="adm-motion-item-meta">{[v.location, v.year].filter(Boolean).join(' · ')}</span>
+                <span className="adm-motion-item-id">{v.youtubeId}</span>
+              </div>
+              <div className="adm-motion-item-actions">
+                <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'up')} disabled={i === 0}>↑</button>
+                <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'down')} disabled={i === videos.length - 1}>↓</button>
+                <button className="adm-motion-remove-btn" onClick={() => handleRemove(v.id)}>✕</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 

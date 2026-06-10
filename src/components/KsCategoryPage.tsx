@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import type { CategoryData, FlowRow, FlowPhoto, IntroPart } from '@/lib/categoryData'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
@@ -398,7 +398,7 @@ function RowPullQuote({ pullQuote, copyOverride }: {
   )
 }
 
-export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: string }) {
+export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copy, setCopy] = useState<CategoryCopy>({})
@@ -573,7 +573,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
         </p>
       </section>
 
-      {anyAssigned && (
+      {videoGallery ?? (anyAssigned && (
         <section className="cat-editorial">
           {flowWithIdx.map(({ row, start }, i) => {
             const key = `${row.kind}-${i}`
@@ -607,7 +607,7 @@ export function KsCategoryPage({ data, catId }: { data: CategoryData; catId: str
             }
           })}
         </section>
-      )}
+      ))}
 
       <div className="cat-brand-strip"><BrandMarquee /></div>
 
