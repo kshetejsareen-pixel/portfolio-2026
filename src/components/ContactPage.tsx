@@ -23,12 +23,6 @@ const DIRECT = [
     note: 'Fastest response',
   },
   {
-    label: 'Elsewhere',
-    value: '@kshetejsareen',
-    href: 'https://instagram.com/kshetejsareen',
-    note: 'Instagram',
-  },
-  {
     label: 'New York',
     value: 'Brooklyn, NY',
     href: null,
@@ -39,6 +33,12 @@ const DIRECT = [
     value: 'Bandra W, Mumbai',
     href: null,
     note: 'By appointment',
+  },
+  {
+    label: 'Elsewhere',
+    value: '@kshetejsareen',
+    href: 'https://instagram.com/kshetejsareen',
+    note: 'Instagram',
   },
   {
     label: 'Press',
