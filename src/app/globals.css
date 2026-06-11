@@ -1491,7 +1491,7 @@ button, input, textarea, select { font: inherit; }
 }
 
 .cat-footer-copy {
-  padding: 28px var(--cat-pad);
+  padding: 48px var(--cat-pad);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1859,6 +1859,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--rule);
 }
+.contact-notes-row:last-child { border-bottom: 0; }
 .contact-notes-cell {
   display: grid;
   grid-template-columns: 180px 1fr;

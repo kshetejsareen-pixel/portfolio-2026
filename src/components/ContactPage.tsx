@@ -402,6 +402,8 @@ export function ContactPage() {
           </div>
         </section>
 
+        <div className="contact-divider" />
+
       </main>
 
       <footer className="cat-footer">
