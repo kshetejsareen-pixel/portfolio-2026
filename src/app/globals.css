@@ -735,7 +735,7 @@ button, input, textarea, select { font: inherit; }
     position: absolute;
     left: 0;
     right: 0;
-    bottom: calc(88px + env(safe-area-inset-bottom, 0px) + 215px);
+    bottom: max(40vh, calc(88px + env(safe-area-inset-bottom, 0px) + 170px));
     z-index: 6;
     pointer-events: none;
   }
