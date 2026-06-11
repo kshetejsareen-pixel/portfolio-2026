@@ -1662,7 +1662,7 @@ button, input, textarea, select { font: inherit; }
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--mute);
+  color: var(--paper);
 }
 .contact-optional { letter-spacing: 0.1em; opacity: 0.6; }
 .contact-input-v2 {
@@ -1680,7 +1680,7 @@ button, input, textarea, select { font: inherit; }
   transition: border-color 250ms ease;
   -webkit-appearance: none;
 }
-.contact-input-v2::placeholder { color: rgba(236,232,224,0.25); }
+.contact-input-v2::placeholder { color: rgba(236,232,224,0.45); }
 .contact-input-v2:focus { border-bottom-color: var(--paper-dim); }
 .contact-textarea-v2 {
   resize: none;
@@ -1698,9 +1698,9 @@ button, input, textarea, select { font: inherit; }
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--mute);
+  color: var(--paper-dim);
   background: transparent;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--rule-2);
   border-radius: 999px;
   padding: 8px 16px;
   cursor: pointer;
