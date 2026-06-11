@@ -1781,7 +1781,7 @@ button, input, textarea, select { font: inherit; }
 
 /* ── Direct channels ── */
 .contact-direct-v2 {
-  padding: 72px var(--cat-pad) 80px;
+  padding: 72px var(--cat-pad) 0;
   max-width: var(--cat-maxw);
   margin: 0 auto;
 }
@@ -1891,7 +1891,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
   .contact-inquiry { grid-template-columns: 1fr; gap: 40px; padding: 48px var(--cat-pad); }
   .contact-row-2 { grid-template-columns: 1fr; gap: 32px; }
   .contact-submit-row { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .contact-direct-v2 { padding: 48px var(--cat-pad); }
+  .contact-direct-v2 { padding: 48px var(--cat-pad) 0; }
   .contact-direct-head { grid-template-columns: 1fr; gap: 24px; margin-bottom: 40px; }
   .contact-direct-grid { grid-template-columns: 1fr 1fr; }
   .contact-direct-cell { padding: 24px 0; padding-right: 16px; }

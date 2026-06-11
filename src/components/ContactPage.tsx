@@ -23,21 +23,21 @@ const DIRECT = [
     note: 'Fastest response',
   },
   {
-    label: 'New York',
-    value: 'Brooklyn, NY',
+    label: 'New Delhi',
+    value: 'Silver Oak Farms',
     href: null,
-    note: 'By appointment · Mon–Fri',
+    note: 'By appointment',
   },
   {
-    label: 'Bombay',
-    value: 'Bandra W, Mumbai',
+    label: 'Bangalore',
+    value: 'Richmond Town',
     href: null,
     note: 'By appointment',
   },
   {
     label: 'Elsewhere',
-    value: '@kshetejsareen',
-    href: 'https://instagram.com/kshetejsareen',
+    value: '@kshetej.atwork',
+    href: 'https://instagram.com/kshetej.atwork',
     note: 'Instagram',
   },
   {
