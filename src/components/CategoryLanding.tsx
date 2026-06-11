@@ -75,6 +75,7 @@ export function CategoryLanding() {
   const [scrubDuration, setScrubDuration] = useState(FIRST_INTERVAL)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
+  const [showNavHint, setShowNavHint] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageRef  = useRef<HTMLDivElement>(null)
 
@@ -145,6 +146,16 @@ export function CategoryLanding() {
       cancelAnimationFrame(raf)
       ro.disconnect()
     }
+  }, [])
+
+  // Show directional swipe hint once per session
+  useEffect(() => {
+    if (typeof sessionStorage === 'undefined') return
+    if (sessionStorage.getItem('ks-nav-hinted')) return
+    setShowNavHint(true)
+    sessionStorage.setItem('ks-nav-hinted', '1')
+    const t = setTimeout(() => setShowNavHint(false), 2800)
+    return () => clearTimeout(t)
   }, [])
 
   useEffect(() => {
@@ -468,12 +479,14 @@ export function CategoryLanding() {
 
       {/* Vertical category-indicator dots — left edge, mirrors cat rail */}
       <div className="ks-nav-dots-y" aria-hidden="true">
+        <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--v${showNavHint ? ' visible' : ''}`}>↑</span>
         {activeCategories.map((_, i) => (
           <span
             key={i === catIdx ? `cy-${globalIdx}` : `y${i}`}
             className={`ks-nav-pip${i === catIdx ? ' active' : ''}`}
           />
         ))}
+        <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--v${showNavHint ? ' visible' : ''}`}>↓</span>
       </div>
 
       {/* Meta block */}
@@ -481,12 +494,14 @@ export function CategoryLanding() {
         {/* Horizontal frame-indicator dots — above name, mobile only */}
         {totalFrames > 1 && (
           <div className="ks-nav-dots-x" aria-hidden="true">
+            <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--h${showNavHint ? ' visible' : ''}`}>←</span>
             {Array.from({ length: totalFrames }, (_, i) => (
               <span
                 key={i === frameForDisplay ? `cx-${globalIdx}` : `x${i}`}
                 className={`ks-nav-pip${i === frameForDisplay ? ' active' : ''}`}
               />
             ))}
+            <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--h${showNavHint ? ' visible' : ''}`}>→</span>
           </div>
         )}
         <h1 className="ks-name">

@@ -767,6 +767,31 @@ button, input, textarea, select { font: inherit; }
     background: rgba(236, 232, 224, 0.95);
     animation: ks-pip-pulse 0.65s ease-out forwards;
   }
+
+  /* Directional hint arrows — shown once per session, fade out after 2.8s */
+  .ks-nav-hint-arrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0;
+    color: rgba(236, 232, 224, 0.5);
+    opacity: 0;
+    transition: opacity 400ms ease;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .ks-nav-hint-arrow.visible {
+    opacity: 1;
+    animation: ks-hint-fade 2.8s ease forwards;
+  }
+  .ks-nav-hint-arrow--h { align-self: center; }
+  .ks-nav-hint-arrow--v { align-self: center; }
+
+  @keyframes ks-hint-fade {
+    0%   { opacity: 0; }
+    15%  { opacity: 0.55; }
+    70%  { opacity: 0.55; }
+    100% { opacity: 0; }
+  }
   .brand-bar::before,
   .brand-bar::after {
     background: linear-gradient(to right,
