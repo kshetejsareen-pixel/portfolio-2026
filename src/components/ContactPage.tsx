@@ -402,7 +402,31 @@ export function ContactPage() {
           </div>
         </section>
 
-        <div className="contact-divider" />
+        {/* ── Explore More ── */}
+        <nav className="cat-footer-nav">
+          <div className="cat-footer-nav-inner">
+            <div className="cat-footer-nav-eyebrow">Explore More</div>
+            <div className="cat-footer-nav-cats">
+              {[
+                { id: '',         name: 'Home' },
+                { id: 'culinary',  name: 'Culinary' },
+                { id: 'spaces',    name: 'Spaces' },
+                { id: 'portraits', name: 'Portraits' },
+                { id: 'objects',   name: 'Objects' },
+                { id: 'motion',    name: 'Motion' },
+              ].map((c, i) => (
+                <a
+                  key={c.id || 'home'}
+                  href={`/${c.id}`}
+                  className="cat-footer-nav-link"
+                  style={{ animationDelay: `${(i * 10 / 6 - 5).toFixed(2)}s` }}
+                >
+                  {c.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </nav>
 
       </main>
 

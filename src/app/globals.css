@@ -1860,7 +1860,6 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
   border-bottom: 1px solid var(--rule);
 }
 .contact-notes-row:last-child { border-bottom: 0; }
-.contact-main-v2 > .contact-divider:last-child { margin-top: 80px; }
 .contact-notes-cell {
   display: grid;
   grid-template-columns: 180px 1fr;
