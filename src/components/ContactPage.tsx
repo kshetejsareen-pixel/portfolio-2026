@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { fadeUp, stagger, staggerFast, heroReveal } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { ContactCopy } from '@/lib/copyConfig'
 
@@ -203,31 +205,43 @@ export function ContactPage() {
       <main className="contact-main-v2">
 
         {/* ── Hero ── */}
-        <section className="contact-hero-v2">
-          <div className="contact-hero-eyebrow ks-eyebrow">Contact</div>
-          <h1 className="contact-hero-title">
+        <motion.section
+          className="contact-hero-v2"
+          variants={heroReveal}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={fadeUp} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
+          <motion.h1 variants={fadeUp} className="contact-hero-title">
             {heroTitle}<span className="contact-hero-period">.</span>
-          </h1>
-          <div className="contact-hero-cols">
-            <p className="contact-hero-col">
+          </motion.h1>
+          <motion.div variants={stagger} className="contact-hero-cols">
+            <motion.p variants={fadeUp} className="contact-hero-col">
               {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
-            </p>
-            <p className="contact-hero-col">
+            </motion.p>
+            <motion.p variants={fadeUp} className="contact-hero-col">
               {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
-            </p>
-          </div>
-        </section>
+            </motion.p>
+          </motion.div>
+        </motion.section>
 
         <div className="contact-divider" />
 
         {/* ── Form ── */}
-        <section className="contact-inquiry" data-sr>
-          <div className="contact-inquiry-left">
+        <motion.section
+          className="contact-inquiry"
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+        >
+          <motion.div variants={fadeUp} className="contact-inquiry-left">
             <div className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</div>
             <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
             <p className="contact-inquiry-note">{inquiryNote}</p>
-          </div>
+          </motion.div>
 
+          <motion.div variants={fadeUp}>
           {status === 'sent' ? (
             <div className="contact-sent-v2">
               <div className="contact-sent-mark">✓</div>
@@ -344,21 +358,28 @@ export function ContactPage() {
 
             </form>
           )}
-        </section>
+          </motion.div>
+        </motion.section>
 
         <div className="contact-divider" />
 
         {/* ── Direct channels ── */}
-        <section className="contact-direct-v2">
-          <div className="contact-direct-head">
+        <motion.section
+          className="contact-direct-v2"
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+        >
+          <motion.div variants={fadeUp} className="contact-direct-head">
             <h2 className="contact-direct-title">
               {directTitle}
             </h2>
             <p className="contact-direct-desc">{directDesc}</p>
-          </div>
+          </motion.div>
           <div className="contact-direct-grid">
             {directChannels.map((d) => (
-              <div key={d.label} className="contact-direct-cell">
+              <motion.div key={d.label} variants={fadeUp} className="contact-direct-cell">
                 <div className="contact-direct-cell-label ks-eyebrow">{d.label}</div>
                 {d.href ? (
                   <a
@@ -373,21 +394,27 @@ export function ContactPage() {
                   <div className="contact-direct-cell-value">{d.value}</div>
                 )}
                 <div className="contact-direct-cell-note ks-eyebrow">{d.note}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         <div className="contact-divider" />
 
         {/* ── Working notes ── */}
-        <section className="contact-notes" data-sr>
-          <div className="contact-notes-label ks-eyebrow">{notesEyebrow}</div>
+        <motion.section
+          className="contact-notes"
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+        >
+          <motion.div variants={fadeUp} className="contact-notes-label ks-eyebrow">{notesEyebrow}</motion.div>
           <div className="contact-notes-table">
             {leftNotes.map((left, i) => {
               const right = rightNotes[i]
               return (
-                <div key={i} className="contact-notes-row">
+                <motion.div key={i} variants={fadeUp} className="contact-notes-row">
                   <div className="contact-notes-cell">
                     <div className="contact-notes-key ks-eyebrow">{left.label}</div>
                     <div className="contact-notes-val">{left.value}</div>
@@ -396,37 +423,44 @@ export function ContactPage() {
                     <div className="contact-notes-key ks-eyebrow">{right?.label}</div>
                     <div className="contact-notes-val">{right?.value}</div>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
           </div>
-        </section>
+        </motion.section>
 
         {/* ── Explore More ── */}
-        <nav className="cat-footer-nav">
+        <motion.nav
+          className="cat-footer-nav"
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           <div className="cat-footer-nav-inner">
-            <div className="cat-footer-nav-eyebrow">Explore More</div>
-            <div className="cat-footer-nav-cats">
+            <motion.div variants={fadeUp} className="cat-footer-nav-eyebrow">Explore More</motion.div>
+            <motion.div variants={staggerFast} className="cat-footer-nav-cats">
               {[
-                { id: '',         name: 'Home' },
+                { id: '',          name: 'Home' },
                 { id: 'culinary',  name: 'Culinary' },
                 { id: 'spaces',    name: 'Spaces' },
                 { id: 'portraits', name: 'Portraits' },
                 { id: 'objects',   name: 'Objects' },
                 { id: 'motion',    name: 'Motion' },
               ].map((c, i) => (
-                <a
+                <motion.a
                   key={c.id || 'home'}
                   href={`/${c.id}`}
                   className="cat-footer-nav-link"
+                  variants={fadeUp}
                   style={{ animationDelay: `${(i * 10 / 6 - 5).toFixed(2)}s` }}
                 >
                   {c.name}
-                </a>
+                </motion.a>
               ))}
-            </div>
+            </motion.div>
           </div>
-        </nav>
+        </motion.nav>
 
       </main>
 
