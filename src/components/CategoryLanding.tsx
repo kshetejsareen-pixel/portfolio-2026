@@ -21,7 +21,7 @@ const CATEGORY_ROUTES: Record<string, string> = {
 
 const IDLE_DELAY     = 3000
 const FIRST_INTERVAL = 2000
-const CYCLE_INTERVAL = 2500
+const CYCLE_INTERVAL = 2800
 
 interface LandingAssignment {
   url: string
@@ -148,13 +148,13 @@ export function CategoryLanding() {
     }
   }, [])
 
-  // Show directional swipe hint once per session
+  // Show directional swipe hint once ever (localStorage, survives hard reloads)
   useEffect(() => {
-    if (typeof sessionStorage === 'undefined') return
-    if (sessionStorage.getItem('ks-nav-hinted')) return
+    if (typeof localStorage === 'undefined') return
+    if (localStorage.getItem('ks-nav-hinted')) return
     setShowNavHint(true)
-    sessionStorage.setItem('ks-nav-hinted', '1')
-    const t = setTimeout(() => setShowNavHint(false), 2800)
+    localStorage.setItem('ks-nav-hinted', '1')
+    const t = setTimeout(() => setShowNavHint(false), 4000)
     return () => clearTimeout(t)
   }, [])
 

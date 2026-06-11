@@ -764,29 +764,28 @@ button, input, textarea, select { font: inherit; }
     animation: ks-pip-pulse 0.65s ease-out forwards;
   }
 
-  /* Directional hint arrows — shown once per session, fade out after 2.8s */
+  /* Directional hint arrows — shown once ever (localStorage), 4s, hard to miss */
   .ks-nav-hint-arrow {
     font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0;
-    color: rgba(236, 232, 224, 0.5);
-    opacity: 0;
-    transition: opacity 400ms ease;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    color: rgba(236, 232, 224, 0);
     flex-shrink: 0;
     line-height: 1;
+    display: block;
   }
   .ks-nav-hint-arrow.visible {
-    opacity: 1;
-    animation: ks-hint-fade 2.8s ease forwards;
+    animation: ks-hint-bounce 4s ease forwards;
   }
   .ks-nav-hint-arrow--h { align-self: center; }
   .ks-nav-hint-arrow--v { align-self: center; }
 
-  @keyframes ks-hint-fade {
-    0%   { opacity: 0; }
-    15%  { opacity: 0.55; }
-    70%  { opacity: 0.55; }
-    100% { opacity: 0; }
+  @keyframes ks-hint-bounce {
+    0%   { color: rgba(236, 232, 224, 0);    transform: scale(0.6); }
+    12%  { color: rgba(236, 232, 224, 0.92); transform: scale(1.2); }
+    22%  { color: rgba(236, 232, 224, 0.85); transform: scale(1.0); }
+    75%  { color: rgba(236, 232, 224, 0.80); transform: scale(1.0); }
+    100% { color: rgba(236, 232, 224, 0);    transform: scale(1.0); }
   }
   .brand-bar::before,
   .brand-bar::after {
