@@ -725,19 +725,19 @@ button, input, textarea, select { font: inherit; }
     background: #000;
   }
 
-  /* Horizontal frame-indicator dots — inside .ks-meta but visually full-width centred */
+  /* Horizontal frame-indicator dots — independent, truly centred on viewport */
   .ks-nav-dots-x {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px) + 215px);
+    z-index: 6;
     pointer-events: none;
-    /* Break out of .ks-meta's right:140px constraint */
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   /* Vertical category-indicator dots — left edge, mirrors cat rail */
