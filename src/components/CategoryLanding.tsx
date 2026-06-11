@@ -19,8 +19,9 @@ const CATEGORY_ROUTES: Record<string, string> = {
   motion:    '/motion',
 }
 
-const IDLE_DELAY    = 3000
-const CYCLE_INTERVAL = 4000
+const IDLE_DELAY     = 3000
+const FIRST_INTERVAL = 2000
+const CYCLE_INTERVAL = 2500
 
 interface LandingAssignment {
   url: string
@@ -71,7 +72,7 @@ function buildCategories(
 export function CategoryLanding() {
   const navigate = useNavigate()
   const [globalIdx, setGlobalIdx] = useState(0)
-  const [scrubDuration, setScrubDuration] = useState(CYCLE_INTERVAL)
+  const [scrubDuration, setScrubDuration] = useState(FIRST_INTERVAL)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -240,16 +241,23 @@ export function CategoryLanding() {
     }, IDLE_DELAY)
   }, [stopCycle])
 
-  // On initial mount, start cycling immediately (no idle delay) so first image
-  // changes exactly when the 4s scrubber bar completes.
+  // On initial mount: first image change fires at 2s, subsequent every 2.5s.
   const startAutoPlay = useCallback(() => {
     stopCycle()
-    cycleRef.current = setInterval(() => {
+    setScrubDuration(FIRST_INTERVAL)
+    idleRef.current = setTimeout(() => {
+      idleRef.current = null
       setScrubDuration(CYCLE_INTERVAL)
       const g = globalIdxRef.current
       globalIdxRef.current = g + 1
       setGlobalIdx(g + 1)
-    }, CYCLE_INTERVAL)
+      cycleRef.current = setInterval(() => {
+        setScrubDuration(CYCLE_INTERVAL)
+        const g2 = globalIdxRef.current
+        globalIdxRef.current = g2 + 1
+        setGlobalIdx(g2 + 1)
+      }, CYCLE_INTERVAL)
+    }, FIRST_INTERVAL)
   }, [stopCycle])
 
   useEffect(() => {
@@ -458,8 +466,29 @@ export function CategoryLanding() {
         </>
       )}
 
+      {/* Vertical category-indicator dots — left edge, mirrors cat rail */}
+      <div className="ks-nav-dots-y" aria-hidden="true">
+        {activeCategories.map((_, i) => (
+          <span
+            key={i === catIdx ? `cy-${globalIdx}` : `y${i}`}
+            className={`ks-nav-pip${i === catIdx ? ' active' : ''}`}
+          />
+        ))}
+      </div>
+
       {/* Meta block */}
       <div className="ks-meta">
+        {/* Horizontal frame-indicator dots — above name, mobile only */}
+        {totalFrames > 1 && (
+          <div className="ks-nav-dots-x" aria-hidden="true">
+            {Array.from({ length: totalFrames }, (_, i) => (
+              <span
+                key={i === frameForDisplay ? `cx-${globalIdx}` : `x${i}`}
+                className={`ks-nav-pip${i === frameForDisplay ? ' active' : ''}`}
+              />
+            ))}
+          </div>
+        )}
         <h1 className="ks-name">
           Kshetej<br /><span className="ks-name-last">Sareen</span>
         </h1>
@@ -488,24 +517,6 @@ export function CategoryLanding() {
       {/* Footer corners — desktop only */}
       <div className="ks-footer-l">© Kshetej Sareen · MMXXVI</div>
       <div className="ks-footer-r">↑ ↓ Categories &nbsp;·&nbsp; ← → Frames</div>
-
-      {/* Mobile swipe hint dots — hidden on desktop */}
-      <div className="ks-nav-dots" aria-hidden="true">
-        {/* Horizontal dots = left/right (frames), only when multiple frames exist */}
-        {totalFrames > 1 && (
-          <div className="ks-nav-dots-x">
-            {Array.from({ length: totalFrames }, (_, i) => (
-              <span key={i} className={`ks-nav-pip${i === frameForDisplay ? ' active' : ''}`} />
-            ))}
-          </div>
-        )}
-        {/* Vertical dots = up/down (categories) — rightmost, under the category rail */}
-        <div className="ks-nav-dots-y">
-          {activeCategories.map((_, i) => (
-            <span key={i} className={`ks-nav-pip${i === catIdx ? ' active' : ''}`} />
-          ))}
-        </div>
-      </div>
 
       {/* Brand marquee bar */}
       <BrandMarquee />
