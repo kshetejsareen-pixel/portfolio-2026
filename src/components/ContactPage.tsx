@@ -7,7 +7,7 @@ import type { ContactCopy } from '@/lib/copyConfig'
 
 const PROJECT_TYPES = ['Culinary', 'Spaces', 'Portraits', 'Objects', 'Motion']
 const TIMELINES = ['This month', '1–3 months', '3+ months', 'Open / flexible']
-const BUDGETS = ['Under $5k', '$5k–$15k', '$15k–$50k', '$50k+', 'Print only']
+const BUDGETS = ['Under ₹50k', '₹50k–1.5L', '₹1.5L–2.5L', '₹2.5L–5L', '₹5L+']
 
 const DIRECT = [
   {
