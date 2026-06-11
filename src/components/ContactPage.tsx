@@ -51,9 +51,9 @@ const DIRECT = [
 const NOTES = [
   {
     label: 'Lead time',
-    value: 'Commissions typically book 3–6 weeks out. Print orders ship within 10 working days.',
+    value: 'Commissions typically book 3–6 weeks out.',
     label2: 'Day rates',
-    value2: 'Available on request once project scope is clear. Half-day, full-day, and multi-day rates.',
+    value2: 'Available on request once project scope is clear. Full-day and multi-day rates.',
   },
   {
     label: 'Travel',
@@ -64,8 +64,8 @@ const NOTES = [
   {
     label: 'Image use & press',
     value: 'Press kit and high-res files available on request from info@kshetejsareen.com.',
-    label2: 'Prints',
-    value2: 'Editions of 12, printed in studio on Hahnemühle Photo Rag. Signed, numbered, and stamped on verso.',
+    label2: '',
+    value2: '',
   },
 ]
 
