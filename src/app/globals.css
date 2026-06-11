@@ -712,7 +712,7 @@ button, input, textarea, select { font: inherit; }
 
   .ks-meta {
     left: 22px;
-    right: 140px;
+    right: 16px;
     bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     max-width: none;
   }
@@ -725,18 +725,14 @@ button, input, textarea, select { font: inherit; }
     background: #000;
   }
 
-  /* Horizontal frame-indicator dots — independent, truly centred on viewport */
+  /* Horizontal frame-indicator dots — in flow above .ks-name, 15px gap */
   .ks-nav-dots-x {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: max(40vh, calc(88px + env(safe-area-inset-bottom, 0px) + 170px));
-    z-index: 6;
+    margin-bottom: 15px;
     pointer-events: none;
   }
 
@@ -822,7 +818,7 @@ button, input, textarea, select { font: inherit; }
   }
 
   /* Compact name — collapse to a single line on mobile */
-  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; }
+  .ks-name { font-size: clamp(32px, 9.5vw, 44px); line-height: 1; letter-spacing: -0.025em; white-space: nowrap; }
   .ks-name br { display: none; }
   .ks-name-last { display: inline; }
   .ks-name-last::before { content: " "; }

@@ -489,22 +489,21 @@ export function CategoryLanding() {
         <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--v${showNavHint ? ' visible' : ''}`}>↓</span>
       </div>
 
-      {/* Horizontal frame-indicator dots — centred on full viewport, above name */}
-      {totalFrames > 1 && (
-        <div className="ks-nav-dots-x" aria-hidden="true">
-          <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--h${showNavHint ? ' visible' : ''}`}>←</span>
-          {Array.from({ length: totalFrames }, (_, i) => (
-            <span
-              key={i === frameForDisplay ? `cx-${globalIdx}` : `x${i}`}
-              className={`ks-nav-pip${i === frameForDisplay ? ' active' : ''}`}
-            />
-          ))}
-          <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--h${showNavHint ? ' visible' : ''}`}>→</span>
-        </div>
-      )}
-
       {/* Meta block */}
       <div className="ks-meta">
+        {/* Horizontal dots — in flow 15px above name, centred via full-width meta */}
+        {totalFrames > 1 && (
+          <div className="ks-nav-dots-x" aria-hidden="true">
+            <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--h${showNavHint ? ' visible' : ''}`}>←</span>
+            {Array.from({ length: totalFrames }, (_, i) => (
+              <span
+                key={i === frameForDisplay ? `cx-${globalIdx}` : `x${i}`}
+                className={`ks-nav-pip${i === frameForDisplay ? ' active' : ''}`}
+              />
+            ))}
+            <span className={`ks-nav-hint-arrow ks-nav-hint-arrow--h${showNavHint ? ' visible' : ''}`}>→</span>
+          </div>
+        )}
         <h1 className="ks-name">
           Kshetej<br /><span className="ks-name-last">Sareen</span>
         </h1>
