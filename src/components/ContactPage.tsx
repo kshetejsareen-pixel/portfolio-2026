@@ -64,8 +64,8 @@ const NOTES = [
   {
     label: 'Image use & press',
     value: 'Press kit and high-res files available on request from info@kshetejsareen.com.',
-    label2: '',
-    value2: '',
+    label2: 'File delivery',
+    value2: 'Edited selects delivered via private gallery within 5–7 working days of the shoot. RAW files not included as standard; available on request.',
   },
 ]
 
