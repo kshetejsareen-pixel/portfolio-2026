@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { mountReveal, scrollReveal } from '@/lib/motionVariants'
+import { motion, useInView } from 'framer-motion'
+import { HIDDEN, VISIBLE, tx } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { ContactCopy } from '@/lib/copyConfig'
 
@@ -109,6 +109,16 @@ export function ContactPage() {
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<Status>('idle')
 
+  // One ref+inView per section — children chain their delays off the same trigger
+  const formRef     = useRef<HTMLElement>(null)
+  const channelsRef = useRef<HTMLElement>(null)
+  const notesRef    = useRef<HTMLElement>(null)
+  const exploreRef  = useRef<HTMLElement>(null)
+  const formInView     = useInView(formRef,     { once: true, amount: 0.15 })
+  const channelsInView = useInView(channelsRef, { once: true, amount: 0.1  })
+  const notesInView    = useInView(notesRef,    { once: true, amount: 0.1  })
+  const exploreInView  = useInView(exploreRef,  { once: true, amount: 0.2  })
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
     onScroll()
@@ -206,15 +216,15 @@ export function ContactPage() {
 
         {/* ── Hero ── */}
         <section className="contact-hero-v2">
-          <motion.div {...mountReveal(0.1)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
-          <motion.h1 {...mountReveal(0.25)} className="contact-hero-title">
+          <motion.div initial={HIDDEN} animate={VISIBLE} transition={tx(0.1)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
+          <motion.h1 initial={HIDDEN} animate={VISIBLE} transition={tx(0.28)} className="contact-hero-title">
             {heroTitle}<span className="contact-hero-period">.</span>
           </motion.h1>
           <div className="contact-hero-cols">
-            <motion.p {...mountReveal(0.4)} className="contact-hero-col">
+            <motion.p initial={HIDDEN} animate={VISIBLE} transition={tx(0.48)} className="contact-hero-col">
               {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
             </motion.p>
-            <motion.p {...mountReveal(0.5)} className="contact-hero-col">
+            <motion.p initial={HIDDEN} animate={VISIBLE} transition={tx(0.62)} className="contact-hero-col">
               {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
             </motion.p>
           </div>
@@ -223,14 +233,14 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Form ── */}
-        <section className="contact-inquiry">
-          <motion.div {...scrollReveal(0, 0.15)} className="contact-inquiry-left">
+        <section className="contact-inquiry" ref={formRef}>
+          <motion.div initial={HIDDEN} animate={formInView ? VISIBLE : HIDDEN} transition={tx(0)} className="contact-inquiry-left">
             <div className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</div>
             <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
             <p className="contact-inquiry-note">{inquiryNote}</p>
           </motion.div>
 
-          <motion.div {...scrollReveal(0.1, 0.15)}>
+          <motion.div initial={HIDDEN} animate={formInView ? VISIBLE : HIDDEN} transition={tx(0.18)}>
           {status === 'sent' ? (
             <div className="contact-sent-v2">
               <div className="contact-sent-mark">✓</div>
@@ -353,8 +363,8 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Direct channels ── */}
-        <section className="contact-direct-v2">
-          <motion.div {...scrollReveal(0)} className="contact-direct-head">
+        <section className="contact-direct-v2" ref={channelsRef}>
+          <motion.div initial={HIDDEN} animate={channelsInView ? VISIBLE : HIDDEN} transition={tx(0)} className="contact-direct-head">
             <h2 className="contact-direct-title">
               {directTitle}
             </h2>
@@ -362,7 +372,7 @@ export function ContactPage() {
           </motion.div>
           <div className="contact-direct-grid">
             {directChannels.map((d, i) => (
-              <motion.div key={d.label} {...scrollReveal(i * 0.07)} className="contact-direct-cell">
+              <motion.div key={d.label} initial={HIDDEN} animate={channelsInView ? VISIBLE : HIDDEN} transition={tx(0.15 + i * 0.1)} className="contact-direct-cell">
                 <div className="contact-direct-cell-label ks-eyebrow">{d.label}</div>
                 {d.href ? (
                   <a
@@ -385,13 +395,13 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Working notes ── */}
-        <section className="contact-notes">
-          <motion.div {...scrollReveal(0)} className="contact-notes-label ks-eyebrow">{notesEyebrow}</motion.div>
+        <section className="contact-notes" ref={notesRef}>
+          <motion.div initial={HIDDEN} animate={notesInView ? VISIBLE : HIDDEN} transition={tx(0)} className="contact-notes-label ks-eyebrow">{notesEyebrow}</motion.div>
           <div className="contact-notes-table">
             {leftNotes.map((left, i) => {
               const right = rightNotes[i]
               return (
-                <motion.div key={i} {...scrollReveal(i * 0.1)} className="contact-notes-row">
+                <motion.div key={i} initial={HIDDEN} animate={notesInView ? VISIBLE : HIDDEN} transition={tx(0.15 + i * 0.18)} className="contact-notes-row">
                   <div className="contact-notes-cell">
                     <div className="contact-notes-key ks-eyebrow">{left.label}</div>
                     <div className="contact-notes-val">{left.value}</div>
@@ -407,9 +417,9 @@ export function ContactPage() {
         </section>
 
         {/* ── Explore More ── */}
-        <nav className="cat-footer-nav">
+        <nav className="cat-footer-nav" ref={exploreRef as unknown as React.RefObject<HTMLElement>}>
           <div className="cat-footer-nav-inner">
-            <motion.div {...scrollReveal(0, 0.2)} className="cat-footer-nav-eyebrow">Explore More</motion.div>
+            <motion.div initial={HIDDEN} animate={exploreInView ? VISIBLE : HIDDEN} transition={tx(0)} className="cat-footer-nav-eyebrow">Explore More</motion.div>
             <div className="cat-footer-nav-cats">
               {[
                 { id: '',          name: 'Home' },
@@ -423,7 +433,9 @@ export function ContactPage() {
                   key={c.id || 'home'}
                   href={`/${c.id}`}
                   className="cat-footer-nav-link"
-                  {...scrollReveal(0.1 + i * 0.06, 0.2)}
+                  initial={HIDDEN}
+                  animate={exploreInView ? VISIBLE : HIDDEN}
+                  transition={tx(0.12 + i * 0.1)}
                   style={{ animationDelay: `${(i * 10 / 6 - 5).toFixed(2)}s` }}
                 >
                   {c.name}
