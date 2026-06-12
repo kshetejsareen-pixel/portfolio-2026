@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { LIFT, tx } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { InfoCopy } from '@/lib/copyConfig'
 
@@ -58,6 +60,9 @@ export function InfoPage() {
   const [scrolled, setScrolled] = useState(false)
   const [copy, setCopy] = useState<InfoCopy>({})
   const [portrait, setPortrait] = useState<PortraitData | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -141,7 +146,12 @@ export function InfoPage() {
 
         {/* ── Hero ── */}
         <section className="info-hero">
-          <div className="info-hero-photo-col">
+          <motion.div
+            {...LIFT}
+            animate={mounted ? LIFT.visible : LIFT.initial}
+            transition={tx(0.1)}
+            className="info-hero-photo-col"
+          >
             <div className="info-hero-photo-wrap">
               {portrait ? (
                 <div className="info-hero-photo-inner info-hero-photo-inner--filled">
@@ -165,31 +175,43 @@ export function InfoPage() {
               )}
             </div>
             <div className="info-hero-cap ks-eyebrow">{heroCap}</div>
-          </div>
+          </motion.div>
 
           <div className="info-hero-text-col">
-            <div className="info-hero-eyebrow ks-eyebrow">
+            <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.22)} className="info-hero-eyebrow ks-eyebrow">
               {heroEyebrow}
-            </div>
-            <h1 className="info-hero-name">
+            </motion.div>
+            <motion.h1 {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.38)} className="info-hero-name">
               Kshetej<br />
               <span className="info-hero-name-last">Sareen<span className="info-hero-dot">.</span></span>
-            </h1>
-            <p className="info-hero-intro">{heroIntro}</p>
+            </motion.h1>
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.56)} className="info-hero-intro">{heroIntro}</motion.p>
           </div>
         </section>
 
         {/* ── Biography ── */}
-        <section className="info-bio" data-sr>
+        <motion.section
+          className="info-bio"
+          initial={LIFT.initial}
+          whileInView={LIFT.visible}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={tx()}
+        >
           <div className="info-bio-label ks-eyebrow">{bioHeading}</div>
           <div className="info-bio-body">
             <p className="info-bio-para">{bioPara1}</p>
             <p className="info-bio-para">{bioPara2}</p>
           </div>
-        </section>
+        </motion.section>
 
         {/* ── Get in touch ── */}
-        <section className="info-touch" data-sr>
+        <motion.section
+          className="info-touch"
+          initial={LIFT.initial}
+          whileInView={LIFT.visible}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={tx()}
+        >
           <h2 className="info-touch-heading">
             {touchHeading}<span className="info-touch-period">.</span>
           </h2>
@@ -219,7 +241,7 @@ export function InfoPage() {
               <div className="info-touch-sub">{touchSocialNote}</div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
       </main>
 

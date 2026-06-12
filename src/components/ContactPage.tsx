@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion, useInView } from 'framer-motion'
-import { HIDDEN, VISIBLE, tx } from '@/lib/motionVariants'
+import { motion } from 'framer-motion'
+import { LIFT, tx } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { ContactCopy } from '@/lib/copyConfig'
 
@@ -108,16 +108,9 @@ export function ContactPage() {
   const [budget, setBudget] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<Status>('idle')
+  const [mounted, setMounted] = useState(false)
 
-  // One ref+inView per section — children chain their delays off the same trigger
-  const formRef     = useRef<HTMLElement>(null)
-  const channelsRef = useRef<HTMLElement>(null)
-  const notesRef    = useRef<HTMLElement>(null)
-  const exploreRef  = useRef<HTMLElement>(null)
-  const formInView     = useInView(formRef,     { once: true, amount: 0.15 })
-  const channelsInView = useInView(channelsRef, { once: true, amount: 0.1  })
-  const notesInView    = useInView(notesRef,    { once: true, amount: 0.1  })
-  const exploreInView  = useInView(exploreRef,  { once: true, amount: 0.2  })
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -216,15 +209,15 @@ export function ContactPage() {
 
         {/* ── Hero ── */}
         <section className="contact-hero-v2">
-          <motion.div initial={HIDDEN} animate={VISIBLE} transition={tx(0.1)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
-          <motion.h1 initial={HIDDEN} animate={VISIBLE} transition={tx(0.28)} className="contact-hero-title">
+          <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.1)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
+          <motion.h1 {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.28)} className="contact-hero-title">
             {heroTitle}<span className="contact-hero-period">.</span>
           </motion.h1>
           <div className="contact-hero-cols">
-            <motion.p initial={HIDDEN} animate={VISIBLE} transition={tx(0.48)} className="contact-hero-col">
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.48)} className="contact-hero-col">
               {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
             </motion.p>
-            <motion.p initial={HIDDEN} animate={VISIBLE} transition={tx(0.62)} className="contact-hero-col">
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.62)} className="contact-hero-col">
               {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
             </motion.p>
           </div>
@@ -233,14 +226,20 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Form ── */}
-        <section className="contact-inquiry" ref={formRef}>
-          <motion.div initial={HIDDEN} animate={formInView ? VISIBLE : HIDDEN} transition={tx(0)} className="contact-inquiry-left">
+        <motion.section
+          className="contact-inquiry"
+          initial={LIFT.initial}
+          whileInView={LIFT.visible}
+          viewport={{ once: true, amount: 0.12 }}
+          transition={tx()}
+        >
+          <div className="contact-inquiry-left">
             <div className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</div>
             <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
             <p className="contact-inquiry-note">{inquiryNote}</p>
-          </motion.div>
+          </div>
 
-          <motion.div initial={HIDDEN} animate={formInView ? VISIBLE : HIDDEN} transition={tx(0.18)}>
+          <div>
           {status === 'sent' ? (
             <div className="contact-sent-v2">
               <div className="contact-sent-mark">✓</div>
@@ -357,22 +356,26 @@ export function ContactPage() {
 
             </form>
           )}
-          </motion.div>
-        </section>
+          </div>
+        </motion.section>
 
         <div className="contact-divider" />
 
         {/* ── Direct channels ── */}
-        <section className="contact-direct-v2" ref={channelsRef}>
-          <motion.div initial={HIDDEN} animate={channelsInView ? VISIBLE : HIDDEN} transition={tx(0)} className="contact-direct-head">
-            <h2 className="contact-direct-title">
-              {directTitle}
-            </h2>
+        <motion.section
+          className="contact-direct-v2"
+          initial={LIFT.initial}
+          whileInView={LIFT.visible}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={tx()}
+        >
+          <div className="contact-direct-head">
+            <h2 className="contact-direct-title">{directTitle}</h2>
             <p className="contact-direct-desc">{directDesc}</p>
-          </motion.div>
+          </div>
           <div className="contact-direct-grid">
-            {directChannels.map((d, i) => (
-              <motion.div key={d.label} initial={HIDDEN} animate={channelsInView ? VISIBLE : HIDDEN} transition={tx(0.15 + i * 0.1)} className="contact-direct-cell">
+            {directChannels.map((d) => (
+              <div key={d.label} className="contact-direct-cell">
                 <div className="contact-direct-cell-label ks-eyebrow">{d.label}</div>
                 {d.href ? (
                   <a
@@ -387,21 +390,27 @@ export function ContactPage() {
                   <div className="contact-direct-cell-value">{d.value}</div>
                 )}
                 <div className="contact-direct-cell-note ks-eyebrow">{d.note}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         <div className="contact-divider" />
 
         {/* ── Working notes ── */}
-        <section className="contact-notes" ref={notesRef}>
-          <motion.div initial={HIDDEN} animate={notesInView ? VISIBLE : HIDDEN} transition={tx(0)} className="contact-notes-label ks-eyebrow">{notesEyebrow}</motion.div>
+        <motion.section
+          className="contact-notes"
+          initial={LIFT.initial}
+          whileInView={LIFT.visible}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={tx()}
+        >
+          <div className="contact-notes-label ks-eyebrow">{notesEyebrow}</div>
           <div className="contact-notes-table">
             {leftNotes.map((left, i) => {
               const right = rightNotes[i]
               return (
-                <motion.div key={i} initial={HIDDEN} animate={notesInView ? VISIBLE : HIDDEN} transition={tx(0.15 + i * 0.18)} className="contact-notes-row">
+                <div key={i} className="contact-notes-row">
                   <div className="contact-notes-cell">
                     <div className="contact-notes-key ks-eyebrow">{left.label}</div>
                     <div className="contact-notes-val">{left.value}</div>
@@ -410,16 +419,22 @@ export function ContactPage() {
                     <div className="contact-notes-key ks-eyebrow">{right?.label}</div>
                     <div className="contact-notes-val">{right?.value}</div>
                   </div>
-                </motion.div>
+                </div>
               )
             })}
           </div>
-        </section>
+        </motion.section>
 
         {/* ── Explore More ── */}
-        <nav className="cat-footer-nav" ref={exploreRef as unknown as React.RefObject<HTMLElement>}>
+        <motion.nav
+          className="cat-footer-nav"
+          initial={LIFT.initial}
+          whileInView={LIFT.visible}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={tx()}
+        >
           <div className="cat-footer-nav-inner">
-            <motion.div initial={HIDDEN} animate={exploreInView ? VISIBLE : HIDDEN} transition={tx(0)} className="cat-footer-nav-eyebrow">Explore More</motion.div>
+            <div className="cat-footer-nav-eyebrow">Explore More</div>
             <div className="cat-footer-nav-cats">
               {[
                 { id: '',          name: 'Home' },
@@ -429,21 +444,18 @@ export function ContactPage() {
                 { id: 'objects',   name: 'Objects' },
                 { id: 'motion',    name: 'Motion' },
               ].map((c, i) => (
-                <motion.a
+                <a
                   key={c.id || 'home'}
                   href={`/${c.id}`}
                   className="cat-footer-nav-link"
-                  initial={HIDDEN}
-                  animate={exploreInView ? VISIBLE : HIDDEN}
-                  transition={tx(0.12 + i * 0.1)}
                   style={{ animationDelay: `${(i * 10 / 6 - 5).toFixed(2)}s` }}
                 >
                   {c.name}
-                </motion.a>
+                </a>
               ))}
             </div>
           </div>
-        </nav>
+        </motion.nav>
 
       </main>
 
