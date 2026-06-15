@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import type { CategoryData, FlowRow, FlowPhoto, IntroPart } from '@/lib/categoryData'
+import type { GalleryData, GalleryAssignment } from '@/lib/getGalleryData'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { BrandMarquee } from '@/components/BrandMarquee'
 import { PROJECT_TAGS } from '@/lib/tags'
-import { LIFT, tx, SECTION, ITEM } from '@/lib/motionVariants'
-import type { GalleryData, GalleryAssignment } from '@/lib/getGalleryData'
 
 const ALL_CATEGORIES = [
   { id: 'culinary',  name: 'Culinary' },
@@ -256,54 +254,48 @@ function CatPhotoWithCap({ photo, idx, aspectOverride }: { photo: FlowPhoto; idx
   )
 }
 
-const ROW_VP = { once: false, amount: 0.1 } as const
-
 function RowFullBleed({ row, idx }: { row: Extract<FlowRow, { kind: 'full-bleed' }>; idx: number }) {
   return (
-    <motion.div className="cat-row cat-row-full-bleed"
-      initial={LIFT.initial} whileInView={LIFT.visible} viewport={ROW_VP} transition={tx()}>
+    <div className="cat-row cat-row-full-bleed">
       <CatPhoto photo={row.photo} />
       <CatCap photo={row.photo} idx={idx} />
-    </motion.div>
+    </div>
   )
 }
 
 function RowFullBleedPano({ row, idx }: { row: Extract<FlowRow, { kind: 'full-bleed-pano' }>; idx: number }) {
   return (
-    <motion.div className="cat-row cat-row-full-bleed"
-      initial={LIFT.initial} whileInView={LIFT.visible} viewport={ROW_VP} transition={tx()}>
+    <div className="cat-row cat-row-full-bleed">
       <CatPhoto photo={row.photo} aspectOverride="pano" />
       <CatCap photo={row.photo} idx={idx} />
-    </motion.div>
+    </div>
   )
 }
 
 function RowAsym({ row, idxBase }: { row: Extract<FlowRow, { kind: 'asym' }>; idxBase: number }) {
   return (
-    <motion.div className="cat-row cat-row-asym"
-      initial={LIFT.initial} whileInView={LIFT.visible} viewport={ROW_VP} transition={tx()}>
+    <div className="cat-row cat-row-asym">
       <div className="cat-contained">
         <div className="cat-row-asym-grid">
-          <div className="cat-asym-item">
+          <div className="cat-asym-item" data-sr>
             <CatPhotoWithCap photo={row.large} idx={idxBase} />
           </div>
           <div className="cat-small-stack">
             {row.smalls.map((p, i) => (
-              <div key={i} className="cat-asym-item">
+              <div key={i} className="cat-asym-item" data-sr>
                 <CatPhotoWithCap photo={p} idx={idxBase + 1 + i} />
               </div>
             ))}
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
 function RowCenteredTall({ row, idx }: { row: Extract<FlowRow, { kind: 'centered-tall' }>; idx: number }) {
   return (
-    <motion.div className="cat-row"
-      initial={LIFT.initial} whileInView={LIFT.visible} viewport={ROW_VP} transition={tx()}>
+    <div className="cat-row">
       <div className="cat-contained">
         <div className="cat-row-ct-grid">
           <div className="cat-row-ct-side">
@@ -316,7 +308,7 @@ function RowCenteredTall({ row, idx }: { row: Extract<FlowRow, { kind: 'centered
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -324,14 +316,13 @@ function RowThreeUp({ row, idxBase }: { row: Extract<FlowRow, { kind: 'three-up'
   return (
     <div className="cat-row cat-row-threeup">
       <div className="cat-contained">
-        <motion.div className="cat-row-3up-grid"
-          initial="hidden" whileInView="visible" viewport={ROW_VP} variants={SECTION}>
+        <div className="cat-row-3up-grid">
           {row.photos.map((p, i) => (
-            <motion.div key={i} className="cat-multi-item" variants={ITEM}>
+            <div key={i} className="cat-multi-item" data-sr>
               <CatPhotoWithCap photo={p} idx={idxBase + i} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   )
@@ -341,14 +332,13 @@ function RowDiptych({ row, idxBase }: { row: Extract<FlowRow, { kind: 'diptych' 
   return (
     <div className="cat-row cat-row-diptych">
       <div className="cat-contained">
-        <motion.div className="cat-row-diptych-grid"
-          initial="hidden" whileInView="visible" viewport={ROW_VP} variants={SECTION}>
+        <div className="cat-row-diptych-grid">
           {row.photos.map((p, i) => (
-            <motion.div key={i} className="cat-multi-item" variants={ITEM}>
+            <div key={i} className="cat-multi-item" data-sr>
               <CatPhotoWithCap photo={p} idx={idxBase + i} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   )
@@ -358,14 +348,13 @@ function RowDuo({ row, idxBase }: { row: Extract<FlowRow, { kind: 'duo' }>; idxB
   return (
     <div className="cat-row cat-row-duo">
       <div className="cat-contained">
-        <motion.div className="cat-row-duo-grid"
-          initial="hidden" whileInView="visible" viewport={ROW_VP} variants={SECTION}>
+        <div className="cat-row-duo-grid">
           {row.photos.map((p, i) => (
-            <motion.div key={i} className="cat-multi-item" variants={ITEM}>
+            <div key={i} className="cat-multi-item" data-sr>
               <CatPhotoWithCap photo={p} idx={idxBase + i} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   )
@@ -373,8 +362,7 @@ function RowDuo({ row, idxBase }: { row: Extract<FlowRow, { kind: 'duo' }>; idxB
 
 function RowOffset({ row, idx }: { row: Extract<FlowRow, { kind: 'offset' }>; idx: number }) {
   return (
-    <motion.div className="cat-row"
-      initial={LIFT.initial} whileInView={LIFT.visible} viewport={ROW_VP} transition={tx()}>
+    <div className="cat-row">
       <div className="cat-contained">
         <div className="cat-row-offset-grid">
           <div className="cat-row-offset-neg" />
@@ -386,7 +374,7 @@ function RowOffset({ row, idx }: { row: Extract<FlowRow, { kind: 'offset' }>; id
           <p className="cat-pull-quote-text">{row.text}</p>
         </div>
       )}
-    </motion.div>
+    </div>
   )
 }
 
@@ -395,30 +383,24 @@ function RowPullQuote({ pullQuote, copyOverride }: {
   copyOverride?: { text?: string; attr?: string; textStyle?: TextStyle; attrStyle?: TextStyle }
 }) {
   return (
-    <motion.div className="cat-row"
-      initial={LIFT.initial} whileInView={LIFT.visible} viewport={ROW_VP} transition={tx()}>
+    <div className="cat-row">
       <div className="cat-pull-quote">
         <p className="cat-pull-quote-text" style={textStyle(copyOverride?.textStyle)}>{copyOverride?.text || pullQuote.text}</p>
         <div className="cat-pull-quote-attr" style={textStyle(copyOverride?.attrStyle)}>{copyOverride?.attr || pullQuote.attr}</div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
 export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData }) {
-  const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copy, setCopy] = useState<CategoryCopy>({})
   const [adminProjects, setAdminProjects] = useState<AdminProject[] | null>(null)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [showAllProjects, setShowAllProjects] = useState(false)
-  const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>(
-    () => initialGallery?.assignments ?? {}
-  )
-  const [heroAssignment, setHeroAssignment] = useState<{ url: string; focalX?: number; focalY?: number } | null>(
-    () => initialGallery?.hero ?? null
-  )
+  const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>(() => initialGallery?.assignments ?? {})
+  const [heroAssignment, setHeroAssignment] = useState<{ url: string; focalX?: number; focalY?: number } | null>(() => initialGallery?.hero ?? null)
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
 
   useEffect(() => {
@@ -438,8 +420,6 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
   }, [catId])
 
   const PROJECTS_INITIAL = 4
-
-  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -562,32 +542,18 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
         )}
         <div className="cat-hero-bg" />
         <div className="cat-hero-meta">
-          <motion.h1
-            className="cat-hero-title"
-            style={textStyle(copy.heroTitleStyle)}
-            {...LIFT}
-            animate={mounted ? LIFT.visible : LIFT.initial}
-            transition={tx(0.1)}
-          >
-            {copy.heroTitle || data.cat.name}
-          </motion.h1>
-          <motion.div
-            className="cat-hero-lower"
-            {...LIFT}
-            animate={mounted ? LIFT.visible : LIFT.initial}
-            transition={tx(0.55)}
-          >
+          <h1 className="cat-hero-title" style={textStyle(copy.heroTitleStyle)}>{copy.heroTitle || data.cat.name}</h1>
+          <div className="cat-hero-lower">
             {yearRange && <div className="cat-hero-year">{yearRange}</div>}
             <div className="cat-scroll-hint">
               <span className="cat-scroll-hint-label">Scroll</span>
               <span className="cat-scroll-hint-arrow" />
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      <motion.section className="cat-intro"
-        initial={LIFT.initial} whileInView={LIFT.visible} viewport={{ once: false, amount: 0.2 }} transition={tx()}>
+      <section className="cat-intro" data-sr>
         <div className="cat-intro-label ks-eyebrow" style={textStyle(copy.introLabelStyle)}>{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body" style={textStyle(copy.introBodyStyle)}>
           {copy.introBody
@@ -599,7 +565,7 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
               )
           }
         </p>
-      </motion.section>
+      </section>
 
       {videoGallery ?? (anyAssigned && (
         <section className="cat-editorial">
@@ -641,16 +607,15 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
 
       {adminProjects !== null && (filteredProjects ?? adminProjects).length > 0 && (
       <>
-      <section className="cat-projects">
-        <motion.header className="cat-projects-header"
-          initial={LIFT.initial} whileInView={LIFT.visible} viewport={{ once: false, amount: 0.3 }} transition={tx()}>
+      <section className="cat-projects" data-sr>
+        <header className="cat-projects-header">
           <h2 className="cat-projects-title">
             {copy.projectsSectionTitle || 'Selected Projects'}
           </h2>
           <p className="cat-projects-note">
             Bodies of work made over weeks or months. Full edits, contact sheets, and shoot notes.
           </p>
-        </motion.header>
+        </header>
 
         {filterTags.length > 0 && (
           <div className="cat-tag-filter">
@@ -680,10 +645,9 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
 
           return (
             <>
-              <motion.div className="cat-projects-grid"
-                initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.05 }} variants={SECTION}>
+              <div className="cat-projects-grid">
                 {visible.map((p) => (
-                  <motion.a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project" variants={ITEM}>
+                  <a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project">
                     <div className="cat-project-cover">
                       <div className="cat-photo" style={{ backgroundColor: '#1a1a1c', width: '100%', height: '100%' }}>
                         {p.coverUrl
@@ -727,9 +691,9 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
                       </div>
                     </div>
                     {p.desc && <p className="cat-project-desc">{p.desc}</p>}
-                  </motion.a>
+                  </a>
                 ))}
-              </motion.div>
+              </div>
 
               {!showAllProjects && remaining > 0 && (
                 <div className="cat-projects-more-wrap">
