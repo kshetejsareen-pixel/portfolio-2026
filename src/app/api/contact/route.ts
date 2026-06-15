@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
     ].filter(Boolean).join('\n')
 
     await resend.emails.send({
-      from: 'KS Studio <onboarding@resend.dev>',
-      to:   'kshetej.sareen@gmail.com',
+      from: 'KS Studio <info@kshetejsareen.com>',
+      to:   'info@kshetejsareen.com',
       replyTo: email,
       subject: `New enquiry${projectType ? ` · ${projectType}` : ''} — ${name}`,
       text: [
