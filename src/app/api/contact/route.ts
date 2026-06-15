@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
       budget      && `Budget      : ${budget}`,
     ].filter(Boolean).join('\n')
 
-    await resend.emails.send({
-      from: 'KS Studio <info@kshetejsareen.com>',
-      to:   'info@kshetejsareen.com',
+    const { data, error } = await resend.emails.send({
+      from:    'KS Studio <info@kshetejsareen.com>',
+      to:      'info@kshetejsareen.com',
       replyTo: email,
       subject: `New enquiry${projectType ? ` · ${projectType}` : ''} — ${name}`,
       text: [
@@ -32,6 +32,12 @@ export async function POST(req: NextRequest) {
       ].filter(Boolean).join('\n'),
     })
 
+    if (error) {
+      console.error('Resend error:', JSON.stringify(error))
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    console.log('Email sent:', data?.id)
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('Contact email error:', err)
