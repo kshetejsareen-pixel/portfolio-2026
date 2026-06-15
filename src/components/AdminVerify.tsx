@@ -72,7 +72,7 @@ export function AdminVerify() {
       <div className="adm-login-box">
         <div className="adm-login-logo">KS · Admin</div>
         <p className="adm-verify-hint">
-          A 6-digit code was sent to your email and phone. Enter it below.
+          A 6-digit code was sent to your email. Enter it below.
         </p>
         <div className="adm-otp-row" onPaste={handlePaste}>
           {code.map((digit, i) => (
