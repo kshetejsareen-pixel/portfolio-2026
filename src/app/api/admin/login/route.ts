@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   const code = generateOtp(OTP_KEY)
 
   const { error } = await resend.emails.send({
-    from: 'KS Studio <onboarding@resend.dev>',
+    from: 'Kshetej Sareen Studios <onboarding@resend.dev>',
     to: process.env.ADMIN_EMAIL!,
     subject: `Admin code: ${code}`,
     text: `Your KS Studio admin verification code is:\n\n${code}\n\nExpires in 10 minutes.`,
