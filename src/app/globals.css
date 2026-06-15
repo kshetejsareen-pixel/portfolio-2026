@@ -1184,12 +1184,11 @@ button, input, textarea, select { font: inherit; }
   line-height: 1.55;
   letter-spacing: 0.01em;
   color: var(--paper);
-  margin: 15px 0 6px;
-  width: 100%;
-  text-align: center;
+  margin: 0 0 30px;
+  text-align: left;
 }
 @media (max-width: 767px) {
-  .cat-hero-oneliner { font-size: 13px; margin-top: 15px; margin-bottom: 5px; text-align: center; }
+  .cat-hero-oneliner { font-size: 13px; margin: 0 0 14px; text-align: left; }
 }
 .cat-hero-lower {
   margin-top: 0; display: flex; align-items: flex-end;
@@ -1216,12 +1215,11 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-scroll-hint-arrow {
   position: absolute;
-  top: 0; right: 0;
+  top: 0; right: -10px;
   width: 1px;
   height: 100%;
   background: var(--paper);
   opacity: 0.6;
-  transform: translateX(5px); /* 5px gap between SCROLL label and line */
   animation: cat-scrollDrip 2.6s ease-in-out infinite;
 }
 @keyframes cat-scrollDrip {
@@ -1229,6 +1227,10 @@ button, input, textarea, select { font: inherit; }
   30%  { transform: scaleY(1); transform-origin: top; opacity: 0.8; }
   70%  { transform: scaleY(1); transform-origin: bottom; opacity: 0.8; }
   100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+@media (max-width: 767px) {
+  .cat-scroll-hint-arrow { right: 0; }
+  .cat-scroll-hint-label { transform: translateX(-10px); }
 }
 
 /* Intro */

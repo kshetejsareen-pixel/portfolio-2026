@@ -16,7 +16,7 @@ const DOC_ID = 'motion-videos'
 
 export async function readMotionVideos(): Promise<MotionVideosDoc> {
   const doc = await firestoreRead<MotionVideosDoc>(DOC_ID, { videos: [] })
-  return { videos: doc.videos ?? [] }
+  return { videos: doc.videos ?? [], bannerVideoId: doc.bannerVideoId }
 }
 
 export async function writeMotionVideos(doc: MotionVideosDoc): Promise<void> {
