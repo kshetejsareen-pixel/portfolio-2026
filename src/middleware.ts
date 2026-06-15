@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
   // Protect all /admin and /api/admin routes
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     const token = request.cookies.get('admin_token')?.value
-    if (token !== process.env.ADMIN_PASSWORD) {
+    if (token !== process.env.ADMIN_SESSION_SECRET) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
