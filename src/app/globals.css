@@ -4882,6 +4882,11 @@ a.info-touch-val:hover { color: var(--paper); }
   background: #0a0a0a;
   overflow: hidden;
 }
+.motion-video-item--portrait .motion-video-wrap {
+  aspect-ratio: 9 / 16;
+  max-width: 420px;
+  margin: 0 auto;
+}
 
 /* YouTube IFrame API replaces the div with an <iframe> */
 .motion-video-wrap > div,
@@ -5115,6 +5120,25 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-motion-order-btn:hover:not(:disabled) { color: #e8e8e0; border-color: #444; }
 .adm-motion-order-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.adm-motion-orient-btn {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  color: #888;
+  background: transparent;
+  border: 1px solid #222;
+  height: 24px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+  white-space: nowrap;
+}
+.adm-motion-orient-btn:hover { color: #e8e8e0; border-color: #444; }
+.adm-motion-orient-btn.active { color: #a8c4ff; border-color: #a8c4ff; }
 
 .adm-motion-remove-btn {
   font-size: 10px;

@@ -5,6 +5,7 @@ export interface MotionVideo {
   title: string
   year?: string
   location?: string
+  isShort?: boolean
 }
 
 export interface MotionVideosDoc {

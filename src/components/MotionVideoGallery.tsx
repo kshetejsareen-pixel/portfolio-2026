@@ -107,7 +107,7 @@ function MotionVideoItem({ video, index }: { video: MotionVideo; index: number }
 
   return (
     <div
-      className="motion-video-item"
+      className={`motion-video-item${video.isShort ? ' motion-video-item--portrait' : ''}`}
       ref={containerRef}
       data-sr
       style={{ animationDelay: `${index * 120}ms` }}

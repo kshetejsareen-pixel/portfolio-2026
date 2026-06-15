@@ -13,7 +13,7 @@ import type { InfoCopy, ContactCopy } from '@/lib/copyConfig'
 import type { FontConfig } from '@/lib/fontConfig'
 import { GFONTS, applyFontConfig } from '@/components/FontLoader'
 import type { MotionVideo } from '@/lib/motionVideos'
-import { extractYouTubeId } from '@/lib/youtubeUtils'
+import { extractYouTubeId, isYouTubeShort } from '@/lib/youtubeUtils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -2318,11 +2318,16 @@ function MotionVideosPanel({
       title: titleInput.trim(),
       year: yearInput.trim() || undefined,
       location: locInput.trim() || undefined,
+      isShort: isYouTubeShort(urlInput),
     }
     setSaving(true)
     await onChange([...videos, newVideo])
     setSaving(false)
     setUrlInput(''); setTitleInput(''); setYearInput(''); setLocInput('')
+  }
+
+  const handleTogglePortrait = async (id: string) => {
+    await onChange(videos.map((v) => v.id === id ? { ...v, isShort: !v.isShort } : v))
   }
 
   const handleRemove = async (id: string) => {
@@ -2383,6 +2388,13 @@ function MotionVideosPanel({
               <div className="adm-motion-item-actions">
                 <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'up')} disabled={i === 0}>↑</button>
                 <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'down')} disabled={i === videos.length - 1}>↓</button>
+                <button
+                  className={`adm-motion-orient-btn${v.isShort ? ' active' : ''}`}
+                  onClick={() => handleTogglePortrait(v.id)}
+                  title="Toggle portrait (9∶16) / landscape (16∶9)"
+                >
+                  {v.isShort ? '9∶16' : '16∶9'}
+                </button>
                 <button className="adm-motion-remove-btn" onClick={() => handleRemove(v.id)}>✕</button>
               </div>
             </div>

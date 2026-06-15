@@ -1,3 +1,7 @@
+export function isYouTubeShort(input: string): boolean {
+  return /\/shorts\//.test(input.trim())
+}
+
 export function extractYouTubeId(input: string): string | null {
   const s = input.trim()
   if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s
