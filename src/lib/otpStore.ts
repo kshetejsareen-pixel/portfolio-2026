@@ -1,7 +1,9 @@
-// In-memory OTP store. Single admin, so one entry at a time is fine.
-// Resets on serverless cold start — 10-min window makes that a non-issue.
+import '@/lib/firebase'
+import { getFirestore } from 'firebase-admin/firestore'
 
-const OTP_TTL_MS = 10 * 60 * 1000 // 10 minutes
+const COLLECTION = 'portfolio'
+const DOC_ID     = 'admin-otp'
+const OTP_TTL_MS = 10 * 60 * 1000
 const MAX_ATTEMPTS = 5
 
 interface OtpEntry {
@@ -10,29 +12,38 @@ interface OtpEntry {
   attempts: number
 }
 
-const store = new Map<string, OtpEntry>()
-
-export function generateOtp(key: string): string {
+export async function generateOtp(_key: string): Promise<string> {
   const code = Math.floor(100_000 + Math.random() * 900_000).toString()
-  store.set(key, { code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 })
+  const entry: OtpEntry = { code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 }
+  await getFirestore().collection(COLLECTION).doc(DOC_ID).set(entry)
   return code
 }
 
-export function verifyOtp(key: string, input: string): 'ok' | 'expired' | 'wrong' | 'locked' {
-  const entry = store.get(key)
-  if (!entry) return 'expired'
-  if (Date.now() > entry.expiresAt) { store.delete(key); return 'expired' }
-  if (entry.attempts >= MAX_ATTEMPTS) return 'locked'
+export async function verifyOtp(
+  _key: string,
+  input: string,
+): Promise<'ok' | 'expired' | 'wrong' | 'locked'> {
+  const db     = getFirestore()
+  const docRef = db.collection(COLLECTION).doc(DOC_ID)
 
-  if (input !== entry.code) {
-    entry.attempts += 1
-    return 'wrong'
-  }
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(docRef)
+    if (!snap.exists) return 'expired'
 
-  store.delete(key)
-  return 'ok'
+    const entry = snap.data() as OtpEntry
+    if (Date.now() > entry.expiresAt) { tx.delete(docRef); return 'expired' }
+    if (entry.attempts >= MAX_ATTEMPTS) return 'locked'
+
+    if (input !== entry.code) {
+      tx.update(docRef, { attempts: entry.attempts + 1 })
+      return 'wrong'
+    }
+
+    tx.delete(docRef)
+    return 'ok'
+  })
 }
 
-export function clearOtp(key: string) {
-  store.delete(key)
+export async function clearOtp(_key: string): Promise<void> {
+  await getFirestore().collection(COLLECTION).doc(DOC_ID).delete()
 }

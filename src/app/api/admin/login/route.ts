@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
   resetRateLimit(`login:${ip}`)
 
-  const code = generateOtp(OTP_KEY)
+  const code = await generateOtp(OTP_KEY)
 
   const { error } = await resend.emails.send({
     from: 'Kshetej Sareen Studios <onboarding@resend.dev>',
