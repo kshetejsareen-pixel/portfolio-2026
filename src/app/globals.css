@@ -1160,8 +1160,8 @@ button, input, textarea, select { font: inherit; }
   line-height: 0.9; letter-spacing: -0.04em; margin: 0;
   font-style: italic; color: var(--paper);
   white-space: nowrap;
-  padding-bottom: 0.15em;
-  margin-bottom: 10px;
+  padding-bottom: 0.12em;
+  margin-bottom: 4px;
 }
 .cat-hero-oneliner {
   font-family: var(--font-sans);
@@ -1170,11 +1170,11 @@ button, input, textarea, select { font: inherit; }
   line-height: 1.55;
   letter-spacing: 0.01em;
   color: rgba(236, 232, 224, 0.55);
-  margin: 0 0 14px;
+  margin: 0 0 6px;
   max-width: 64ch;
 }
 @media (max-width: 767px) {
-  .cat-hero-oneliner { font-size: 12px; margin-bottom: 12px; max-width: 100%; }
+  .cat-hero-oneliner { font-size: 12px; margin-bottom: 5px; max-width: 100%; }
 }
 .cat-hero-lower {
   margin-top: 0; display: flex; align-items: flex-end;
