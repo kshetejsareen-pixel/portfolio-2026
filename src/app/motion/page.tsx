@@ -4,6 +4,7 @@ import { motionData } from '@/lib/categoryData'
 import { readMotionVideos } from '@/lib/motionVideos'
 import { getGalleryData } from '@/lib/getGalleryData'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Motion — Kshetej Sareen' }
 
 export default async function MotionPage() {
