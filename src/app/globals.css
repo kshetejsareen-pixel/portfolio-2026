@@ -2610,6 +2610,51 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .adm-login-btn:hover:not(:disabled) { opacity: 0.85; }
 
+.adm-verify-hint {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 20px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.adm-otp-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.adm-otp-input {
+  width: 44px;
+  height: 52px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #e8e8e0;
+  font-size: 22px;
+  font-family: var(--font-mono, monospace);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.adm-otp-input:focus { border-color: #666; }
+.adm-otp-input:disabled { opacity: 0.4; }
+
+.adm-verify-back {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  padding: 6px;
+}
+.adm-verify-back:hover { color: #888; }
+
 /* ═══════════════════════════════════════════════════════════════
    ADMIN — Panel layout
 ═══════════════════════════════════════════════════════════════ */

@@ -21,9 +21,10 @@ export function AdminLogin() {
     })
 
     if (res.ok) {
-      router.push('/admin')
+      router.push('/admin/verify')
     } else {
-      setError('Wrong password.')
+      const { error: msg } = await res.json().catch(() => ({}))
+      setError(msg ?? 'Wrong password.')
       setLoading(false)
     }
   }

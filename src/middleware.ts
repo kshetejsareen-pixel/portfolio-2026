@@ -4,8 +4,13 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow the login page and login API through
-  if (pathname === '/admin/login' || pathname === '/api/admin/login') {
+  // Allow login + verify pages/APIs through without a session cookie
+  if (
+    pathname === '/admin/login' ||
+    pathname === '/admin/verify' ||
+    pathname === '/api/admin/login' ||
+    pathname === '/api/admin/verify'
+  ) {
     return NextResponse.next()
   }
 

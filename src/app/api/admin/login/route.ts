@@ -1,8 +1,35 @@
 import { NextResponse } from 'next/server'
 import { checkRateLimit, resetRateLimit, getClientIp } from '@/lib/rateLimit'
+import { generateOtp } from '@/lib/otpStore'
+import { Resend } from 'resend'
+import twilio from 'twilio'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+const OTP_KEY = 'admin-otp'
+
+async function sendOtpEmail(code: string) {
+  await resend.emails.send({
+    from: 'KS Studio <info@kshetejsareen.com>',
+    to: process.env.ADMIN_EMAIL!,
+    subject: `Your admin code: ${code}`,
+    text: `Your KS Studio admin verification code is:\n\n${code}\n\nExpires in 10 minutes. If you didn't request this, ignore it.`,
+  })
+}
+
+async function sendOtpSms(code: string) {
+  const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN,
+  )
+  await client.messages.create({
+    body: `KS Studio admin code: ${code}. Expires in 10 min.`,
+    from: process.env.TWILIO_FROM_NUMBER!,
+    to: process.env.ADMIN_PHONE!,
+  })
+}
 
 export async function POST(req: Request) {
-  // 5 failed attempts per IP per 15 minutes
   const ip = getClientIp(req)
   if (!checkRateLimit(`login:${ip}`, 5, 15 * 60 * 1000)) {
     return NextResponse.json(
@@ -17,15 +44,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Wrong password' }, { status: 401 })
   }
 
-  // Correct password — clear the rate limit and issue a session cookie
   resetRateLimit(`login:${ip}`)
 
-  const res = NextResponse.json({ ok: true })
-  res.cookies.set('admin_token', process.env.ADMIN_SESSION_SECRET!, {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+  const code = generateOtp(OTP_KEY)
+
+  // Fire both sends; if one fails, log but don't block
+  const results = await Promise.allSettled([
+    sendOtpEmail(code),
+    sendOtpSms(code),
+  ])
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') {
+      console.error(`OTP send #${i} failed:`, r.reason)
+    }
   })
-  return res
+
+  // Both failed — don't let the user proceed without a code
+  if (results.every((r) => r.status === 'rejected')) {
+    return NextResponse.json(
+      { error: 'Could not send verification code. Check server logs.' },
+      { status: 500 },
+    )
+  }
+
+  return NextResponse.json({ step: 'verify' })
 }
