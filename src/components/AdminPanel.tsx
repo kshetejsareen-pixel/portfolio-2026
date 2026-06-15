@@ -854,26 +854,8 @@ export function AdminPanel() {
 
           // ── Motion page (videos) ────────────────────────────────────────────
           if (activeCatId === 'motion') {
-            const heroSlot = pageSlots.find((s) => s.id === 'motion-hero')
             return (
               <div className="adm-slots-scroll adm-slots-scroll--cat">
-                {heroSlot && (
-                  <div className="adm-cat-section">
-                    <div className="adm-cat-section-head">
-                      <span className="adm-cat-section-title">Hero Banner</span>
-                      <span className="adm-cat-section-desc">Full-bleed background behind the Motion title</span>
-                    </div>
-                    <div className="adm-slots-grid">{renderCard(heroSlot)}</div>
-                  </div>
-                )}
-                <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Category title" hint="Large text over the hero banner" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder="Motion" withStyle styleValue={ds('heroTitleStyle')} onStyleChange={ss('heroTitleStyle')} />
-                  <InlineCopyField label="Hero oneliner" hint="Short descriptor shown below the title on the hero" value={d('heroOneliner')} onChange={sf('heroOneliner')} placeholder="e.g. Film & moving image, 2021–2026" multiline rows={2} />
-                </div>
-                <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
-                  <InlineCopyField label="Intro body" value={d('introBody')} onChange={sf('introBody')} multiline rows={4} placeholder="Paragraph text for the motion intro…" withStyle styleValue={ds('introBodyStyle')} onStyleChange={ss('introBodyStyle')} />
-                </div>
                 <MotionBannerField
                   bannerVideoId={motionBannerVideoId}
                   onChange={async (newId) => {
@@ -886,6 +868,14 @@ export function AdminPanel() {
                     showToast('Banner video saved')
                   }}
                 />
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Category title" hint="Large text over the hero banner" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder="Motion" withStyle styleValue={ds('heroTitleStyle')} onStyleChange={ss('heroTitleStyle')} />
+                  <InlineCopyField label="Hero oneliner" hint="Short descriptor shown below the title on the hero" value={d('heroOneliner')} onChange={sf('heroOneliner')} placeholder="e.g. Film & moving image, 2021–2026" multiline rows={2} />
+                </div>
+                <div className="adm-inline-copy-group">
+                  <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
+                  <InlineCopyField label="Intro body" value={d('introBody')} onChange={sf('introBody')} multiline rows={4} placeholder="Paragraph text for the motion intro…" withStyle styleValue={ds('introBodyStyle')} onStyleChange={ss('introBodyStyle')} />
+                </div>
                 <MotionVideosPanel
                   videos={motionVideos}
                   onChange={async (updated) => {
