@@ -399,9 +399,37 @@ button, input, textarea, select { font: inherit; }
 /* ─────────────────────────────────────────────
    Top bar
    ───────────────────────────────────────────── */
-.ks-top-bar {
+.ks-avail-ticker {
   position: absolute;
   top: 0; left: 0; right: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 56px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(236,232,224,0.55);
+  z-index: 8;
+  pointer-events: none;
+}
+.ks-avail-ticker-left { display: flex; align-items: center; gap: 7px; }
+.ks-avail-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #7ecb8f;
+  box-shadow: 0 0 5px #7ecb8f;
+  flex-shrink: 0;
+}
+
+.ks-top-bar {
+  position: absolute;
+  top: 32px; left: 0; right: 0;
   height: auto;
   display: flex;
   align-items: center;
@@ -673,9 +701,16 @@ button, input, textarea, select { font: inherit; }
    */
   .ks-letterbox { display: none; }
 
-  /* Top bar: match category-page padding (max 18px or safe-area, 22px sides) */
+  /* Ticker: smaller padding on mobile */
+  .ks-avail-ticker {
+    padding: 0 22px;
+    font-size: 9px;
+  }
+
+  /* Top bar: sits below the 32px ticker */
   .ks-top-bar {
-    padding: max(18px, env(safe-area-inset-top, 0px)) 22px 14px;
+    top: 32px;
+    padding: max(10px, env(safe-area-inset-top, 0px)) 22px 14px;
   }
   .ks-wordmark-ks { font-size: 15px; }
   .ks-top-nav { gap: 16px; }

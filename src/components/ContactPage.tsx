@@ -9,7 +9,7 @@ import type { ContactCopy } from '@/lib/copyConfig'
 
 const PROJECT_TYPES = ['Culinary', 'Spaces', 'Portraits', 'Objects', 'Motion']
 const TIMELINES = ['This month', '1–3 months', '3+ months', 'Open / flexible']
-const BUDGETS = ['Under $500', '$500–$2k', '$2k–$3k', '$3k–$6k', '$6k+']
+const BUDGETS = ['₹2,00,000 – ₹5,00,000', '₹5,00,000 – ₹10,00,000', '₹10,00,000 – ₹20,00,000', '₹20,00,000+']
 
 const DIRECT = [
   { label: 'Studio',    value: 'info@kshetejsareen.com', href: 'mailto:info@kshetejsareen.com', note: 'For commissions & prints' },
@@ -133,7 +133,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
   const tickerStatus   = contactCopy.tickerStatus   ?? 'Open for bookings — May through Sept 2026'
   const tickerLeadTime = contactCopy.tickerLeadTime ?? 'Lead time · 3–6 weeks'
-  const heroTitle      = contactCopy.heroTitle      ?? 'Say hello'
+  const heroTitle      = contactCopy.heroTitle      ?? "Let's talk"
   const heroPara1      = contactCopy.heroPara1      ?? null
   const heroPara2      = contactCopy.heroPara2      ?? null
   const inquiryEyebrow = contactCopy.inquiryEyebrow ?? '01 · Project inquiry'
@@ -245,7 +245,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
             {status === 'sent' ? (
               <div className="contact-sent-v2">
                 <div className="contact-sent-mark">✓</div>
-                <p>Message received. I&rsquo;ll be in touch within 48 hours.</p>
+                <p>Message received. I&rsquo;ll be in touch within two working days.</p>
                 <button className="contact-sent-reset" onClick={() => setStatus('idle')}>Send another</button>
               </div>
             ) : (
@@ -314,7 +314,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
                   <label className="contact-field-label">Tell me about the project</label>
                   <textarea
                     className={`contact-input-v2 contact-textarea-v2${errors.message ? ' contact-input-v2--error' : ''}`}
-                    placeholder="A few sentences is plenty — concept, dates, location, anything else useful."
+                    placeholder="Tell me the concept, location, and dates — the more context, the faster I can respond."
                     rows={6} value={message}
                     onChange={(e) => { setMessage(e.target.value); setErrors((p) => ({ ...p, message: undefined })) }}
                     disabled={status === 'submitting'}

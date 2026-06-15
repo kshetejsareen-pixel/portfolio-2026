@@ -167,6 +167,8 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
       ? buildCategories(initialData.config, initialData.assignments, initialData.categoryOrder)
       : categories
   )
+  const [tickerStatus,   setTickerStatus]   = useState('Open for bookings — May through Sept 2026')
+  const [tickerLeadTime, setTickerLeadTime] = useState('Lead time · 3–6 weeks')
   const cycleRef      = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -183,6 +185,17 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
       .then((r) => r.json())
       .then(({ config, assignments, categoryOrder }) => {
         setActiveCategories(buildCategories(config ?? {}, assignments ?? {}, categoryOrder ?? []))
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/copy')
+      .then((r) => r.json())
+      .then((d) => {
+        const c = d.copy?.contact
+        if (c?.tickerStatus)   setTickerStatus(c.tickerStatus)
+        if (c?.tickerLeadTime) setTickerLeadTime(c.tickerLeadTime)
       })
       .catch(() => {})
   }, [])
@@ -424,6 +437,15 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
       <div className="ks-letterbox ks-letterbox--bottom" />
+
+      {/* Availability ticker */}
+      <div className="ks-avail-ticker" aria-label="Studio availability">
+        <span className="ks-avail-ticker-left">
+          <span className="ks-avail-dot" aria-hidden="true" />
+          {tickerStatus}
+        </span>
+        <span className="ks-avail-ticker-right">{tickerLeadTime}</span>
+      </div>
 
       {/* Top bar */}
       <div className="ks-top-bar">
