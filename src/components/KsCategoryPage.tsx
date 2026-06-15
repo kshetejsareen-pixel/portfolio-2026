@@ -393,7 +393,7 @@ function RowPullQuote({ pullQuote, copyOverride }: {
   )
 }
 
-export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData }) {
+export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bannerVideoId }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData; bannerVideoId?: string }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copy, setCopy] = useState<CategoryCopy>({})
@@ -530,7 +530,17 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
       </header>
 
       <section className="cat-hero" style={{ backgroundColor: heroTint }}>
-        {heroAssignment && (
+        {bannerVideoId ? (
+          <div className="cat-hero-video-wrap">
+            <iframe
+              className="cat-hero-video"
+              src={`https://www.youtube.com/embed/${bannerVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${bannerVideoId}&modestbranding=1&rel=0&playsinline=1`}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              title="Hero banner video"
+            />
+          </div>
+        ) : heroAssignment && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={heroAssignment.url}

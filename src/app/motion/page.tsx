@@ -7,7 +7,7 @@ import { getGalleryData } from '@/lib/getGalleryData'
 export const metadata = { title: 'Motion — Kshetej Sareen' }
 
 export default async function MotionPage() {
-  const [{ videos }, initialGallery] = await Promise.allSettled([
+  const [motionDoc, initialGallery] = await Promise.allSettled([
     readMotionVideos(),
     getGalleryData('motion'),
   ]).then(([v, g]) => [
@@ -15,11 +15,14 @@ export default async function MotionPage() {
     g.status === 'fulfilled' ? g.value : undefined,
   ] as const)
 
+  const { videos, bannerVideoId } = motionDoc as { videos: typeof motionDoc['videos']; bannerVideoId?: string }
+
   return (
     <KsCategoryPage
       data={motionData}
       catId="motion"
       initialGallery={initialGallery}
+      bannerVideoId={bannerVideoId}
       videoGallery={videos.length > 0 ? <MotionVideoGallery videos={videos} /> : undefined}
     />
   )

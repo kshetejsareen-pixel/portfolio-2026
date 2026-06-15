@@ -263,14 +263,18 @@ export function AdminPanel() {
     fetchProjects()
     fetchCopyCfg()
     fetch('/api/admin/fonts').then((r) => r.json()).then((d) => { if (d.config) setFontConfig(d.config) })
-    fetch('/api/admin/motion-videos').then((r) => r.json()).then((d) => { if (d.videos) setMotionVideos(d.videos) })
+    fetch('/api/admin/motion-videos').then((r) => r.json()).then((d) => {
+      if (d.videos) setMotionVideos(d.videos)
+      if (d.bannerVideoId) setMotionBannerVideoId(d.bannerVideoId)
+    })
   }, [fetchImages, fetchAssignments, fetchConfig, fetchProjects, fetchCopyCfg])
 
   // ── Font config state ──────────────────────────────────────────────────────
   const [fontConfig, setFontConfig] = useState<FontConfig>({})
 
   // ── Motion videos state ────────────────────────────────────────────────────
-  const [motionVideos, setMotionVideos] = useState<MotionVideo[]>([])
+  const [motionVideos,        setMotionVideos]        = useState<MotionVideo[]>([])
+  const [motionBannerVideoId, setMotionBannerVideoId] = useState<string>('')
 
   // ── Inline copy draft state ────────────────────────────────────────────────
   const [draftCopy, setDraftCopy]   = useState<Record<string, unknown>>({})
@@ -870,6 +874,18 @@ export function AdminPanel() {
                   <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
                   <InlineCopyField label="Intro body" value={d('introBody')} onChange={sf('introBody')} multiline rows={4} placeholder="Paragraph text for the motion intro…" withStyle styleValue={ds('introBodyStyle')} onStyleChange={ss('introBodyStyle')} />
                 </div>
+                <MotionBannerField
+                  bannerVideoId={motionBannerVideoId}
+                  onChange={async (newId) => {
+                    setMotionBannerVideoId(newId)
+                    await fetch('/api/admin/motion-videos', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ videos: motionVideos, bannerVideoId: newId }),
+                    })
+                    showToast('Banner video saved')
+                  }}
+                />
                 <MotionVideosPanel
                   videos={motionVideos}
                   onChange={async (updated) => {
@@ -877,7 +893,7 @@ export function AdminPanel() {
                     await fetch('/api/admin/motion-videos', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ videos: updated }),
+                      body: JSON.stringify({ videos: updated, bannerVideoId: motionBannerVideoId }),
                     })
                     showToast('Videos saved')
                   }}
@@ -2213,6 +2229,76 @@ function LibraryPanel({
         <button className="adm-load-more" onClick={onLoadMore}>Load more</button>
       )}
     </aside>
+  )
+}
+
+// ─── MotionBannerField ────────────────────────────────────────────────────────
+
+function MotionBannerField({
+  bannerVideoId,
+  onChange,
+}: {
+  bannerVideoId: string
+  onChange: (newId: string) => Promise<void>
+}) {
+  const [input, setInput]   = useState(bannerVideoId)
+  const [error, setError]   = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => { setInput(bannerVideoId) }, [bannerVideoId])
+
+  const handleSave = async () => {
+    const trimmed = input.trim()
+    if (!trimmed) {
+      setSaving(true)
+      await onChange('')
+      setSaving(false)
+      setError('')
+      return
+    }
+    const ytId = extractYouTubeId(trimmed)
+    if (!ytId) { setError('Could not find a YouTube video ID in that URL.'); return }
+    setError('')
+    setSaving(true)
+    await onChange(ytId)
+    setSaving(false)
+  }
+
+  return (
+    <div className="adm-motion-banner">
+      <div className="adm-motion-videos-head">
+        <span className="adm-motion-videos-title">Hero Banner Video</span>
+        <span className="adm-motion-videos-count">Plays as full-screen background on the Motion page</span>
+      </div>
+      <div className="adm-motion-banner-row">
+        {bannerVideoId && (
+          <img
+            className="adm-motion-banner-thumb"
+            src={`https://img.youtube.com/vi/${bannerVideoId}/mqdefault.jpg`}
+            alt="Banner preview"
+          />
+        )}
+        <div className="adm-motion-banner-inputs">
+          <input
+            className="adm-motion-input"
+            placeholder="YouTube URL, Shorts URL, or video ID"
+            value={input}
+            onChange={(e) => { setInput(e.target.value); setError('') }}
+          />
+          {error && <span className="adm-motion-error">{error}</span>}
+          <div className="adm-motion-banner-actions">
+            <button className="adm-motion-add-btn" onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving…' : 'Set banner →'}
+            </button>
+            {bannerVideoId && (
+              <button className="adm-motion-remove-btn" onClick={() => { setInput(''); onChange('') }}>
+                Remove
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

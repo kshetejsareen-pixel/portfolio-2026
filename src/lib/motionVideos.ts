@@ -9,6 +9,7 @@ export interface MotionVideo {
 
 export interface MotionVideosDoc {
   videos: MotionVideo[]
+  bannerVideoId?: string
 }
 
 const DOC_ID = 'motion-videos'
