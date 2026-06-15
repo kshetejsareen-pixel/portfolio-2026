@@ -265,7 +265,7 @@ function CatPhotoWithCap({ photo, idx, aspectOverride }: { photo: FlowPhoto; idx
   )
 }
 
-const ROW_VP = { once: true, amount: 0.1 } as const
+const ROW_VP = { once: false, amount: 0.1 } as const
 
 function RowFullBleed({ row, idx }: { row: Extract<FlowRow, { kind: 'full-bleed' }>; idx: number }) {
   return (
@@ -576,7 +576,7 @@ export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryDa
       </section>
 
       <motion.section className="cat-intro"
-        initial={LIFT.initial} whileInView={LIFT.visible} viewport={{ once: true, amount: 0.2 }} transition={tx()}>
+        initial={LIFT.initial} whileInView={LIFT.visible} viewport={{ once: false, amount: 0.2 }} transition={tx()}>
         <div className="cat-intro-label ks-eyebrow" style={textStyle(copy.introLabelStyle)}>{copy.introLabel || data.intro.label}</div>
         <p className="cat-intro-body" style={textStyle(copy.introBodyStyle)}>
           {copy.introBody
@@ -632,7 +632,7 @@ export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryDa
       <>
       <section className="cat-projects">
         <motion.header className="cat-projects-header"
-          initial={LIFT.initial} whileInView={LIFT.visible} viewport={{ once: true, amount: 0.3 }} transition={tx()}>
+          initial={LIFT.initial} whileInView={LIFT.visible} viewport={{ once: false, amount: 0.3 }} transition={tx()}>
           <h2 className="cat-projects-title">
             {copy.projectsSectionTitle || 'Selected Projects'}
           </h2>
@@ -670,7 +670,7 @@ export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryDa
           return (
             <>
               <motion.div className="cat-projects-grid"
-                initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={SECTION}>
+                initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.05 }} variants={SECTION}>
                 {visible.map((p) => (
                   <motion.a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project" variants={ITEM}>
                     <div className="cat-project-cover">
