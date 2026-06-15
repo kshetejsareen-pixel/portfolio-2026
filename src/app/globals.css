@@ -1139,6 +1139,24 @@ button, input, textarea, select { font: inherit; }
   border: none;
   pointer-events: none;
 }
+/* Mute toggle for banner video — sits above the hero overlay (z-index > cat-hero-bg) */
+.cat-hero-mute-btn {
+  position: absolute;
+  bottom: 28px; right: 28px;
+  z-index: 10;
+  pointer-events: auto;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: color 200ms, border-color 200ms, background 200ms;
+}
+.cat-hero-mute-btn svg { width: 20px; height: 20px; }
+.cat-hero-mute-btn:hover { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.65); }
+.cat-hero-mute-btn.unmuted { color: #fff; border-color: rgba(255,255,255,0.4); }
 .cat-hero-bg {
   position: absolute; inset: 0; z-index: 1;
   background-image:
@@ -4861,24 +4879,27 @@ a.info-touch-val:hover { color: var(--paper); }
    Motion — Video gallery
 ═══════════════════════════════════════════════════════════════ */
 
-/* Reel gallery — full-viewport scroll-snap */
+/* Reel gallery — plain block in page flow. Page scrolls freely through all videos.
+   IntersectionObserver triggers play/pause as each video enters the viewport. */
 .motion-reel-gallery {
   width: 100%;
-  height: 100svh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  overscroll-behavior-y: auto;
 }
 
 .motion-reel-item {
   height: 100svh;
-  scroll-snap-align: start;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   background: #000;
+  /* Dim videos that aren't the active (most-visible) one */
+  opacity: 0.4;
+  transition: opacity 0.5s ease;
+}
+
+.motion-reel-item--active {
+  opacity: 1;
 }
 
 /* Portrait video */
@@ -4899,7 +4920,7 @@ a.info-touch-val:hover { color: var(--paper); }
   overflow: hidden;
 }
 
-/* YouTube IFrame API — !important overrides YT's inline style */
+/* YouTube IFrame API — !important overrides YT's inline style injection */
 .motion-reel-video-wrap > div,
 .motion-reel-video-wrap iframe,
 .motion-reel-player {
@@ -4910,12 +4931,20 @@ a.info-touch-val:hover { color: var(--paper); }
   border: 0 !important;
 }
 
-/* Top + bottom fade vignettes — dim everything outside the video frame */
+/* Transparent overlay above the iframe — captures wheel/touch events so they
+   bubble to the gallery listener (cross-origin iframes block event propagation) */
+.motion-reel-event-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Top + bottom fade vignettes — above event-layer (z-index 2), no pointer events */
 .motion-reel-fade {
   position: absolute;
   left: 0; right: 0;
   pointer-events: none;
-  z-index: 4;
+  z-index: 5;
 }
 .motion-reel-fade--top {
   top: 0;
@@ -4923,20 +4952,35 @@ a.info-touch-val:hover { color: var(--paper); }
   background: linear-gradient(to bottom, rgba(0,0,0,0.72), transparent);
 }
 
-/* Bottom area: gradient + meta text */
+/* Bottom area: gradient + meta text, centered */
 .motion-reel-bottom {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   padding: 0 28px 40px;
   background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-  z-index: 4;
+  z-index: 5;
   pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+/* For portrait videos, cap the meta to the video's own width */
+.motion-reel-item--portrait .motion-reel-bottom {
+  padding-left: 0;
+  padding-right: 0;
+}
+.motion-reel-item--portrait .motion-reel-meta {
+  width: calc(100svh * 9 / 16);
+  max-width: 100vw;
 }
 
 .motion-reel-meta {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 6px;
+  width: 100%;
 }
 
 .motion-reel-title {
@@ -4963,18 +5007,26 @@ a.info-touch-val:hover { color: var(--paper); }
   font-size: 11px;
   letter-spacing: 0.2em;
   color: rgba(255,255,255,0.35);
-  z-index: 4;
+  z-index: 6;
 }
 
-/* Inactive items slightly dimmed — fades out non-active videos */
-.motion-reel-item:not(.motion-reel-item--active) {
-  opacity: 0.35;
-  transition: opacity 0.5s ease;
+/* Mute / unmute toggle — bottom-right */
+.motion-reel-mute-btn {
+  position: absolute;
+  bottom: 44px; right: 24px;
+  z-index: 6;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: color 200ms, border-color 200ms, background 200ms;
 }
-.motion-reel-item--active {
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
+.motion-reel-mute-btn svg { width: 18px; height: 18px; }
+.motion-reel-mute-btn:hover { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.65); }
+.motion-reel-mute-btn.unmuted { color: #fff; border-color: rgba(255,255,255,0.4); }
 
 @media (max-width: 767px) {
   .motion-reel-bottom { padding: 0 20px 32px; }
@@ -5195,6 +5247,22 @@ a.info-touch-val:hover { color: var(--paper); }
 .adm-motion-orient-btn:hover { color: #e8e8e0; border-color: #444; }
 .adm-motion-orient-btn.active { color: #a8c4ff; border-color: #a8c4ff; }
 
+.adm-motion-edit-btn {
+  font-size: 10px;
+  color: #888;
+  background: transparent;
+  border: 1px solid #222;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+}
+.adm-motion-edit-btn:hover { color: #e8e8e0; border-color: #444; }
+.adm-motion-edit-btn.active { color: #a8c4ff; border-color: #a8c4ff; }
+
 .adm-motion-remove-btn {
   font-size: 10px;
   color: #e8e8e0;
@@ -5210,3 +5278,17 @@ a.info-touch-val:hover { color: var(--paper); }
   margin-top: 4px;
 }
 .adm-motion-remove-btn:hover { color: #c44; border-color: #c44; }
+
+.adm-motion-item-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.adm-motion-edit-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0 4px 0;
+  border-top: 1px solid #1a1a1a;
+  margin-bottom: 4px;
+}

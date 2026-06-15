@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { MotionVideo } from '@/lib/motionVideos'
 
 declare global {
@@ -37,76 +37,51 @@ function onYTReady(cb: () => void) {
 }
 
 export function MotionVideoGallery({ videos }: { videos: MotionVideo[] }) {
-  const galleryRef = useRef<HTMLDivElement>(null)
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
-  const touchStartY = useRef(0)
-  const scrollLock = useRef(false)
-
   useEffect(() => { loadYouTubeAPI() }, [])
-
-  const goTo = useCallback((idx: number) => {
-    const gallery = galleryRef.current
-    const items = gallery?.querySelectorAll('.motion-reel-item')
-    const el = items?.[idx] as HTMLElement | undefined
-    if (!el || scrollLock.current) return
-    scrollLock.current = true
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    setActiveIndex(idx)
-    setTimeout(() => { scrollLock.current = false }, 900)
-  }, [])
-
-  // Swipe gesture (touch + mouse wheel) for next/prev
-  useEffect(() => {
-    const onTouchStart = (e: TouchEvent) => { touchStartY.current = e.touches[0].clientY }
-    const onTouchEnd = (e: TouchEvent) => {
-      if (activeIndex === null) return
-      const dy = touchStartY.current - e.changedTouches[0].clientY
-      if (Math.abs(dy) < 60) return
-      if (dy > 0 && activeIndex < videos.length - 1) goTo(activeIndex + 1)
-      else if (dy < 0 && activeIndex > 0) goTo(activeIndex - 1)
-    }
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchend', onTouchEnd, { passive: true })
-    return () => {
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchend', onTouchEnd)
-    }
-  }, [activeIndex, videos.length, goTo])
 
   if (videos.length === 0) return null
 
   return (
-    <div className="motion-reel-gallery" ref={galleryRef}>
+    <div className="motion-reel-gallery">
       {videos.map((video, i) => (
-        <MotionReelItem
-          key={video.id}
-          video={video}
-          index={i}
-          galleryRef={galleryRef}
-          isActive={activeIndex === i}
-          onActivate={() => setActiveIndex(i)}
-        />
+        <MotionReelItem key={video.id} video={video} index={i} total={videos.length} />
       ))}
     </div>
   )
 }
 
 function MotionReelItem({
-  video, index, galleryRef, isActive, onActivate,
+  video, index, total,
 }: {
   video: MotionVideo
   index: number
-  galleryRef: React.RefObject<HTMLDivElement | null>
-  isActive: boolean
-  onActivate: () => void
+  total: number
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const itemRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
   const playerId = `yt-reel-${video.id}`
   const isPortrait = video.isShort
+  const [isActive, setIsActive] = useState(false)
+  const [muted, setMuted] = useState(true)
 
+  // IntersectionObserver — no scroll container, just the viewport.
+  // Play when ≥55% visible; pause and reset mute when leaving.
+  useEffect(() => {
+    const el = itemRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsActive(entry.isIntersecting)
+        if (!entry.isIntersecting) setMuted(true)
+      },
+      { root: null, threshold: 0.55 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  // Init YT player once
   useEffect(() => {
     const init = () => {
       if (!window.YT?.Player) return
@@ -115,54 +90,50 @@ function MotionReelItem({
         playerVars: {
           autoplay: 0,
           mute: 1,
-          controls: 1,
+          controls: 0,
           modestbranding: 1,
           rel: 0,
           playsinline: 1,
-        },
-        events: {
-          onReady: () => {
-            const el = containerRef.current
-            if (!el) return
-            observerRef.current = new IntersectionObserver(
-              (entries) => {
-                const e = entries[0]
-                if (e.isIntersecting) {
-                  playerRef.current?.playVideo()
-                  onActivate()
-                } else {
-                  playerRef.current?.pauseVideo()
-                }
-              },
-              { root: galleryRef.current, threshold: 0.7 }
-            )
-            observerRef.current.observe(el)
-          },
+          disablekb: 1,
         },
       })
     }
     onYTReady(init)
-    return () => {
-      observerRef.current?.disconnect()
-      playerRef.current?.destroy()
-    }
+    return () => { playerRef.current?.destroy() }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [video.youtubeId, playerId])
 
+  // Play / pause based on visibility
+  useEffect(() => {
+    if (!playerRef.current) return
+    if (isActive) playerRef.current.playVideo?.()
+    else playerRef.current.pauseVideo?.()
+  }, [isActive])
+
+  // Sync mute state to player
+  useEffect(() => {
+    if (!playerRef.current) return
+    if (muted) playerRef.current.mute?.()
+    else playerRef.current.unMute?.()
+  }, [muted])
+
   return (
     <div
-      className={`motion-reel-item${isPortrait ? ' motion-reel-item--portrait' : ' motion-reel-item--landscape'}${isActive ? ' motion-reel-item--active' : ''}`}
-      ref={containerRef}
+      ref={itemRef}
+      className={[
+        'motion-reel-item',
+        isPortrait ? 'motion-reel-item--portrait' : 'motion-reel-item--landscape',
+        isActive ? 'motion-reel-item--active' : '',
+      ].join(' ').trim()}
     >
-      {/* Top fade */}
       <div className="motion-reel-fade motion-reel-fade--top" />
 
-      {/* Video */}
       <div className="motion-reel-video-wrap">
         <div id={playerId} className="motion-reel-player" />
+        {/* Overlay keeps the video non-interactive (no accidental YT clicks) */}
+        <div className="motion-reel-event-layer" />
       </div>
 
-      {/* Bottom gradient + meta */}
       <div className="motion-reel-bottom">
         {(video.title || video.year || video.location) && (
           <div className="motion-reel-meta">
@@ -176,8 +147,25 @@ function MotionReelItem({
         )}
       </div>
 
-      {/* Index dot */}
-      <div className="motion-reel-index">{String(index + 1).padStart(2, '0')}</div>
+      <div className="motion-reel-index">{index + 1} / {total}</div>
+
+      {isActive && (
+        <button
+          className={`motion-reel-mute-btn${muted ? '' : ' unmuted'}`}
+          onClick={() => setMuted((m) => !m)}
+          aria-label={muted ? 'Unmute' : 'Mute'}
+        >
+          {muted ? (
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+          )}
+        </button>
+      )}
     </div>
   )
 }

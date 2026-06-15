@@ -2307,6 +2307,8 @@ function MotionVideosPanel({
   const [locInput, setLocInput]       = useState('')
   const [addError, setAddError]       = useState('')
   const [saving, setSaving]           = useState(false)
+  const [editingId, setEditingId]     = useState<string | null>(null)
+  const [editForm, setEditForm]       = useState({ title: '', year: '', location: '' })
 
   const handleAdd = async () => {
     const ytId = extractYouTubeId(urlInput)
@@ -2328,6 +2330,21 @@ function MotionVideosPanel({
 
   const handleTogglePortrait = async (id: string) => {
     await onChange(videos.map((v) => v.id === id ? { ...v, isShort: !v.isShort } : v))
+  }
+
+  const handleEditOpen = (v: MotionVideo) => {
+    if (editingId === v.id) { setEditingId(null); return }
+    setEditingId(v.id)
+    setEditForm({ title: v.title || '', year: v.year || '', location: v.location || '' })
+  }
+
+  const handleEditSave = async (id: string) => {
+    await onChange(videos.map((v) =>
+      v.id === id
+        ? { ...v, title: editForm.title.trim(), year: editForm.year.trim() || undefined, location: editForm.location.trim() || undefined }
+        : v
+    ))
+    setEditingId(null)
   }
 
   const handleRemove = async (id: string) => {
@@ -2374,29 +2391,59 @@ function MotionVideosPanel({
       {videos.length > 0 && (
         <div className="adm-motion-list">
           {videos.map((v, i) => (
-            <div key={v.id} className="adm-motion-item">
-              <img
-                className="adm-motion-thumb"
-                src={`https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg`}
-                alt={v.title || v.youtubeId}
-              />
-              <div className="adm-motion-item-info">
-                <span className="adm-motion-item-title">{v.title || <em style={{ opacity: 0.4 }}>Untitled</em>}</span>
-                <span className="adm-motion-item-meta">{[v.location, v.year].filter(Boolean).join(' · ')}</span>
-                <span className="adm-motion-item-id">{v.youtubeId}</span>
+            <div key={v.id} className="adm-motion-item-wrap">
+              <div className="adm-motion-item">
+                <img
+                  className="adm-motion-thumb"
+                  src={`https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg`}
+                  alt={v.title || v.youtubeId}
+                />
+                <div className="adm-motion-item-info">
+                  <span className="adm-motion-item-title">{v.title || <em style={{ opacity: 0.4 }}>Untitled</em>}</span>
+                  <span className="adm-motion-item-meta">{[v.location, v.year].filter(Boolean).join(' · ')}</span>
+                  <span className="adm-motion-item-id">{v.youtubeId}</span>
+                </div>
+                <div className="adm-motion-item-actions">
+                  <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'up')} disabled={i === 0}>↑</button>
+                  <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'down')} disabled={i === videos.length - 1}>↓</button>
+                  <button
+                    className={`adm-motion-orient-btn${v.isShort ? ' active' : ''}`}
+                    onClick={() => handleTogglePortrait(v.id)}
+                    title="Toggle portrait (9∶16) / landscape (16∶9)"
+                  >
+                    {v.isShort ? '9∶16' : '16∶9'}
+                  </button>
+                  <button
+                    className={`adm-motion-edit-btn${editingId === v.id ? ' active' : ''}`}
+                    onClick={() => handleEditOpen(v)}
+                    title="Edit copy"
+                  >✏</button>
+                  <button className="adm-motion-remove-btn" onClick={() => handleRemove(v.id)}>✕</button>
+                </div>
               </div>
-              <div className="adm-motion-item-actions">
-                <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'up')} disabled={i === 0}>↑</button>
-                <button className="adm-motion-order-btn" onClick={() => moveVideo(v.id, 'down')} disabled={i === videos.length - 1}>↓</button>
-                <button
-                  className={`adm-motion-orient-btn${v.isShort ? ' active' : ''}`}
-                  onClick={() => handleTogglePortrait(v.id)}
-                  title="Toggle portrait (9∶16) / landscape (16∶9)"
-                >
-                  {v.isShort ? '9∶16' : '16∶9'}
-                </button>
-                <button className="adm-motion-remove-btn" onClick={() => handleRemove(v.id)}>✕</button>
-              </div>
+              {editingId === v.id && (
+                <div className="adm-motion-edit-form">
+                  <input
+                    className="adm-motion-input adm-motion-input--sm"
+                    placeholder="Title"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                  />
+                  <input
+                    className="adm-motion-input adm-motion-input--xs"
+                    placeholder="Year"
+                    value={editForm.year}
+                    onChange={(e) => setEditForm((f) => ({ ...f, year: e.target.value }))}
+                  />
+                  <input
+                    className="adm-motion-input adm-motion-input--sm"
+                    placeholder="Location"
+                    value={editForm.location}
+                    onChange={(e) => setEditForm((f) => ({ ...f, location: e.target.value }))}
+                  />
+                  <button className="adm-motion-add-btn" onClick={() => handleEditSave(v.id)}>Save →</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
