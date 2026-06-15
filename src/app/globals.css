@@ -342,6 +342,27 @@ button, input, textarea, select { font: inherit; }
 .ks-photo-layer .ks-frame:nth-child(4n+3) .ks-frame-img { animation: ks-ken-2 24s linear infinite alternate; }
 .ks-photo-layer .ks-frame:nth-child(4n+4) .ks-frame-img { animation: ks-ken-3 20s linear infinite alternate; }
 
+/* YouTube background video — covers the frame like object-fit: cover */
+.ks-frame-video-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ks-frame-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 16:9 cover — whichever dimension hits the edge first, the other overflows */
+  width: 100vw;
+  height: 56.25vw;   /* 9/16 × 100vw */
+  min-height: 100vh;
+  min-width: 177.78vh; /* 16/9 × 100vh */
+  border: none;
+  pointer-events: none;
+}
+
 .ks-slot-tag {
   position: absolute;
   left: 50%;

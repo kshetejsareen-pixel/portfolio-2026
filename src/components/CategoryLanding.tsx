@@ -7,6 +7,7 @@ import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { BrandMarquee } from '@/components/BrandMarquee'
 import { useNavigate } from '@/components/PageTransition'
 import type { LandingData, LandingAssignment } from '@/lib/getLandingData'
+import type { MotionVideo } from '@/lib/motionVideos'
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -169,6 +170,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   )
   const [tickerStatus,   setTickerStatus]   = useState('Open for bookings — May through Sept 2026')
   const [tickerLeadTime, setTickerLeadTime] = useState('Lead time · 3–6 weeks')
+  const [motionVideos,   setMotionVideos]   = useState<MotionVideo[]>([])
   const cycleRef      = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -197,6 +199,13 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
         if (c?.tickerStatus)   setTickerStatus(c.tickerStatus)
         if (c?.tickerLeadTime) setTickerLeadTime(c.tickerLeadTime)
       })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/motion-videos')
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.videos)) setMotionVideos(d.videos) })
       .catch(() => {})
   }, [])
 
@@ -384,7 +393,18 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
                 style={{ backgroundColor: c.tint }}
                 aria-hidden={!active}
               >
-                {f.image && loadedSlots.has(`${c.id}-${fi}`)
+                {c.id === 'motion' && active && motionVideos[fi] ? (
+                  <div className="ks-frame-video-wrap">
+                    <iframe
+                      key={motionVideos[fi].youtubeId}
+                      className="ks-frame-video"
+                      src={`https://www.youtube.com/embed/${motionVideos[fi].youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${motionVideos[fi].youtubeId}&modestbranding=1&rel=0&playsinline=1`}
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                      title={motionVideos[fi].title}
+                    />
+                  </div>
+                ) : f.image && loadedSlots.has(`${c.id}-${fi}`)
                   ? (
                     <picture>
                       {f.mobileImage && (
@@ -401,7 +421,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
                       />
                     </picture>
                   )
-                  : active && !f.image && (
+                  : active && !f.image && c.id !== 'motion' && (
                     <div className="ks-slot-tag">
                       {c.label.toUpperCase()} · DROP IMAGE — {f.title.toUpperCase()}
                     </div>
