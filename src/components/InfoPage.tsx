@@ -86,8 +86,12 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
 
   const heroEyebrow = copy.heroEyebrow ?? 'Info · A working biography'
   const heroIntro = copy.heroIntro ?? 'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.'
-  const bioPara1  = copy.bioPara1  ?? 'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.'
-  const bioPara2  = copy.bioPara2  ?? 'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.'
+  const bioPara1  = copy.bioPara1  ?? 'There is a moment, just before the shutter fires, where everything either holds together or it doesn\'t. Light, space, texture, intention — all of it in the balance. Kshetej has spent the better part of a decade learning to trust that moment.'
+  const bioPara2  = copy.bioPara2  ?? 'He didn\'t arrive here through a conventional path. He was studying to be a Chartered Accountant when he realised the numbers he cared about were the ones on a lens barrel. Self-taught from the ground up — through YouTube rabbit holes, late-night forums, and the generosity of seniors who took the time to show him what no classroom would — he built his eye the hard way. And the hard way, it turns out, was the right way.'
+  const bioPara3  = copy.bioPara3  ?? 'Over seven years, his work has taken him across continents — Dubai, Oman, Angola, the Maldives, and across the length and breadth of India — shooting for some of the world\'s most discerning hospitality and luxury brands. Taj. The Leela. Six Senses. JW Marriott. Jumeirah. Tom Ford. His editorial work has appeared in Architectural Digest.'
+  const bioPara4  = copy.bioPara4  ?? 'Today, Kshetej Sareen Studios operates out of Delhi and Bangalore, shooting on Fujifilm GFX medium format and Sony — systems chosen not for their prestige, but for what they do to light at the edges of a frame, and matched deliberately to what each job demands.'
+  const bioPara5  = copy.bioPara5  ?? 'The studio specialises in architectural, residential, hospitality, and F&B photography, working with clients who understand that great imagery is not decoration. It is the first impression, the lasting one, and everything in between.'
+  const bioPara6  = copy.bioPara6  ?? 'He is still learning. That part hasn\'t changed.'
   const heroCap   = copy.heroCap   ?? 'Self · Studio · 2026'
   const bioHeading      = copy.bioHeading      ?? 'Biography'
   const practiceHeading = copy.practiceHeading ?? 'Practice, categories of work'
@@ -200,6 +204,10 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
           <div className="info-bio-body">
             <p className="info-bio-para">{bioPara1}</p>
             <p className="info-bio-para">{bioPara2}</p>
+            {bioPara3 && <p className="info-bio-para">{bioPara3}</p>}
+            {bioPara4 && <p className="info-bio-para">{bioPara4}</p>}
+            {bioPara5 && <p className="info-bio-para">{bioPara5}</p>}
+            {bioPara6 && <p className="info-bio-para">{bioPara6}</p>}
           </div>
         </motion.section>
 

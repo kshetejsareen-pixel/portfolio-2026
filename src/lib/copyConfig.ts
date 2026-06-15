@@ -26,6 +26,10 @@ export interface InfoCopy {
   heroIntro?: string
   bioPara1?: string
   bioPara2?: string
+  bioPara3?: string
+  bioPara4?: string
+  bioPara5?: string
+  bioPara6?: string
   heroCap?: string
   bioHeading?: string
   practiceHeading?: string
