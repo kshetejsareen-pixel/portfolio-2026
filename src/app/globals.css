@@ -1160,17 +1160,17 @@ button, input, textarea, select { font: inherit; }
 .cat-hero-letter--bottom { bottom: 0; }
 .cat-hero-meta {
   position: absolute; left: var(--cat-pad); right: var(--cat-pad);
-  bottom: max(96px, env(safe-area-inset-bottom, 0px) + 64px);
+  bottom: max(40px, env(safe-area-inset-bottom, 0px) + 28px);
   z-index: 4;
 }
 @media (max-width: 767px) {
   .cat-hero-meta {
-    bottom: max(32px, env(safe-area-inset-bottom, 32px));
+    bottom: max(28px, env(safe-area-inset-bottom, 28px));
   }
 }
 .cat-hero-title {
   font-family: var(--font-serif); font-weight: 400;
-  font-size: clamp(72px, 14vw, 220px);
+  font-size: clamp(79px, 15.4vw, 242px);
   line-height: 0.9; letter-spacing: -0.04em; margin: 0;
   font-style: italic; color: var(--paper);
   white-space: nowrap;
@@ -1179,16 +1179,16 @@ button, input, textarea, select { font: inherit; }
 }
 .cat-hero-oneliner {
   font-family: var(--font-sans);
-  font-size: clamp(12px, 1.1vw, 15px);
+  font-size: clamp(13px, 1.21vw, 17px);
   font-weight: 300;
   line-height: 1.55;
   letter-spacing: 0.01em;
-  color: rgba(236, 232, 224, 0.55);
-  margin: 0 0 6px;
+  color: var(--paper);
+  margin: 15px 0 6px;
   max-width: 64ch;
 }
 @media (max-width: 767px) {
-  .cat-hero-oneliner { font-size: 12px; margin-bottom: 5px; max-width: 100%; }
+  .cat-hero-oneliner { font-size: 13px; margin-top: 15px; margin-bottom: 5px; max-width: 100%; }
 }
 .cat-hero-lower {
   margin-top: 0; display: flex; align-items: flex-end;
@@ -1203,7 +1203,7 @@ button, input, textarea, select { font: inherit; }
 .cat-scroll-hint {
   position: relative;
   width: max-content;
-  height: 76px; /* 56px line + 20px for text, so bottom = SCROLL baseline */
+  height: 76px;
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -1217,9 +1217,10 @@ button, input, textarea, select { font: inherit; }
   position: absolute;
   top: 0; right: 0;
   width: 1px;
-  height: 100%; /* fills full 76px — ends exactly at SCROLL's bottom */
+  height: 100%;
   background: var(--paper);
   opacity: 0.6;
+  transform: translateX(4px); /* 4px right of the SCROLL label's right edge */
   animation: cat-scrollDrip 2.6s ease-in-out infinite;
 }
 @keyframes cat-scrollDrip {
