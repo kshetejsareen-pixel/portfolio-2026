@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { LIFT, tx } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { ContactCopy } from '@/lib/copyConfig'
@@ -95,6 +95,14 @@ function Chip({
   )
 }
 
+function item(inView: boolean, delay: number) {
+  return {
+    ...LIFT,
+    animate: inView ? LIFT.visible : LIFT.initial,
+    transition: tx(delay),
+  }
+}
+
 export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -109,6 +117,15 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [mounted, setMounted] = useState(false)
+
+  // One ref per section — all children in that section share the same trigger
+  const inquiryRef  = useRef<HTMLElement>(null)
+  const directRef   = useRef<HTMLElement>(null)
+  const notesRef    = useRef<HTMLElement>(null)
+
+  const inquiryInView = useInView(inquiryRef,  { once: true, amount: 0.05 })
+  const directInView  = useInView(directRef,   { once: true, amount: 0.05 })
+  const notesInView   = useInView(notesRef,    { once: true, amount: 0.05 })
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -207,17 +224,17 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
       <main className="contact-main-v2">
 
-        {/* ── Hero ── */}
+        {/* ── Hero — mounted-gate cascade, top to bottom ── */}
         <section className="contact-hero-v2">
-          <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.1)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
-          <motion.h1 {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.28)} className="contact-hero-title">
+          <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.08)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
+          <motion.h1  {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.22)} className="contact-hero-title">
             {heroTitle}<span className="contact-hero-period">.</span>
           </motion.h1>
           <div className="contact-hero-cols">
-            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.48)} className="contact-hero-col">
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.38)} className="contact-hero-col">
               {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
             </motion.p>
-            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.62)} className="contact-hero-col">
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.52)} className="contact-hero-col">
               {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
             </motion.p>
           </div>
@@ -225,151 +242,145 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
         <div className="contact-divider" />
 
-        {/* ── Form ── */}
-        <section className="contact-inquiry">
+        {/* ── Project inquiry — single inView gate, children stagger by delay ── */}
+        <section ref={inquiryRef} className="contact-inquiry">
           <div className="contact-inquiry-left">
-            <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0)} className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</motion.div>
-            <motion.h2 {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.09)} className="contact-inquiry-heading">{inquiryHeading}</motion.h2>
-            <motion.p {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.18)} className="contact-inquiry-note">{inquiryNote}</motion.p>
+            <motion.div   {...item(inquiryInView, 0.00)} className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</motion.div>
+            <motion.h2    {...item(inquiryInView, 0.09)} className="contact-inquiry-heading">{inquiryHeading}</motion.h2>
+            <motion.p     {...item(inquiryInView, 0.18)} className="contact-inquiry-note">{inquiryNote}</motion.p>
           </div>
 
           <div>
-          {status === 'sent' ? (
-            <div className="contact-sent-v2">
-              <div className="contact-sent-mark">✓</div>
-              <p>Message received. I&rsquo;ll be in touch within 48 hours.</p>
-              <button className="contact-sent-reset" onClick={() => setStatus('idle')}>
-                Send another
-              </button>
-            </div>
-          ) : (
-            <form className="contact-form-v2" onSubmit={handleSubmit} noValidate>
+            {status === 'sent' ? (
+              <div className="contact-sent-v2">
+                <div className="contact-sent-mark">✓</div>
+                <p>Message received. I&rsquo;ll be in touch within 48 hours.</p>
+                <button className="contact-sent-reset" onClick={() => setStatus('idle')}>
+                  Send another
+                </button>
+              </div>
+            ) : (
+              <form className="contact-form-v2" onSubmit={handleSubmit} noValidate>
 
-              {/* Name + Email */}
-              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0)} className="contact-row-2">
-                <div className="contact-field-v2">
-                  <label className="contact-field-label">Your name</label>
+                {/* Name + Email — separate items */}
+                <div className="contact-row-2">
+                  <motion.div {...item(inquiryInView, 0.27)} className="contact-field-v2">
+                    <label className="contact-field-label">Your name</label>
+                    <input
+                      className="contact-input-v2"
+                      type="text"
+                      placeholder="Full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      disabled={status === 'submitting'}
+                    />
+                  </motion.div>
+                  <motion.div {...item(inquiryInView, 0.36)} className="contact-field-v2">
+                    <label className="contact-field-label">Email</label>
+                    <input
+                      className="contact-input-v2"
+                      type="email"
+                      placeholder="you@studio.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={status === 'submitting'}
+                    />
+                  </motion.div>
+                </div>
+
+                {/* Company */}
+                <motion.div {...item(inquiryInView, 0.45)} className="contact-field-v2">
+                  <label className="contact-field-label">
+                    Company or publication <span className="contact-optional">(optional)</span>
+                  </label>
                   <input
                     className="contact-input-v2"
                     type="text"
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Magazine, agency, brand"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    disabled={status === 'submitting'}
+                  />
+                </motion.div>
+
+                {/* Project type */}
+                <motion.div {...item(inquiryInView, 0.54)} className="contact-field-v2">
+                  <label className="contact-field-label">Project type</label>
+                  <div className="contact-chips">
+                    {PROJECT_TYPES.map((t) => (
+                      <Chip key={t} label={t} selected={projectTypes.includes(t)} onClick={() => toggleType(t)} />
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Timeline + Budget — separate items */}
+                <div className="contact-row-2">
+                  <motion.div {...item(inquiryInView, 0.63)} className="contact-field-v2">
+                    <label className="contact-field-label">Timeline</label>
+                    <div className="contact-chips">
+                      {TIMELINES.map((t) => (
+                        <Chip key={t} label={t} selected={timeline === t} onClick={() => setTimeline(timeline === t ? '' : t)} />
+                      ))}
+                    </div>
+                  </motion.div>
+                  <motion.div {...item(inquiryInView, 0.72)} className="contact-field-v2">
+                    <label className="contact-field-label">Budget range</label>
+                    <div className="contact-chips">
+                      {BUDGETS.map((b) => (
+                        <Chip key={b} label={b} selected={budget === b} onClick={() => setBudget(budget === b ? '' : b)} />
+                      ))}
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Message */}
+                <motion.div {...item(inquiryInView, 0.81)} className="contact-field-v2">
+                  <label className="contact-field-label">Tell me about the project</label>
+                  <textarea
+                    className="contact-input-v2 contact-textarea-v2"
+                    placeholder="A few sentences is plenty — concept, dates, location, anything else useful."
+                    rows={6}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     required
                     disabled={status === 'submitting'}
                   />
-                </div>
-                <div className="contact-field-v2">
-                  <label className="contact-field-label">Email</label>
-                  <input
-                    className="contact-input-v2"
-                    type="email"
-                    placeholder="you@studio.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                </motion.div>
+
+                {status === 'error' && (
+                  <p className="contact-error-v2">Something went wrong — please email directly.</p>
+                )}
+
+                {/* Submit */}
+                <motion.div {...item(inquiryInView, 0.90)} className="contact-submit-row">
+                  <span className="contact-privacy">{privacyText}</span>
+                  <button
+                    className="contact-submit-v2"
+                    type="submit"
                     disabled={status === 'submitting'}
-                  />
-                </div>
-              </motion.div>
+                  >
+                    {status === 'submitting' ? 'Sending…' : 'Send inquiry →'}
+                  </button>
+                </motion.div>
 
-              {/* Company */}
-              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.09)} className="contact-field-v2">
-                <label className="contact-field-label">
-                  Company or publication <span className="contact-optional">(optional)</span>
-                </label>
-                <input
-                  className="contact-input-v2"
-                  type="text"
-                  placeholder="Magazine, agency, brand"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  disabled={status === 'submitting'}
-                />
-              </motion.div>
-
-              {/* Project type chips */}
-              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.18)} className="contact-field-v2">
-                <label className="contact-field-label">Project type</label>
-                <div className="contact-chips">
-                  {PROJECT_TYPES.map((t) => (
-                    <Chip key={t} label={t} selected={projectTypes.includes(t)} onClick={() => toggleType(t)} />
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Timeline + Budget */}
-              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.27)} className="contact-row-2">
-                <div className="contact-field-v2">
-                  <label className="contact-field-label">Timeline</label>
-                  <div className="contact-chips">
-                    {TIMELINES.map((t) => (
-                      <Chip key={t} label={t} selected={timeline === t} onClick={() => setTimeline(timeline === t ? '' : t)} />
-                    ))}
-                  </div>
-                </div>
-                <div className="contact-field-v2">
-                  <label className="contact-field-label">Budget range</label>
-                  <div className="contact-chips">
-                    {BUDGETS.map((b) => (
-                      <Chip key={b} label={b} selected={budget === b} onClick={() => setBudget(budget === b ? '' : b)} />
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Message */}
-              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.36)} className="contact-field-v2">
-                <label className="contact-field-label">Tell me about the project</label>
-                <textarea
-                  className="contact-input-v2 contact-textarea-v2"
-                  placeholder="A few sentences is plenty — concept, dates, location, anything else useful."
-                  rows={6}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                  disabled={status === 'submitting'}
-                />
-              </motion.div>
-
-              {status === 'error' && (
-                <p className="contact-error-v2">Something went wrong — please email directly.</p>
-              )}
-
-              {/* Submit row */}
-              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.45)} className="contact-submit-row">
-                <span className="contact-privacy">{privacyText}</span>
-                <button
-                  className="contact-submit-v2"
-                  type="submit"
-                  disabled={status === 'submitting'}
-                >
-                  {status === 'submitting' ? 'Sending…' : 'Send inquiry →'}
-                </button>
-              </motion.div>
-
-            </form>
-          )}
+              </form>
+            )}
           </div>
         </section>
 
         <div className="contact-divider" />
 
         {/* ── Direct channels ── */}
-        <motion.section
-          className="contact-direct-v2"
-          initial={LIFT.initial}
-          whileInView={LIFT.visible}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={tx()}
-        >
+        <section ref={directRef} className="contact-direct-v2">
           <div className="contact-direct-head">
-            <h2 className="contact-direct-title">{directTitle}</h2>
-            <p className="contact-direct-desc">{directDesc}</p>
+            <motion.h2 {...item(directInView, 0.00)} className="contact-direct-title">{directTitle}</motion.h2>
+            <motion.p  {...item(directInView, 0.09)} className="contact-direct-desc">{directDesc}</motion.p>
           </div>
           <div className="contact-direct-grid">
-            {directChannels.map((d) => (
-              <div key={d.label} className="contact-direct-cell">
+            {directChannels.map((d, i) => (
+              <motion.div key={d.label} {...item(directInView, 0.18 + i * 0.08)} className="contact-direct-cell">
                 <div className="contact-direct-cell-label ks-eyebrow">{d.label}</div>
                 {d.href ? (
                   <a
@@ -384,27 +395,21 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
                   <div className="contact-direct-cell-value">{d.value}</div>
                 )}
                 <div className="contact-direct-cell-note ks-eyebrow">{d.note}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         <div className="contact-divider" />
 
         {/* ── Working notes ── */}
-        <motion.section
-          className="contact-notes"
-          initial={LIFT.initial}
-          whileInView={LIFT.visible}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={tx()}
-        >
-          <div className="contact-notes-label ks-eyebrow">{notesEyebrow}</div>
+        <section ref={notesRef} className="contact-notes">
+          <motion.div {...item(notesInView, 0.00)} className="contact-notes-label ks-eyebrow">{notesEyebrow}</motion.div>
           <div className="contact-notes-table">
             {leftNotes.map((left, i) => {
               const right = rightNotes[i]
               return (
-                <div key={i} className="contact-notes-row">
+                <motion.div key={i} {...item(notesInView, 0.09 + i * 0.1)} className="contact-notes-row">
                   <div className="contact-notes-cell">
                     <div className="contact-notes-key ks-eyebrow">{left.label}</div>
                     <div className="contact-notes-val">{left.value}</div>
@@ -413,11 +418,11 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
                     <div className="contact-notes-key ks-eyebrow">{right?.label}</div>
                     <div className="contact-notes-val">{right?.value}</div>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
           </div>
-        </motion.section>
+        </section>
 
         {/* ── Explore More ── */}
         <motion.nav
