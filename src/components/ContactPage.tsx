@@ -116,6 +116,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
   const [budget, setBudget] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<Status>('idle')
+  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({})
   const [mounted, setMounted] = useState(false)
 
   // One ref per section — all children in that section share the same trigger
@@ -171,6 +172,14 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const newErrors: typeof errors = {}
+    if (!name.trim())    newErrors.name    = 'Required'
+    if (!email.trim())   newErrors.email   = 'Required'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Enter a valid email'
+    if (!message.trim()) newErrors.message = 'Required'
+    if (Object.keys(newErrors).length) { setErrors(newErrors); return }
+
     setStatus('submitting')
     try {
       const res = await fetch('/api/contact', {
@@ -186,6 +195,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
         setStatus('sent')
         setName(''); setEmail(''); setCompany('')
         setProjectTypes([]); setTimeline(''); setBudget(''); setMessage('')
+        setErrors({})
       } else {
         setStatus('error')
       }
@@ -267,26 +277,26 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
                   <motion.div {...item(inquiryInView, 0.27)} className="contact-field-v2">
                     <label className="contact-field-label">Your name</label>
                     <input
-                      className="contact-input-v2"
+                      className={`contact-input-v2${errors.name ? ' contact-input-v2--error' : ''}`}
                       type="text"
                       placeholder="Full name"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
+                      onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })) }}
                       disabled={status === 'submitting'}
                     />
+                    {errors.name && <span className="contact-field-error">{errors.name}</span>}
                   </motion.div>
                   <motion.div {...item(inquiryInView, 0.36)} className="contact-field-v2">
                     <label className="contact-field-label">Email</label>
                     <input
-                      className="contact-input-v2"
+                      className={`contact-input-v2${errors.email ? ' contact-input-v2--error' : ''}`}
                       type="email"
                       placeholder="you@studio.com"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                      onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })) }}
                       disabled={status === 'submitting'}
                     />
+                    {errors.email && <span className="contact-field-error">{errors.email}</span>}
                   </motion.div>
                 </div>
 
@@ -339,14 +349,14 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
                 <motion.div {...item(inquiryInView, 0.81)} className="contact-field-v2">
                   <label className="contact-field-label">Tell me about the project</label>
                   <textarea
-                    className="contact-input-v2 contact-textarea-v2"
+                    className={`contact-input-v2 contact-textarea-v2${errors.message ? ' contact-input-v2--error' : ''}`}
                     placeholder="A few sentences is plenty — concept, dates, location, anything else useful."
                     rows={6}
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    required
+                    onChange={(e) => { setMessage(e.target.value); setErrors((p) => ({ ...p, message: undefined })) }}
                     disabled={status === 'submitting'}
                   />
+                  {errors.message && <span className="contact-field-error">{errors.message}</span>}
                 </motion.div>
 
                 {status === 'error' && (
