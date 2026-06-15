@@ -95,10 +95,10 @@ function Chip({
   )
 }
 
-export function ContactPage() {
+export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [contactCopy, setContactCopy] = useState<ContactCopy>({})
+  const [contactCopy, setContactCopy] = useState<ContactCopy>(() => initialCopy ?? {})
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -226,17 +226,11 @@ export function ContactPage() {
         <div className="contact-divider" />
 
         {/* ── Form ── */}
-        <motion.section
-          className="contact-inquiry"
-          initial={LIFT.initial}
-          whileInView={LIFT.visible}
-          viewport={{ once: true, amount: 0.12 }}
-          transition={tx()}
-        >
+        <section className="contact-inquiry">
           <div className="contact-inquiry-left">
-            <div className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</div>
-            <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
-            <p className="contact-inquiry-note">{inquiryNote}</p>
+            <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0)} className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</motion.div>
+            <motion.h2 {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.09)} className="contact-inquiry-heading">{inquiryHeading}</motion.h2>
+            <motion.p {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.18)} className="contact-inquiry-note">{inquiryNote}</motion.p>
           </div>
 
           <div>
@@ -252,7 +246,7 @@ export function ContactPage() {
             <form className="contact-form-v2" onSubmit={handleSubmit} noValidate>
 
               {/* Name + Email */}
-              <div className="contact-row-2">
+              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0)} className="contact-row-2">
                 <div className="contact-field-v2">
                   <label className="contact-field-label">Your name</label>
                   <input
@@ -277,10 +271,10 @@ export function ContactPage() {
                     disabled={status === 'submitting'}
                   />
                 </div>
-              </div>
+              </motion.div>
 
               {/* Company */}
-              <div className="contact-field-v2">
+              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.09)} className="contact-field-v2">
                 <label className="contact-field-label">
                   Company or publication <span className="contact-optional">(optional)</span>
                 </label>
@@ -292,20 +286,20 @@ export function ContactPage() {
                   onChange={(e) => setCompany(e.target.value)}
                   disabled={status === 'submitting'}
                 />
-              </div>
+              </motion.div>
 
               {/* Project type chips */}
-              <div className="contact-field-v2">
+              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.18)} className="contact-field-v2">
                 <label className="contact-field-label">Project type</label>
                 <div className="contact-chips">
                   {PROJECT_TYPES.map((t) => (
                     <Chip key={t} label={t} selected={projectTypes.includes(t)} onClick={() => toggleType(t)} />
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Timeline + Budget */}
-              <div className="contact-row-2">
+              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.27)} className="contact-row-2">
                 <div className="contact-field-v2">
                   <label className="contact-field-label">Timeline</label>
                   <div className="contact-chips">
@@ -322,10 +316,10 @@ export function ContactPage() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Message */}
-              <div className="contact-field-v2">
+              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.36)} className="contact-field-v2">
                 <label className="contact-field-label">Tell me about the project</label>
                 <textarea
                   className="contact-input-v2 contact-textarea-v2"
@@ -336,14 +330,14 @@ export function ContactPage() {
                   required
                   disabled={status === 'submitting'}
                 />
-              </div>
+              </motion.div>
 
               {status === 'error' && (
                 <p className="contact-error-v2">Something went wrong — please email directly.</p>
               )}
 
               {/* Submit row */}
-              <div className="contact-submit-row">
+              <motion.div {...LIFT} whileInView={LIFT.visible} viewport={{ once: true, amount: 0 }} transition={tx(0.45)} className="contact-submit-row">
                 <span className="contact-privacy">{privacyText}</span>
                 <button
                   className="contact-submit-v2"
@@ -352,12 +346,12 @@ export function ContactPage() {
                 >
                   {status === 'submitting' ? 'Sending…' : 'Send inquiry →'}
                 </button>
-              </div>
+              </motion.div>
 
             </form>
           )}
           </div>
-        </motion.section>
+        </section>
 
         <div className="contact-divider" />
 

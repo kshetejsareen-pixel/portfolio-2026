@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { LIFT, tx } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { InfoCopy } from '@/lib/copyConfig'
+import type { PortraitData } from '@/lib/getInfoData'
 
 const DEFAULT_PRACTICE = [
   { label: 'Portraits', frames: 24 },
@@ -53,13 +54,11 @@ function parseNameYear(text: string): { name: string; year: string }[] {
     })
 }
 
-interface PortraitData { url: string; focalX?: number; focalY?: number }
-
-export function InfoPage() {
+export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoCopy; initialPortrait?: PortraitData | null }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [copy, setCopy] = useState<InfoCopy>({})
-  const [portrait, setPortrait] = useState<PortraitData | null>(null)
+  const [copy, setCopy] = useState<InfoCopy>(() => initialCopy ?? {})
+  const [portrait, setPortrait] = useState<PortraitData | null>(() => initialPortrait ?? null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => { setMounted(true) }, [])
