@@ -8,6 +8,7 @@ import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { BrandMarquee } from '@/components/BrandMarquee'
 import { PROJECT_TAGS } from '@/lib/tags'
 import { LIFT, tx, SECTION, ITEM } from '@/lib/motionVariants'
+import type { GalleryData, GalleryAssignment } from '@/lib/getGalleryData'
 
 const ALL_CATEGORIES = [
   { id: 'culinary',  name: 'Culinary' },
@@ -96,16 +97,6 @@ interface AdminProject {
   coverFocalX?: number
   coverFocalY?: number
   tags?: string[]
-}
-
-interface GalleryAssignment {
-  url: string
-  title: string
-  location: string
-  year: string
-  camera: string
-  focalX?: number
-  focalY?: number
 }
 
 // Walks the flow in render order and overlays Cloudinary assignments onto each photo.
@@ -414,7 +405,7 @@ function RowPullQuote({ pullQuote, copyOverride }: {
   )
 }
 
-export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode }) {
+export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData }) {
   const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -422,8 +413,12 @@ export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryDa
   const [adminProjects, setAdminProjects] = useState<AdminProject[] | null>(null)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [showAllProjects, setShowAllProjects] = useState(false)
-  const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>({})
-  const [heroAssignment, setHeroAssignment] = useState<{ url: string; focalX?: number; focalY?: number } | null>(null)
+  const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>(
+    () => initialGallery?.assignments ?? {}
+  )
+  const [heroAssignment, setHeroAssignment] = useState<{ url: string; focalX?: number; focalY?: number } | null>(
+    () => initialGallery?.hero ?? null
+  )
   const [focalOverrides, setFocalOverrides] = useState<Record<string, { focalX: number; focalY: number }>>({})
 
   useEffect(() => {
