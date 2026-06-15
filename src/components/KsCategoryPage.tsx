@@ -58,6 +58,7 @@ interface CategoryCopy {
   pullQuoteText?: string
   pullQuoteAttr?: string
   heroTitle?: string
+  heroOneliner?: string
   projectsSectionTitle?: string
   heroTitleStyle?: TextStyle
   introLabelStyle?: TextStyle
@@ -543,11 +544,14 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery }: { 
         <div className="cat-hero-bg" />
         <div className="cat-hero-meta">
           <h1 className="cat-hero-title" style={textStyle(copy.heroTitleStyle)}>{copy.heroTitle || data.cat.name}</h1>
+          {copy.heroOneliner && (
+            <p className="cat-hero-oneliner">{copy.heroOneliner}</p>
+          )}
           <div className="cat-hero-lower">
             {yearRange && <div className="cat-hero-year">{yearRange}</div>}
             <div className="cat-scroll-hint">
-              <span className="cat-scroll-hint-label">Scroll</span>
               <span className="cat-scroll-hint-arrow" />
+              <span className="cat-scroll-hint-label">Scroll</span>
             </div>
           </div>
         </div>

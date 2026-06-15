@@ -13,6 +13,7 @@ export interface CategoryCopy {
   pullQuoteText?: string
   pullQuoteAttr?: string
   heroTitle?: string
+  heroOneliner?: string
   projectsSectionTitle?: string
   heroTitleStyle?: TextStyle
   introLabelStyle?: TextStyle

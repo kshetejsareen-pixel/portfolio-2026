@@ -864,6 +864,7 @@ export function AdminPanel() {
                 )}
                 <div className="adm-inline-copy-group">
                   <InlineCopyField label="Category title" hint="Large text over the hero banner" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder="Motion" withStyle styleValue={ds('heroTitleStyle')} onStyleChange={ss('heroTitleStyle')} />
+                  <InlineCopyField label="Hero oneliner" hint="Short descriptor shown below the title on the hero" value={d('heroOneliner')} onChange={sf('heroOneliner')} placeholder="e.g. Film & moving image, 2021–2026" multiline rows={2} />
                 </div>
                 <div className="adm-inline-copy-group">
                   <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
@@ -924,6 +925,7 @@ export function AdminPanel() {
               )}
               <div className="adm-inline-copy-group">
                 <InlineCopyField label="Category title" hint="Large text over the hero banner" value={d('heroTitle')} onChange={sf('heroTitle')} placeholder={activePage} withStyle styleValue={ds('heroTitleStyle')} onStyleChange={ss('heroTitleStyle')} />
+                <InlineCopyField label="Hero oneliner" hint="Short descriptor shown below the title on the hero" value={d('heroOneliner')} onChange={sf('heroOneliner')} placeholder="e.g. Architectural & hospitality photography, 2019–2026" multiline rows={2} />
               </div>
               <div className="adm-inline-copy-group">
                 <InlineCopyField label="Intro label" hint="Small eyebrow above the intro paragraph" value={d('introLabel')} onChange={sf('introLabel')} placeholder="On the work" withStyle styleValue={ds('introLabelStyle')} onStyleChange={ss('introLabelStyle')} />
