@@ -6,6 +6,7 @@ import { categories, type Category, type Frame } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { BrandMarquee } from '@/components/BrandMarquee'
 import { useNavigate } from '@/components/PageTransition'
+import type { LandingData, LandingAssignment } from '@/lib/getLandingData'
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -22,17 +23,6 @@ const CATEGORY_ROUTES: Record<string, string> = {
 const IDLE_DELAY     = 3000
 const FIRST_INTERVAL = 2000
 const CYCLE_INTERVAL = 2800
-
-interface LandingAssignment {
-  url: string
-  mobileUrl?: string
-  title: string
-  location: string
-  year: string
-  camera: string
-  focalX?: number
-  focalY?: number
-}
 
 // Build the active categories list from config + assignments, sorted by stored order.
 function buildCategories(
@@ -69,7 +59,7 @@ function buildCategories(
   })
 }
 
-export function CategoryLanding() {
+export function CategoryLanding({ initialData }: { initialData?: LandingData }) {
   const navigate = useNavigate()
   const [globalIdx, setGlobalIdx] = useState(0)
   const [scrubDuration, setScrubDuration] = useState(FIRST_INTERVAL)
@@ -171,8 +161,12 @@ export function CategoryLanding() {
     return () => bc.close()
   }, [])
 
-  // Dynamic data from the admin panel
-  const [activeCategories, setActiveCategories] = useState<Category[]>(categories)
+  // Dynamic data from the admin panel — seeded with server-fetched data to avoid placeholder flash
+  const [activeCategories, setActiveCategories] = useState<Category[]>(() =>
+    initialData
+      ? buildCategories(initialData.config, initialData.assignments, initialData.categoryOrder)
+      : categories
+  )
   const cycleRef      = useRef<ReturnType<typeof setInterval> | null>(null)
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)

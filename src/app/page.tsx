@@ -1,4 +1,5 @@
 import { CategoryLanding } from '@/components/CategoryLanding'
+import { getLandingData } from '@/lib/getLandingData'
 
 export const metadata = {
   title: 'Kshetej Sareen',
@@ -12,6 +13,11 @@ export const metadata = {
   },
 }
 
-export default function Home() {
-  return <CategoryLanding />
+export default async function Home() {
+  try {
+    const initialData = await getLandingData()
+    return <CategoryLanding initialData={initialData} />
+  } catch {
+    return <CategoryLanding />
+  }
 }
