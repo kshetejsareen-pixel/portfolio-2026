@@ -171,7 +171,8 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   const [tickerStatus,   setTickerStatus]   = useState('Open for bookings — May through Sept 2026')
   const [tickerLeadTime, setTickerLeadTime] = useState('Lead time · 3–6 weeks')
   const [motionVideos,   setMotionVideos]   = useState<MotionVideo[]>([])
-  const cycleRef      = useRef<ReturnType<typeof setInterval> | null>(null)
+  const motionVideosRef = useRef<MotionVideo[]>([])
+  const cycleRef      = useRef<ReturnType<typeof setTimeout> | null>(null)
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
@@ -180,6 +181,17 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   const globalIdxRef  = useRef(0)
   useEffect(() => { activeCatsRef.current = activeCategories }, [activeCategories])
   useEffect(() => { globalIdxRef.current = globalIdx }, [globalIdx])
+  useEffect(() => { motionVideosRef.current = motionVideos }, [motionVideos])
+
+  // Returns the display duration for a given global index — 5s for motion video frames, 3s otherwise
+  const getFrameInterval = useCallback((g: number) => {
+    const n = activeCatsRef.current.length || 1
+    const ci = g % n
+    const cat = activeCatsRef.current[ci]
+    const fi = Math.floor(g / n) % (cat?.frames?.length || 1)
+    const isMotionVideo = cat?.id === 'motion' && motionVideosRef.current.length > fi
+    return isMotionVideo ? 5000 : CYCLE_INTERVAL
+  }, [])
 
   // Fetch config + assignments — polls every 3s while tab is visible for live admin preview
   const fetchLanding = useCallback(() => {
@@ -251,7 +263,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
 
   // ── Idle-cycle helpers ───────────────────────────────────────────────────
   const stopCycle = useCallback(() => {
-    if (cycleRef.current) { clearInterval(cycleRef.current); cycleRef.current = null }
+    if (cycleRef.current) { clearTimeout(cycleRef.current); cycleRef.current = null }
     if (idleRef.current)  { clearTimeout(idleRef.current);  idleRef.current  = null }
   }, [])
 
@@ -259,33 +271,35 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
     stopCycle()
     setScrubDuration(IDLE_DELAY + CYCLE_INTERVAL)
     idleRef.current = setTimeout(() => {
-      cycleRef.current = setInterval(() => {
-        setScrubDuration(CYCLE_INTERVAL)
-        const g = globalIdxRef.current
-        globalIdxRef.current = g + 1
-        setGlobalIdx(g + 1)
-      }, CYCLE_INTERVAL)
+      const tick = () => {
+        const g = globalIdxRef.current + 1
+        globalIdxRef.current = g
+        setGlobalIdx(g)
+        const delay = getFrameInterval(g)
+        setScrubDuration(delay)
+        cycleRef.current = setTimeout(tick, delay)
+      }
+      tick()
     }, IDLE_DELAY)
-  }, [stopCycle])
+  }, [stopCycle, getFrameInterval])
 
-  // On initial mount: first image change fires at 2s, subsequent every 2.5s.
   const startAutoPlay = useCallback(() => {
     stopCycle()
-    setScrubDuration(FIRST_INTERVAL)
+    const tick = () => {
+      const g = globalIdxRef.current + 1
+      globalIdxRef.current = g
+      setGlobalIdx(g)
+      const delay = getFrameInterval(g)
+      setScrubDuration(delay)
+      cycleRef.current = setTimeout(tick, delay)
+    }
+    const firstDelay = getFrameInterval(globalIdxRef.current)
+    setScrubDuration(firstDelay)
     idleRef.current = setTimeout(() => {
       idleRef.current = null
-      setScrubDuration(CYCLE_INTERVAL)
-      const g = globalIdxRef.current
-      globalIdxRef.current = g + 1
-      setGlobalIdx(g + 1)
-      cycleRef.current = setInterval(() => {
-        setScrubDuration(CYCLE_INTERVAL)
-        const g2 = globalIdxRef.current
-        globalIdxRef.current = g2 + 1
-        setGlobalIdx(g2 + 1)
-      }, CYCLE_INTERVAL)
-    }, FIRST_INTERVAL)
-  }, [stopCycle])
+      tick()
+    }, firstDelay)
+  }, [stopCycle, getFrameInterval])
 
   useEffect(() => {
     startAutoPlay()
@@ -393,17 +407,13 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
                 style={{ backgroundColor: c.tint }}
                 aria-hidden={!active}
               >
-                {c.id === 'motion' && active && motionVideos[fi] ? (
-                  <div className="ks-frame-video-wrap">
-                    <iframe
-                      key={motionVideos[fi].youtubeId}
-                      className="ks-frame-video"
-                      src={`https://www.youtube.com/embed/${motionVideos[fi].youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${motionVideos[fi].youtubeId}&modestbranding=1&rel=0&playsinline=1`}
-                      allow="autoplay; fullscreen"
-                      allowFullScreen
-                      title={motionVideos[fi].title}
-                    />
-                  </div>
+                {c.id === 'motion' && motionVideos[fi] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    className="ks-frame-img"
+                    src={`https://img.youtube.com/vi/${motionVideos[fi].youtubeId}/hqdefault.jpg`}
+                    alt={motionVideos[fi].title || ''}
+                  />
                 ) : f.image && loadedSlots.has(`${c.id}-${fi}`)
                   ? (
                     <picture>
