@@ -2277,7 +2277,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
   margin: 0;
 }
 .info-hero-name-last {
-  font-style: italic;
+  font-style: normal;
   color: var(--paper-dim);
 }
 .info-hero-dot {
