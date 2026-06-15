@@ -1161,20 +1161,20 @@ button, input, textarea, select { font: inherit; }
   font-style: italic; color: var(--paper);
   white-space: nowrap;
   padding-bottom: 0.15em;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .cat-hero-oneliner {
-  font-family: var(--font-mono);
-  font-size: clamp(11px, 1vw, 13px);
-  line-height: 1.65;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(236, 232, 224, 0.5);
-  margin: 0 0 28px;
-  max-width: 72ch;
+  font-family: var(--font-sans);
+  font-size: clamp(12px, 1.1vw, 15px);
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: rgba(236, 232, 224, 0.55);
+  margin: 0 0 14px;
+  max-width: 64ch;
 }
 @media (max-width: 767px) {
-  .cat-hero-oneliner { font-size: 10px; margin-bottom: 20px; max-width: 100%; }
+  .cat-hero-oneliner { font-size: 12px; margin-bottom: 12px; max-width: 100%; }
 }
 .cat-hero-lower {
   margin-top: 0; display: flex; align-items: flex-end;
@@ -1183,16 +1183,28 @@ button, input, textarea, select { font: inherit; }
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute); word-spacing: -0.15em;
 }
+
+/* Scroll hint — line and label share the same bottom edge.
+   The animation drips from top down to the baseline of "SCROLL". */
 .cat-scroll-hint {
-  display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right;
-  flex-shrink: 0; margin-left: auto;
+  position: relative;
+  width: max-content;
+  height: 76px; /* 56px line + 20px for text, so bottom = SCROLL baseline */
+  flex-shrink: 0;
+  margin-left: auto;
 }
 .cat-scroll-hint-label {
+  position: absolute;
+  bottom: 0; right: 0;
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute);
 }
 .cat-scroll-hint-arrow {
-  width: 1px; height: 56px; background: var(--paper);
+  position: absolute;
+  top: 0; right: 0;
+  width: 1px;
+  height: 100%; /* fills full 76px — ends exactly at SCROLL's bottom */
+  background: var(--paper);
   opacity: 0.6;
   animation: cat-scrollDrip 2.6s ease-in-out infinite;
 }
