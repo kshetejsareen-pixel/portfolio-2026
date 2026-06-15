@@ -21,7 +21,7 @@ const CATEGORY_ROUTES: Record<string, string> = {
 }
 
 const IDLE_DELAY     = 3000
-const FIRST_INTERVAL = 2000
+const FIRST_INTERVAL = 2500
 const CYCLE_INTERVAL = 2800
 
 // Build the active categories list from config + assignments, sorted by stored order.
