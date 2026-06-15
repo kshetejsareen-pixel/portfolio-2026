@@ -29,6 +29,9 @@ export function extractYouTubeId(input: string): string | null {
   // youtu.be/ID
   const short = s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
   if (short) return short[1]
+  // youtube.com/shorts/ID
+  const shorts = s.match(/\/shorts\/([a-zA-Z0-9_-]{11})/)
+  if (shorts) return shorts[1]
   // youtube.com/watch?v=ID
   const long = s.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
   if (long) return long[1]
