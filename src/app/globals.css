@@ -62,9 +62,6 @@ button, input, textarea, select { font: inherit; }
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.ks-page-root {
-  animation: ks-page-enter 1.6s linear both;
-}
 
 /* ── Landing ambient motion ───────────────────────────────────────────────── */
 /* Effect 1 — name block drifts slowly; wordmark counter-drifts for depth */

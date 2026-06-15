@@ -415,6 +415,7 @@ function RowPullQuote({ pullQuote, copyOverride }: {
 }
 
 export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copy, setCopy] = useState<CategoryCopy>({})
@@ -442,6 +443,8 @@ export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryDa
   }, [catId])
 
   const PROJECTS_INITIAL = 4
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -564,14 +567,27 @@ export function KsCategoryPage({ data, catId, videoGallery }: { data: CategoryDa
         )}
         <div className="cat-hero-bg" />
         <div className="cat-hero-meta">
-          <h1 className="cat-hero-title" style={textStyle(copy.heroTitleStyle)}>{copy.heroTitle || data.cat.name}</h1>
-          <div className="cat-hero-lower">
+          <motion.h1
+            className="cat-hero-title"
+            style={textStyle(copy.heroTitleStyle)}
+            {...LIFT}
+            animate={mounted ? LIFT.visible : LIFT.initial}
+            transition={tx(0.1)}
+          >
+            {copy.heroTitle || data.cat.name}
+          </motion.h1>
+          <motion.div
+            className="cat-hero-lower"
+            {...LIFT}
+            animate={mounted ? LIFT.visible : LIFT.initial}
+            transition={tx(0.55)}
+          >
             {yearRange && <div className="cat-hero-year">{yearRange}</div>}
             <div className="cat-scroll-hint">
               <span className="cat-scroll-hint-label">Scroll</span>
               <span className="cat-scroll-hint-arrow" />
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
