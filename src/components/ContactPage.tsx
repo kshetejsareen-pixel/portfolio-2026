@@ -207,157 +207,99 @@ export function ContactPage() {
 
       <main className="contact-main-v2">
 
-        {/* ── Hero ── */}
+        {/* ── Hero — each piece waits for the previous to finish ── */}
         <section className="contact-hero-v2">
-          <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.1)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
-          <motion.h1 {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.28)} className="contact-hero-title">
+          <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.05)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
+          <motion.h1  {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.65)} className="contact-hero-title">
             {heroTitle}<span className="contact-hero-period">.</span>
           </motion.h1>
           <div className="contact-hero-cols">
-            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.48)} className="contact-hero-col">
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(1.25)} className="contact-hero-col">
               {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
             </motion.p>
-            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.62)} className="contact-hero-col">
+            <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(1.85)} className="contact-hero-col">
               {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
             </motion.p>
           </div>
         </section>
 
-        <div className="contact-divider" />
+        {/* Divider slides in after hero settles */}
+        <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(2.7)} className="contact-divider" />
 
-        {/* ── Form ── */}
-        <motion.section
-          className="contact-inquiry"
-          initial={LIFT.initial}
-          whileInView={LIFT.visible}
-          viewport={{ once: true, amount: 0.12 }}
-          transition={tx()}
-        >
+        {/* ── Form — each field appears one after the other ── */}
+        <section className="contact-inquiry">
+
+          {/* Left panel */}
           <div className="contact-inquiry-left">
-            <div className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</div>
-            <h2 className="contact-inquiry-heading">{inquiryHeading}</h2>
-            <p className="contact-inquiry-note">{inquiryNote}</p>
+            <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(3.0)} className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</motion.div>
+            <motion.h2 {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(3.6)} className="contact-inquiry-heading">{inquiryHeading}</motion.h2>
+            <motion.p  {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(4.2)} className="contact-inquiry-note">{inquiryNote}</motion.p>
           </div>
 
-          <div>
           {status === 'sent' ? (
             <div className="contact-sent-v2">
               <div className="contact-sent-mark">✓</div>
               <p>Message received. I&rsquo;ll be in touch within 48 hours.</p>
-              <button className="contact-sent-reset" onClick={() => setStatus('idle')}>
-                Send another
-              </button>
+              <button className="contact-sent-reset" onClick={() => setStatus('idle')}>Send another</button>
             </div>
           ) : (
             <form className="contact-form-v2" onSubmit={handleSubmit} noValidate>
 
-              {/* Name + Email */}
               <div className="contact-row-2">
-                <div className="contact-field-v2">
+                <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(4.8)} className="contact-field-v2">
                   <label className="contact-field-label">Your name</label>
-                  <input
-                    className="contact-input-v2"
-                    type="text"
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    disabled={status === 'submitting'}
-                  />
-                </div>
-                <div className="contact-field-v2">
+                  <input className="contact-input-v2" type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required disabled={status === 'submitting'} />
+                </motion.div>
+                <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(5.4)} className="contact-field-v2">
                   <label className="contact-field-label">Email</label>
-                  <input
-                    className="contact-input-v2"
-                    type="email"
-                    placeholder="you@studio.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={status === 'submitting'}
-                  />
-                </div>
+                  <input className="contact-input-v2" type="email" placeholder="you@studio.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={status === 'submitting'} />
+                </motion.div>
               </div>
 
-              {/* Company */}
-              <div className="contact-field-v2">
-                <label className="contact-field-label">
-                  Company or publication <span className="contact-optional">(optional)</span>
-                </label>
-                <input
-                  className="contact-input-v2"
-                  type="text"
-                  placeholder="Magazine, agency, brand"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  disabled={status === 'submitting'}
-                />
-              </div>
+              <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(6.0)} className="contact-field-v2">
+                <label className="contact-field-label">Company or publication <span className="contact-optional">(optional)</span></label>
+                <input className="contact-input-v2" type="text" placeholder="Magazine, agency, brand" value={company} onChange={(e) => setCompany(e.target.value)} disabled={status === 'submitting'} />
+              </motion.div>
 
-              {/* Project type chips */}
-              <div className="contact-field-v2">
+              <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(6.6)} className="contact-field-v2">
                 <label className="contact-field-label">Project type</label>
                 <div className="contact-chips">
-                  {PROJECT_TYPES.map((t) => (
-                    <Chip key={t} label={t} selected={projectTypes.includes(t)} onClick={() => toggleType(t)} />
-                  ))}
+                  {PROJECT_TYPES.map((t) => <Chip key={t} label={t} selected={projectTypes.includes(t)} onClick={() => toggleType(t)} />)}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Timeline + Budget */}
               <div className="contact-row-2">
-                <div className="contact-field-v2">
+                <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(7.2)} className="contact-field-v2">
                   <label className="contact-field-label">Timeline</label>
                   <div className="contact-chips">
-                    {TIMELINES.map((t) => (
-                      <Chip key={t} label={t} selected={timeline === t} onClick={() => setTimeline(timeline === t ? '' : t)} />
-                    ))}
+                    {TIMELINES.map((t) => <Chip key={t} label={t} selected={timeline === t} onClick={() => setTimeline(timeline === t ? '' : t)} />)}
                   </div>
-                </div>
-                <div className="contact-field-v2">
+                </motion.div>
+                <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(7.8)} className="contact-field-v2">
                   <label className="contact-field-label">Budget range</label>
                   <div className="contact-chips">
-                    {BUDGETS.map((b) => (
-                      <Chip key={b} label={b} selected={budget === b} onClick={() => setBudget(budget === b ? '' : b)} />
-                    ))}
+                    {BUDGETS.map((b) => <Chip key={b} label={b} selected={budget === b} onClick={() => setBudget(budget === b ? '' : b)} />)}
                   </div>
-                </div>
+                </motion.div>
               </div>
 
-              {/* Message */}
-              <div className="contact-field-v2">
+              <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(8.4)} className="contact-field-v2">
                 <label className="contact-field-label">Tell me about the project</label>
-                <textarea
-                  className="contact-input-v2 contact-textarea-v2"
-                  placeholder="A few sentences is plenty — concept, dates, location, anything else useful."
-                  rows={6}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                  disabled={status === 'submitting'}
-                />
-              </div>
+                <textarea className="contact-input-v2 contact-textarea-v2" placeholder="A few sentences is plenty — concept, dates, location, anything else useful." rows={6} value={message} onChange={(e) => setMessage(e.target.value)} required disabled={status === 'submitting'} />
+              </motion.div>
 
-              {status === 'error' && (
-                <p className="contact-error-v2">Something went wrong — please email directly.</p>
-              )}
+              {status === 'error' && <p className="contact-error-v2">Something went wrong — please email directly.</p>}
 
-              {/* Submit row */}
-              <div className="contact-submit-row">
+              <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(9.0)} className="contact-submit-row">
                 <span className="contact-privacy">{privacyText}</span>
-                <button
-                  className="contact-submit-v2"
-                  type="submit"
-                  disabled={status === 'submitting'}
-                >
+                <button className="contact-submit-v2" type="submit" disabled={status === 'submitting'}>
                   {status === 'submitting' ? 'Sending…' : 'Send inquiry →'}
                 </button>
-              </div>
+              </motion.div>
 
             </form>
           )}
-          </div>
-        </motion.section>
+        </section>
 
         <div className="contact-divider" />
 
