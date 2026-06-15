@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { motion, useInView } from 'framer-motion'
-import { LIFT, tx } from '@/lib/motionVariants'
+import { motion } from 'framer-motion'
+import { LIFT, tx, EASE } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { ContactCopy } from '@/lib/copyConfig'
 
@@ -12,63 +12,18 @@ const TIMELINES = ['This month', '1–3 months', '3+ months', 'Open / flexible']
 const BUDGETS = ['Under $500', '$500–$2k', '$2k–$3k', '$3k–$6k', '$6k+']
 
 const DIRECT = [
-  {
-    label: 'Studio',
-    value: 'info@kshetejsareen.com',
-    href: 'mailto:info@kshetejsareen.com',
-    note: 'For commissions & prints',
-  },
-  {
-    label: 'WhatsApp',
-    value: '+91 99995 67676',
-    href: 'https://wa.me/919999567676',
-    note: 'Fastest response',
-  },
-  {
-    label: 'New Delhi',
-    value: 'Silver Oak Farms',
-    href: null,
-    note: 'By appointment',
-  },
-  {
-    label: 'Bangalore',
-    value: 'Richmond Town',
-    href: null,
-    note: 'By appointment',
-  },
-  {
-    label: 'Elsewhere',
-    value: '@kshetej.atwork',
-    href: 'https://instagram.com/kshetej.atwork',
-    note: 'Instagram',
-  },
-  {
-    label: 'Press',
-    value: 'info@kshetejsareen.com',
-    href: 'mailto:info@kshetejsareen.com',
-    note: 'Media inquiries, image use',
-  },
+  { label: 'Studio',    value: 'info@kshetejsareen.com', href: 'mailto:info@kshetejsareen.com', note: 'For commissions & prints' },
+  { label: 'WhatsApp',  value: '+91 99995 67676',         href: 'https://wa.me/919999567676',   note: 'Fastest response' },
+  { label: 'New Delhi', value: 'Silver Oak Farms',         href: null,                            note: 'By appointment' },
+  { label: 'Bangalore', value: 'Richmond Town',            href: null,                            note: 'By appointment' },
+  { label: 'Elsewhere', value: '@kshetej.atwork',          href: 'https://instagram.com/kshetej.atwork', note: 'Instagram' },
+  { label: 'Press',     value: 'info@kshetejsareen.com', href: 'mailto:info@kshetejsareen.com', note: 'Media inquiries, image use' },
 ]
 
 const NOTES = [
-  {
-    label: 'Lead time',
-    value: 'Commissions typically book 3–6 weeks out.',
-    label2: 'Day rates',
-    value2: 'Available on request once project scope is clear. Full-day and multi-day rates.',
-  },
-  {
-    label: 'Travel',
-    value: 'Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.',
-    label2: 'Usage & licensing',
-    value2: 'All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.',
-  },
-  {
-    label: 'Image use & press',
-    value: 'Press kit and high-res files available on request from info@kshetejsareen.com.',
-    label2: 'File delivery',
-    value2: 'Edited selects delivered via private gallery within 5–7 working days of the shoot. RAW files not included as standard; available on request.',
-  },
+  { label: 'Lead time',        value: 'Commissions typically book 3–6 weeks out.',                                                                           label2: 'Day rates',          value2: 'Available on request once project scope is clear. Full-day and multi-day rates.' },
+  { label: 'Travel',           value: 'Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.',                            label2: 'Usage & licensing', value2: 'All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.' },
+  { label: 'Image use & press',value: 'Press kit and high-res files available on request from info@kshetejsareen.com.',                                     label2: 'File delivery',      value2: 'Edited selects delivered via private gallery within 5–7 working days of the shoot. RAW files not included as standard; available on request.' },
 ]
 
 function parseNotesCol(text: string): { label: string; value: string }[] {
@@ -81,26 +36,58 @@ function parseNotesCol(text: string): { label: string; value: string }[] {
 
 type Status = 'idle' | 'submitting' | 'sent' | 'error'
 
-function Chip({
-  label, selected, onClick,
-}: { label: string; selected: boolean; onClick: () => void }) {
+function Chip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      className={`contact-chip${selected ? ' selected' : ''}`}
-      onClick={onClick}
-    >
+    <button type="button" className={`contact-chip${selected ? ' selected' : ''}`} onClick={onClick}>
       {label}
     </button>
   )
 }
 
-function item(inView: boolean, delay: number) {
-  return {
-    ...LIFT,
-    animate: inView ? LIFT.visible : LIFT.initial,
-    transition: tx(delay),
-  }
+// Fires a JS interval that increments `step` by 1 every `stagger` ms once the
+// ref element scrolls past the trigger point. Returns visible(idx) => boolean.
+function useCascade(ref: React.RefObject<HTMLElement | null>, total: number, stagger = 100) {
+  const [step, setStep] = useState(-1)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        obs.disconnect()
+        let i = 0
+        setStep(0)
+        const timer = setInterval(() => {
+          i += 1
+          setStep(i)
+          if (i >= total - 1) clearInterval(timer)
+        }, stagger)
+      },
+      { threshold: 0, rootMargin: '0px 0px -25% 0px' },
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (idx: number) => idx <= step
+}
+
+const ITEM_TX = { duration: 0.5, ease: EASE }
+
+function Fade({ show, children, className }: { show: boolean; children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div
+      className={className}
+      initial={LIFT.initial}
+      animate={show ? LIFT.visible : LIFT.initial}
+      transition={ITEM_TX}
+    >
+      {children}
+    </motion.div>
+  )
 }
 
 export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {}) {
@@ -119,14 +106,14 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
   const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({})
   const [mounted, setMounted] = useState(false)
 
-  // One ref per section — all children in that section share the same trigger
-  const inquiryRef  = useRef<HTMLElement>(null)
-  const directRef   = useRef<HTMLElement>(null)
-  const notesRef    = useRef<HTMLElement>(null)
+  const inquiryRef = useRef<HTMLElement>(null)
+  const directRef  = useRef<HTMLElement>(null)
+  const notesRef   = useRef<HTMLElement>(null)
 
-  const inquiryInView = useInView(inquiryRef,  { once: true, amount: 0.05 })
-  const directInView  = useInView(directRef,   { once: true, amount: 0.05 })
-  const notesInView   = useInView(notesRef,    { once: true, amount: 0.05 })
+  // 11 items in inquiry, 8 in direct, 4 in notes — all at 100ms stagger
+  const inq  = useCascade(inquiryRef, 11, 100)
+  const dir  = useCascade(directRef,  8,  100)
+  const note = useCascade(notesRef,   4,  110)
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -144,17 +131,17 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
       .catch(() => {})
   }, [])
 
-  const tickerStatus    = contactCopy.tickerStatus    ?? 'Open for bookings — May through Sept 2026'
-  const tickerLeadTime  = contactCopy.tickerLeadTime  ?? 'Lead time · 3–6 weeks'
-  const heroTitle       = contactCopy.heroTitle       ?? 'Say hello'
-  const heroPara1       = contactCopy.heroPara1       ?? null
-  const heroPara2       = contactCopy.heroPara2       ?? null
-  const inquiryEyebrow  = contactCopy.inquiryEyebrow  ?? '01 · Project inquiry'
-  const inquiryHeading  = contactCopy.inquiryHeading  ?? 'Start with the project, not the form.'
-  const inquiryNote     = contactCopy.inquiryNote     ?? "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message."
-  const privacyText     = contactCopy.privacyText     ?? 'No mailing list. Your details stay between us.'
-  const directTitle     = contactCopy.directTitle     ?? 'Direct channels.'
-  const directDesc      = contactCopy.directDesc      ?? 'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.'
+  const tickerStatus   = contactCopy.tickerStatus   ?? 'Open for bookings — May through Sept 2026'
+  const tickerLeadTime = contactCopy.tickerLeadTime ?? 'Lead time · 3–6 weeks'
+  const heroTitle      = contactCopy.heroTitle      ?? 'Say hello'
+  const heroPara1      = contactCopy.heroPara1      ?? null
+  const heroPara2      = contactCopy.heroPara2      ?? null
+  const inquiryEyebrow = contactCopy.inquiryEyebrow ?? '01 · Project inquiry'
+  const inquiryHeading = contactCopy.inquiryHeading ?? 'Start with the project, not the form.'
+  const inquiryNote    = contactCopy.inquiryNote    ?? "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message."
+  const privacyText    = contactCopy.privacyText    ?? 'No mailing list. Your details stay between us.'
+  const directTitle    = contactCopy.directTitle    ?? 'Direct channels.'
+  const directDesc     = contactCopy.directDesc     ?? 'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.'
 
   const directChannels = contactCopy.directChannels
     ? contactCopy.directChannels.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
@@ -185,11 +172,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name, email, company,
-          projectType: projectTypes.join(', '),
-          timeline, budget, message,
-        }),
+        body: JSON.stringify({ name, email, company, projectType: projectTypes.join(', '), timeline, budget, message }),
       })
       if (res.ok) {
         setStatus('sent')
@@ -206,7 +189,6 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
   return (
     <div className="ks-page-root">
-      {/* Topbar */}
       <header className={`cat-topbar${scrolled ? ' scrolled' : ''}`}>
         <div className="cat-tb-left">
           <Link href="/" className="cat-tb-ks" aria-label="Back to home">KS</Link>
@@ -223,7 +205,6 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
         </div>
       </header>
 
-      {/* Availability ticker */}
       <div className="contact-ticker">
         <span className="contact-ticker-left">
           <span className="contact-ticker-dot" />
@@ -234,7 +215,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
       <main className="contact-main-v2">
 
-        {/* ── Hero — mounted-gate cascade, top to bottom ── */}
+        {/* ── Hero — mounted gate, strict top-to-bottom ── */}
         <section className="contact-hero-v2">
           <motion.div {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.08)} className="contact-hero-eyebrow ks-eyebrow">Contact</motion.div>
           <motion.h1  {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.22)} className="contact-hero-title">
@@ -252,12 +233,12 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
         <div className="contact-divider" />
 
-        {/* ── Project inquiry — single inView gate, children stagger by delay ── */}
+        {/* ── Project inquiry — JS interval cascade ── */}
         <section ref={inquiryRef} className="contact-inquiry">
           <div className="contact-inquiry-left">
-            <motion.div   {...item(inquiryInView, 0.00)} className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</motion.div>
-            <motion.h2    {...item(inquiryInView, 0.09)} className="contact-inquiry-heading">{inquiryHeading}</motion.h2>
-            <motion.p     {...item(inquiryInView, 0.18)} className="contact-inquiry-note">{inquiryNote}</motion.p>
+            <Fade show={inq(0)} className="contact-inquiry-label ks-eyebrow">{inquiryEyebrow}</Fade>
+            <Fade show={inq(1)}><h2 className="contact-inquiry-heading">{inquiryHeading}</h2></Fade>
+            <Fade show={inq(2)}><p className="contact-inquiry-note">{inquiryNote}</p></Fade>
           </div>
 
           <div>
@@ -265,115 +246,92 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
               <div className="contact-sent-v2">
                 <div className="contact-sent-mark">✓</div>
                 <p>Message received. I&rsquo;ll be in touch within 48 hours.</p>
-                <button className="contact-sent-reset" onClick={() => setStatus('idle')}>
-                  Send another
-                </button>
+                <button className="contact-sent-reset" onClick={() => setStatus('idle')}>Send another</button>
               </div>
             ) : (
               <form className="contact-form-v2" onSubmit={handleSubmit} noValidate>
 
-                {/* Name + Email — separate items */}
                 <div className="contact-row-2">
-                  <motion.div {...item(inquiryInView, 0.27)} className="contact-field-v2">
+                  <Fade show={inq(3)} className="contact-field-v2">
                     <label className="contact-field-label">Your name</label>
                     <input
                       className={`contact-input-v2${errors.name ? ' contact-input-v2--error' : ''}`}
-                      type="text"
-                      placeholder="Full name"
-                      value={name}
+                      type="text" placeholder="Full name" value={name}
                       onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })) }}
                       disabled={status === 'submitting'}
                     />
                     {errors.name && <span className="contact-field-error">{errors.name}</span>}
-                  </motion.div>
-                  <motion.div {...item(inquiryInView, 0.36)} className="contact-field-v2">
+                  </Fade>
+                  <Fade show={inq(4)} className="contact-field-v2">
                     <label className="contact-field-label">Email</label>
                     <input
                       className={`contact-input-v2${errors.email ? ' contact-input-v2--error' : ''}`}
-                      type="email"
-                      placeholder="you@studio.com"
-                      value={email}
+                      type="email" placeholder="you@studio.com" value={email}
                       onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })) }}
                       disabled={status === 'submitting'}
                     />
                     {errors.email && <span className="contact-field-error">{errors.email}</span>}
-                  </motion.div>
+                  </Fade>
                 </div>
 
-                {/* Company */}
-                <motion.div {...item(inquiryInView, 0.45)} className="contact-field-v2">
-                  <label className="contact-field-label">
-                    Company or publication <span className="contact-optional">(optional)</span>
-                  </label>
+                <Fade show={inq(5)} className="contact-field-v2">
+                  <label className="contact-field-label">Company or publication <span className="contact-optional">(optional)</span></label>
                   <input
-                    className="contact-input-v2"
-                    type="text"
-                    placeholder="Magazine, agency, brand"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    disabled={status === 'submitting'}
+                    className="contact-input-v2" type="text" placeholder="Magazine, agency, brand" value={company}
+                    onChange={(e) => setCompany(e.target.value)} disabled={status === 'submitting'}
                   />
-                </motion.div>
+                </Fade>
 
-                {/* Project type */}
-                <motion.div {...item(inquiryInView, 0.54)} className="contact-field-v2">
+                <Fade show={inq(6)} className="contact-field-v2">
                   <label className="contact-field-label">Project type</label>
                   <div className="contact-chips">
                     {PROJECT_TYPES.map((t) => (
                       <Chip key={t} label={t} selected={projectTypes.includes(t)} onClick={() => toggleType(t)} />
                     ))}
                   </div>
-                </motion.div>
+                </Fade>
 
-                {/* Timeline + Budget — separate items */}
                 <div className="contact-row-2">
-                  <motion.div {...item(inquiryInView, 0.63)} className="contact-field-v2">
+                  <Fade show={inq(7)} className="contact-field-v2">
                     <label className="contact-field-label">Timeline</label>
                     <div className="contact-chips">
                       {TIMELINES.map((t) => (
                         <Chip key={t} label={t} selected={timeline === t} onClick={() => setTimeline(timeline === t ? '' : t)} />
                       ))}
                     </div>
-                  </motion.div>
-                  <motion.div {...item(inquiryInView, 0.72)} className="contact-field-v2">
+                  </Fade>
+                  <Fade show={inq(8)} className="contact-field-v2">
                     <label className="contact-field-label">Budget range</label>
                     <div className="contact-chips">
                       {BUDGETS.map((b) => (
                         <Chip key={b} label={b} selected={budget === b} onClick={() => setBudget(budget === b ? '' : b)} />
                       ))}
                     </div>
-                  </motion.div>
+                  </Fade>
                 </div>
 
-                {/* Message */}
-                <motion.div {...item(inquiryInView, 0.81)} className="contact-field-v2">
+                <Fade show={inq(9)} className="contact-field-v2">
                   <label className="contact-field-label">Tell me about the project</label>
                   <textarea
                     className={`contact-input-v2 contact-textarea-v2${errors.message ? ' contact-input-v2--error' : ''}`}
                     placeholder="A few sentences is plenty — concept, dates, location, anything else useful."
-                    rows={6}
-                    value={message}
+                    rows={6} value={message}
                     onChange={(e) => { setMessage(e.target.value); setErrors((p) => ({ ...p, message: undefined })) }}
                     disabled={status === 'submitting'}
                   />
                   {errors.message && <span className="contact-field-error">{errors.message}</span>}
-                </motion.div>
+                </Fade>
 
                 {status === 'error' && (
                   <p className="contact-error-v2">Something went wrong — please email directly.</p>
                 )}
 
-                {/* Submit */}
-                <motion.div {...item(inquiryInView, 0.90)} className="contact-submit-row">
+                <Fade show={inq(10)} className="contact-submit-row">
                   <span className="contact-privacy">{privacyText}</span>
-                  <button
-                    className="contact-submit-v2"
-                    type="submit"
-                    disabled={status === 'submitting'}
-                  >
+                  <button className="contact-submit-v2" type="submit" disabled={status === 'submitting'}>
                     {status === 'submitting' ? 'Sending…' : 'Send inquiry →'}
                   </button>
-                </motion.div>
+                </Fade>
 
               </form>
             )}
@@ -385,27 +343,24 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
         {/* ── Direct channels ── */}
         <section ref={directRef} className="contact-direct-v2">
           <div className="contact-direct-head">
-            <motion.h2 {...item(directInView, 0.00)} className="contact-direct-title">{directTitle}</motion.h2>
-            <motion.p  {...item(directInView, 0.09)} className="contact-direct-desc">{directDesc}</motion.p>
+            <Fade show={dir(0)}><h2 className="contact-direct-title">{directTitle}</h2></Fade>
+            <Fade show={dir(1)}><p className="contact-direct-desc">{directDesc}</p></Fade>
           </div>
           <div className="contact-direct-grid">
             {directChannels.map((d, i) => (
-              <motion.div key={d.label} {...item(directInView, 0.18 + i * 0.08)} className="contact-direct-cell">
+              <Fade key={d.label} show={dir(2 + i)} className="contact-direct-cell">
                 <div className="contact-direct-cell-label ks-eyebrow">{d.label}</div>
                 {d.href ? (
-                  <a
-                    href={d.href}
-                    className="contact-direct-cell-value"
+                  <a href={d.href} className="contact-direct-cell-value"
                     target={d.href.startsWith('http') ? '_blank' : undefined}
-                    rel={d.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  >
+                    rel={d.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
                     {d.value}
                   </a>
                 ) : (
                   <div className="contact-direct-cell-value">{d.value}</div>
                 )}
                 <div className="contact-direct-cell-note ks-eyebrow">{d.note}</div>
-              </motion.div>
+              </Fade>
             ))}
           </div>
         </section>
@@ -414,12 +369,12 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
 
         {/* ── Working notes ── */}
         <section ref={notesRef} className="contact-notes">
-          <motion.div {...item(notesInView, 0.00)} className="contact-notes-label ks-eyebrow">{notesEyebrow}</motion.div>
+          <Fade show={note(0)} className="contact-notes-label ks-eyebrow">{notesEyebrow}</Fade>
           <div className="contact-notes-table">
             {leftNotes.map((left, i) => {
               const right = rightNotes[i]
               return (
-                <motion.div key={i} {...item(notesInView, 0.09 + i * 0.1)} className="contact-notes-row">
+                <Fade key={i} show={note(1 + i)} className="contact-notes-row">
                   <div className="contact-notes-cell">
                     <div className="contact-notes-key ks-eyebrow">{left.label}</div>
                     <div className="contact-notes-val">{left.value}</div>
@@ -428,7 +383,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
                     <div className="contact-notes-key ks-eyebrow">{right?.label}</div>
                     <div className="contact-notes-val">{right?.value}</div>
                   </div>
-                </motion.div>
+                </Fade>
               )
             })}
           </div>
@@ -446,19 +401,12 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
             <div className="cat-footer-nav-eyebrow">Explore More</div>
             <div className="cat-footer-nav-cats">
               {[
-                { id: '',          name: 'Home' },
-                { id: 'culinary',  name: 'Culinary' },
-                { id: 'spaces',    name: 'Spaces' },
-                { id: 'portraits', name: 'Portraits' },
-                { id: 'objects',   name: 'Objects' },
-                { id: 'motion',    name: 'Motion' },
+                { id: '', name: 'Home' }, { id: 'culinary', name: 'Culinary' },
+                { id: 'spaces', name: 'Spaces' }, { id: 'portraits', name: 'Portraits' },
+                { id: 'objects', name: 'Objects' }, { id: 'motion', name: 'Motion' },
               ].map((c, i) => (
-                <a
-                  key={c.id || 'home'}
-                  href={`/${c.id}`}
-                  className="cat-footer-nav-link"
-                  style={{ animationDelay: `${(i * 10 / 6 - 5).toFixed(2)}s` }}
-                >
+                <a key={c.id || 'home'} href={`/${c.id}`} className="cat-footer-nav-link"
+                  style={{ animationDelay: `${(i * 10 / 6 - 5).toFixed(2)}s` }}>
                   {c.name}
                 </a>
               ))}
