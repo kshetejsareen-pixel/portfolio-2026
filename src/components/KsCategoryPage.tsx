@@ -18,19 +18,22 @@ const ALL_CATEGORIES = [
 // Glow cycle: 6s total, 4 items offset by 1.5s each.
 // Delay formula puts item 0 at peak (50% of keyframe) immediately at mount.
 function ExploreNav({ catId }: { catId: string }) {
-  const others = ALL_CATEGORIES.filter(c => c.id !== catId)
+  const links = [
+    { id: '', name: 'Home' },
+    ...ALL_CATEGORIES.filter(c => c.id !== catId),
+  ]
 
   return (
     <nav className="cat-footer-nav">
       <div className="cat-footer-nav-inner">
         <div className="cat-footer-nav-eyebrow">Explore More</div>
         <div className="cat-footer-nav-cats">
-          {others.map((c, i) => (
+          {links.map((c, i) => (
             <a
-              key={c.id}
+              key={c.id || 'home'}
               href={`/${c.id}`}
               className="cat-footer-nav-link"
-              style={{ animationDelay: `${i * 2.5 - 5}s` }}
+              style={{ animationDelay: `${(i * 1.5 - 4.5).toFixed(1)}s` }}
             >
               {c.name}
             </a>
