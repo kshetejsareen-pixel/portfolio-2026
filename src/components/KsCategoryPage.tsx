@@ -400,27 +400,34 @@ function RowPullQuote({ pullQuote, copyOverride }: {
 let _bannerYTReady = false
 const _bannerYTQueue: (() => void)[] = []
 
+function flushBannerYTQueue() {
+  _bannerYTReady = true
+  _bannerYTQueue.forEach((cb) => cb())
+  _bannerYTQueue.length = 0
+}
+
 function loadBannerYTAPI() {
   if (typeof window === 'undefined') return
   if (_bannerYTReady) return
-  if ((window as { YT?: unknown }).YT) { _bannerYTReady = true; return }
-  if (document.getElementById('yt-iframe-api')) return
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((window as any).YT?.Player) { flushBannerYTQueue(); return }
+  // Always chain — even if the script was already added by MotionVideoGallery
   const prev = (window as { onYouTubeIframeAPIReady?: () => void }).onYouTubeIframeAPIReady
   ;(window as { onYouTubeIframeAPIReady: () => void }).onYouTubeIframeAPIReady = () => {
     prev?.()
-    _bannerYTReady = true
-    _bannerYTQueue.forEach((cb) => cb())
-    _bannerYTQueue.length = 0
+    flushBannerYTQueue()
   }
-  const tag = document.createElement('script')
-  tag.id = 'yt-iframe-api'
-  tag.src = 'https://www.youtube.com/iframe_api'
-  document.head.appendChild(tag)
+  if (!document.getElementById('yt-iframe-api')) {
+    const tag = document.createElement('script')
+    tag.id = 'yt-iframe-api'
+    tag.src = 'https://www.youtube.com/iframe_api'
+    document.head.appendChild(tag)
+  }
 }
 
 function onBannerYTReady(cb: () => void) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (_bannerYTReady && (window as any).YT?.Player) cb()
+  if (_bannerYTReady || (window as any).YT?.Player) { flushBannerYTQueue(); cb() }
   else _bannerYTQueue.push(cb)
 }
 

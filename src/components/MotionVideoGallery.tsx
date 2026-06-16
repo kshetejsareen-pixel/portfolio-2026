@@ -14,25 +14,32 @@ declare global {
 let _ytReady = false
 const _ytQueue: (() => void)[] = []
 
+function flushYTQueue() {
+  _ytReady = true
+  _ytQueue.forEach((cb) => cb())
+  _ytQueue.length = 0
+}
+
 function loadYouTubeAPI() {
   if (typeof window === 'undefined') return
   if (_ytReady) return
-  if (document.getElementById('yt-iframe-api')) return
+  // YT already loaded by another component (e.g. BannerVideo) — flush immediately
+  if (window.YT?.Player) { flushYTQueue(); return }
+  // Always chain the global callback — even if the script tag already exists
+  // (created by another component), we still need our queue flushed when it fires
   const prev = window.onYouTubeIframeAPIReady
-  window.onYouTubeIframeAPIReady = () => {
-    prev?.()
-    _ytReady = true
-    _ytQueue.forEach((cb) => cb())
-    _ytQueue.length = 0
+  window.onYouTubeIframeAPIReady = () => { prev?.(); flushYTQueue() }
+  if (!document.getElementById('yt-iframe-api')) {
+    const tag = document.createElement('script')
+    tag.id = 'yt-iframe-api'
+    tag.src = 'https://www.youtube.com/iframe_api'
+    document.head.appendChild(tag)
   }
-  const tag = document.createElement('script')
-  tag.id = 'yt-iframe-api'
-  tag.src = 'https://www.youtube.com/iframe_api'
-  document.head.appendChild(tag)
 }
 
 function onYTReady(cb: () => void) {
-  if (_ytReady && window.YT?.Player) cb()
+  // Check live window.YT in case it was loaded by another component
+  if (_ytReady || window.YT?.Player) { flushYTQueue(); cb() }
   else _ytQueue.push(cb)
 }
 
