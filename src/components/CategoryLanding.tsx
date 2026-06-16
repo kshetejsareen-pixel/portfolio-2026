@@ -448,9 +448,21 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
                 aria-hidden={!active}
               >
                 {c.id === 'motion' && motionVideos[fi] ? (
-                  <>
-                    {/* Poster thumbnail — visible while the iframe loads or on inactive frames */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                  active ? (
+                    /* Active: iframe only — no sibling img that could layer on top */
+                    <div className="ks-frame-video-wrap">
+                      <iframe
+                        key={motionVideos[fi].youtubeId}
+                        className="ks-frame-video"
+                        src={`https://www.youtube.com/embed/${motionVideos[fi].youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${motionVideos[fi].youtubeId}&modestbranding=1&rel=0&playsinline=1`}
+                        allow="autoplay; fullscreen"
+                        allowFullScreen
+                        title={motionVideos[fi].title}
+                      />
+                    </div>
+                  ) : (
+                    /* Inactive: thumbnail so the frame isn't a bare background */
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       className="ks-frame-img"
                       src={`https://img.youtube.com/vi/${motionVideos[fi].youtubeId}/hqdefault.jpg`}
@@ -461,20 +473,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
                         if (!img.src.includes('/0.jpg')) img.src = `https://img.youtube.com/vi/${motionVideos[fi].youtubeId}/0.jpg`
                       }}
                     />
-                    {/* Video iframe — only mounted for the active frame to avoid multiple YT players */}
-                    {active && (
-                      <div className="ks-frame-video-wrap">
-                        <iframe
-                          key={motionVideos[fi].youtubeId}
-                          className="ks-frame-video"
-                          src={`https://www.youtube.com/embed/${motionVideos[fi].youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${motionVideos[fi].youtubeId}&modestbranding=1&rel=0&playsinline=1`}
-                          allow="autoplay; fullscreen"
-                          allowFullScreen
-                          title={motionVideos[fi].title}
-                        />
-                      </div>
-                    )}
-                  </>
+                  )
                 ) : f.image && loadedSlots.has(`${c.id}-${fi}`)
                   ? (
                     <picture>
