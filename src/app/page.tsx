@@ -1,5 +1,6 @@
 import { CategoryLanding } from '@/components/CategoryLanding'
 import { getLandingData } from '@/lib/getLandingData'
+import { readCopyConfig } from '@/lib/copyConfig'
 
 export const metadata = {
   title: 'Kshetej Sareen',
@@ -14,10 +15,24 @@ export const metadata = {
 }
 
 export default async function Home() {
-  try {
-    const initialData = await getLandingData()
-    return <CategoryLanding initialData={initialData} />
-  } catch {
-    return <CategoryLanding />
+  const [landingResult, copyResult] = await Promise.allSettled([
+    getLandingData(),
+    readCopyConfig(),
+  ])
+
+  const initialData = landingResult.status === 'fulfilled' ? landingResult.value : undefined
+
+  const rawCopy   = copyResult.status === 'fulfilled' ? copyResult.value : {}
+  const land      = (rawCopy?.landing  ?? {}) as Record<string, unknown>
+  const contact   = (rawCopy?.contact  ?? {}) as Record<string, unknown>
+  const initialCopy = {
+    tickerStatus:       (land.tickerStatus    ?? contact.tickerStatus)    as string | undefined,
+    tickerLeadTime:     (land.tickerLeadTime  ?? contact.tickerLeadTime)  as string | undefined,
+    tickerStatusStyle:  land.tickerStatusStyle  as { font?: 'serif'|'mono'|'sans'; size?: number; italic?: boolean; bold?: boolean } | undefined,
+    tickerLeadTimeStyle: land.tickerLeadTimeStyle as { font?: 'serif'|'mono'|'sans'; size?: number; italic?: boolean; bold?: boolean } | undefined,
+    tagline:            land.tagline           as string | undefined,
+    taglineStyle:       land.taglineStyle      as { font?: 'serif'|'mono'|'sans'; size?: number; italic?: boolean; bold?: boolean } | undefined,
   }
+
+  return <CategoryLanding initialData={initialData} initialCopy={initialCopy} />
 }

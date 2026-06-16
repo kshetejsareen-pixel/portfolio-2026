@@ -76,7 +76,16 @@ function buildCategories(
   })
 }
 
-export function CategoryLanding({ initialData }: { initialData?: LandingData }) {
+interface LandingCopy {
+  tickerStatus?: string
+  tickerLeadTime?: string
+  tickerStatusStyle?: TextStyle
+  tickerLeadTimeStyle?: TextStyle
+  tagline?: string
+  taglineStyle?: TextStyle
+}
+
+export function CategoryLanding({ initialData, initialCopy }: { initialData?: LandingData; initialCopy?: LandingCopy }) {
   const navigate = useNavigate()
   const [globalIdx, setGlobalIdx] = useState(0)
   const [scrubDuration, setScrubDuration] = useState(FIRST_INTERVAL)
@@ -184,12 +193,12 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
       ? buildCategories(initialData.config, initialData.assignments, initialData.categoryOrder)
       : categories
   )
-  const [tickerStatus,      setTickerStatus]      = useState('Open for bookings — May through Sept 2026')
-  const [tickerLeadTime,    setTickerLeadTime]    = useState('Lead time · 3–6 weeks')
-  const [tickerStatusStyle, setTickerStatusStyle] = useState<TextStyle | undefined>(undefined)
-  const [tickerLeadStyle,   setTickerLeadStyle]   = useState<TextStyle | undefined>(undefined)
-  const [tagline,           setTagline]           = useState('')
-  const [taglineStyle,      setTaglineStyle]      = useState<TextStyle | undefined>(undefined)
+  const [tickerStatus,      setTickerStatus]      = useState(initialCopy?.tickerStatus      ?? 'Open for bookings — May through Sept 2026')
+  const [tickerLeadTime,    setTickerLeadTime]    = useState(initialCopy?.tickerLeadTime    ?? 'Lead time · 3–6 weeks')
+  const [tickerStatusStyle, setTickerStatusStyle] = useState<TextStyle | undefined>(initialCopy?.tickerStatusStyle)
+  const [tickerLeadStyle,   setTickerLeadStyle]   = useState<TextStyle | undefined>(initialCopy?.tickerLeadTimeStyle)
+  const [tagline,           setTagline]           = useState(initialCopy?.tagline           ?? '')
+  const [taglineStyle,      setTaglineStyle]      = useState<TextStyle | undefined>(initialCopy?.taglineStyle)
   const [motionVideos,   setMotionVideos]   = useState<MotionVideo[]>([])
   const motionVideosRef = useRef<MotionVideo[]>([])
   const cycleRef      = useRef<ReturnType<typeof setTimeout> | null>(null)
