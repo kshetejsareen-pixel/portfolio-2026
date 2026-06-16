@@ -98,9 +98,11 @@ export function VisualEditor({ pageId }: { pageId: string }) {
     const safe = Array.isArray(ov) ? ov.filter(
       (o) => o && typeof o.selector === 'string' && o.properties && typeof o.properties === 'object'
     ) : []
-    styleTagRef.current.textContent = safe
+    const rules = safe
       .map((o) => `${o.selector}{${Object.entries(o.properties).map(([k,v]) => `${k}:${v}!important`).join(';')}}`)
       .join('\n')
+    // Wrap in desktop-only media query so mobile responsive styles are never overridden
+    styleTagRef.current.textContent = rules ? `@media(min-width:769px){${rules}}` : ''
   }, [])
 
   // ── History ────────────────────────────────────────────────────────────────
