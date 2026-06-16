@@ -196,9 +196,13 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
-  // Cap motion frame count to available videos so empty slots never enter the cycle
+  // Cap motion frame count to available videos so empty slots never enter the cycle.
+  // Exclude motion entirely until videos load — the empty-array initial state would
+  // otherwise let uncapped frame slots cycle with no content.
   const displayCategories = useMemo(() => {
-    if (motionVideos.length === 0) return activeCategories
+    if (motionVideos.length === 0) {
+      return activeCategories.filter(cat => cat.id !== 'motion')
+    }
     return activeCategories.map((cat) =>
       cat.id !== 'motion' ? cat : { ...cat, frames: cat.frames.slice(0, motionVideos.length) }
     )
