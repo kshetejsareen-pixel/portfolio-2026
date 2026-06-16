@@ -309,12 +309,14 @@ button, input, textarea, select { font: inherit; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 600ms linear;
+  /* Outgoing: fade out in 300ms */
+  transition: opacity 300ms linear;
   background-image:
     radial-gradient(70% 55% at 50% 38%, rgba(255,255,255,0.05), transparent 70%),
     linear-gradient(135deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 14px);
 }
-.ks-frame.active { opacity: 1; }
+/* Incoming: wait 300ms for outgoing to clear, then fade in over 300ms */
+.ks-frame.active { opacity: 1; transition: opacity 300ms linear 300ms; }
 
 .ks-frame::after {
   content: '';
