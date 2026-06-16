@@ -485,7 +485,7 @@ function BannerVideo({ videoId }: { videoId: string }) {
   )
 }
 
-export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bannerVideoId }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData; bannerVideoId?: string }) {
+export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bannerVideoId, yearRange: yearRangeProp }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData; bannerVideoId?: string; yearRange?: string | null }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copy, setCopy] = useState<CategoryCopy>({})
@@ -580,13 +580,14 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bann
   const assignedYears = Object.values(galleryAssignments)
     .map((a) => parseInt(a.year, 10))
     .filter((y) => !isNaN(y))
-  const yearRange = assignedYears.length > 0
+  const computedYearRange = assignedYears.length > 0
     ? (() => {
         const min = Math.min(...assignedYears)
         const max = Math.max(...assignedYears)
         return min === max ? String(min) : `${min}–${max}`
       })()
     : null
+  const yearRange = yearRangeProp ?? computedYearRange
 
   const YEAR_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
                       'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Twenty']

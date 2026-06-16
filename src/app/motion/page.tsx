@@ -18,12 +18,22 @@ export default async function MotionPage() {
 
   const { videos, bannerVideoId } = motionDoc as { videos: typeof motionDoc['videos']; bannerVideoId?: string }
 
+  const motionYears = videos.map((v) => parseInt(v.year ?? '', 10)).filter((y) => !isNaN(y))
+  const motionYearRange = motionYears.length > 0
+    ? (() => {
+        const min = Math.min(...motionYears)
+        const max = Math.max(...motionYears)
+        return min === max ? String(min) : `${min}–${max}`
+      })()
+    : null
+
   return (
     <KsCategoryPage
       data={motionData}
       catId="motion"
       initialGallery={initialGallery}
       bannerVideoId={bannerVideoId}
+      yearRange={motionYearRange}
       videoGallery={videos.length > 0 ? <MotionVideoGallery videos={videos} /> : undefined}
     />
   )
