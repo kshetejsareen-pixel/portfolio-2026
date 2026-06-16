@@ -60,35 +60,25 @@ function MotionReelItem({
   const itemRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null)
+  const initializedRef = useRef(false)   // lazy-init flag
+  const isActiveRef = useRef(false)
   const playerId = `yt-reel-${video.id}`
   const isPortrait = video.isShort
   const [isActive, setIsActive] = useState(false)
   const [muted, setMuted] = useState(true)
 
-  // IntersectionObserver — no scroll container, just the viewport.
-  // Play when ≥55% visible; pause and reset mute when leaving.
-  useEffect(() => {
-    const el = itemRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsActive(entry.isIntersecting)
-        if (!entry.isIntersecting) setMuted(true)
-      },
-      { root: null, threshold: 0.55 },
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  // Init YT player once
-  useEffect(() => {
-    const init = () => {
-      if (!window.YT?.Player) return
+  // Lazy-create the player the first time the item scrolls into view.
+  // autoplay:1 + mute:1 + playsinline:1 is the only combo iOS Safari allows
+  // for programmatic video start (IntersectionObserver is not a user gesture).
+  const initPlayer = () => {
+    if (initializedRef.current) return
+    initializedRef.current = true
+    onYTReady(() => {
+      if (playerRef.current) return
       playerRef.current = new window.YT.Player(playerId, {
         videoId: video.youtubeId,
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,      // triggers iOS autoplay on player creation
           mute: 1,
           controls: 0,
           modestbranding: 1,
@@ -97,18 +87,32 @@ function MotionReelItem({
           disablekb: 1,
         },
       })
-    }
-    onYTReady(init)
-    return () => { playerRef.current?.destroy() }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [video.youtubeId, playerId])
+    })
+  }
 
-  // Play / pause based on visibility
+  // IntersectionObserver — no scroll container, just the viewport.
   useEffect(() => {
-    if (!playerRef.current) return
-    if (isActive) playerRef.current.playVideo?.()
-    else playerRef.current.pauseVideo?.()
-  }, [isActive])
+    const el = itemRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry.isIntersecting
+        isActiveRef.current = visible
+        setIsActive(visible)
+        if (visible) {
+          initPlayer()                          // create on first entry
+          playerRef.current?.playVideo?.()      // resume on subsequent entries
+        } else {
+          setMuted(true)
+          playerRef.current?.pauseVideo?.()
+        }
+      },
+      { root: null, threshold: 0.4 },
+    )
+    observer.observe(el)
+    return () => { observer.disconnect(); playerRef.current?.destroy() }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerId, video.youtubeId])
 
   // Sync mute state to player
   useEffect(() => {
