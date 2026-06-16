@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { categories, type Category, type Frame } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
@@ -196,10 +196,18 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   const idleRef       = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
+  // Cap motion frame count to available videos so empty slots never enter the cycle
+  const displayCategories = useMemo(() => {
+    if (motionVideos.length === 0) return activeCategories
+    return activeCategories.map((cat) =>
+      cat.id !== 'motion' ? cat : { ...cat, frames: cat.frames.slice(0, motionVideos.length) }
+    )
+  }, [activeCategories, motionVideos])
+
   // Refs so the interval callback always reads current values without stale closures
-  const activeCatsRef = useRef(activeCategories)
+  const activeCatsRef = useRef(displayCategories)
   const globalIdxRef  = useRef(0)
-  useEffect(() => { activeCatsRef.current = activeCategories }, [activeCategories])
+  useEffect(() => { activeCatsRef.current = displayCategories }, [displayCategories])
   useEffect(() => { globalIdxRef.current = globalIdx }, [globalIdx])
   useEffect(() => { motionVideosRef.current = motionVideos }, [motionVideos])
 
@@ -266,9 +274,9 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
     }
   }, [fetchLanding])
 
-  const numCats = activeCategories.length || 1
+  const numCats = displayCategories.length || 1
   const catIdx = globalIdx % numCats
-  const cat = activeCategories[catIdx] ?? activeCategories[0]
+  const cat = displayCategories[catIdx] ?? displayCategories[0]
   const totalFrames = cat.frames.length || 1
   const frameForDisplay = Math.floor(globalIdx / numCats) % totalFrames
   const frame = cat.frames[frameForDisplay] ?? cat.frames[0]
@@ -282,7 +290,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
     // Add current slot and preload next so the upcoming transition is smooth
     const nextG   = globalIdx + 1
     const nextCi  = nextG % numCats
-    const nextCat = activeCategories[nextCi]
+    const nextCat = displayCategories[nextCi]
     const nextFi  = nextCat ? Math.floor(nextG / numCats) % (nextCat.frames.length || 1) : 0
     setLoadedSlots((prev) => {
       const s = new Set(prev)
@@ -365,7 +373,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   // ── Category-strip click ─────────────────────────────────────────────────
   const handleCatClick = (i: number) => {
     if (i === catIdx) {
-      const route = CATEGORY_ROUTES[activeCategories[i]?.id]
+      const route = CATEGORY_ROUTES[displayCategories[i]?.id]
       if (route) navigate(route)
       return
     }
@@ -433,7 +441,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
 
       {/* Photo layers */}
       <div className="ks-photo-layer">
-        {activeCategories.map((c, ci) =>
+        {displayCategories.map((c, ci) =>
           c.frames.map((f, fi) => {
             const active = ci === catIdx && fi === frameForDisplay
             const slotId = `landing-${c.id}-${fi}`
@@ -554,7 +562,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
 
       {/* Category rail */}
       <div className="ks-cat-rail">
-        {activeCategories.map((c, i) => (
+        {displayCategories.map((c, i) => (
           <button
             key={c.id}
             className={`ks-cat${i === catIdx ? ' active' : ''}`}
@@ -586,7 +594,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
 
       {/* Vertical category-indicator dots — left edge, mirrors cat rail */}
       <div className="ks-nav-dots-y" aria-hidden="true">
-        {activeCategories.map((_, i) => (
+        {displayCategories.map((_, i) => (
           <span
             key={i === catIdx ? `cy-${globalIdx}` : `y${i}`}
             className={`ks-nav-pip${i === catIdx ? ' active' : ''}`}
