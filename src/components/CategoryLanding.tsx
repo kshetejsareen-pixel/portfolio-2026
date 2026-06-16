@@ -243,7 +243,13 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
   useEffect(() => {
     fetch('/api/motion-videos')
       .then((r) => r.json())
-      .then((d) => { if (Array.isArray(d.videos)) setMotionVideos(d.videos) })
+      .then((d) => {
+        // Banner plays first, then uploaded videos in their motion-page order
+        const seq: MotionVideo[] = []
+        if (d.bannerVideoId) seq.push({ id: 'banner', youtubeId: d.bannerVideoId, title: 'Motion reel', isShort: false })
+        if (Array.isArray(d.videos)) seq.push(...d.videos)
+        setMotionVideos(seq)
+      })
       .catch(() => {})
   }, [])
 
@@ -407,12 +413,20 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
     startIdleCountdown()
   }
 
+  // iOS Safari: touchmove with preventDefault() can cause the touch to end as
+  // 'touchcancel' instead of 'touchend', leaving the cycle stopped permanently.
+  const handleTouchCancel = () => {
+    touchStartRef.current = null
+    startIdleCountdown()
+  }
+
   return (
     <div
       ref={stageRef}
       className="ks-stage"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
     >
       {/* Effect 3 — ambient particles */}
       <canvas ref={canvasRef} className="ks-particles" aria-hidden="true" />
@@ -434,12 +448,33 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
                 aria-hidden={!active}
               >
                 {c.id === 'motion' && motionVideos[fi] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    className="ks-frame-img"
-                    src={`https://img.youtube.com/vi/${motionVideos[fi].youtubeId}/hqdefault.jpg`}
-                    alt={motionVideos[fi].title || ''}
-                  />
+                  <>
+                    {/* Poster thumbnail — visible while the iframe loads or on inactive frames */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      className="ks-frame-img"
+                      src={`https://img.youtube.com/vi/${motionVideos[fi].youtubeId}/hqdefault.jpg`}
+                      alt=""
+                      aria-hidden="true"
+                      onError={(e) => {
+                        const img = e.currentTarget
+                        if (!img.src.includes('/0.jpg')) img.src = `https://img.youtube.com/vi/${motionVideos[fi].youtubeId}/0.jpg`
+                      }}
+                    />
+                    {/* Video iframe — only mounted for the active frame to avoid multiple YT players */}
+                    {active && (
+                      <div className="ks-frame-video-wrap">
+                        <iframe
+                          key={motionVideos[fi].youtubeId}
+                          className="ks-frame-video"
+                          src={`https://www.youtube.com/embed/${motionVideos[fi].youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${motionVideos[fi].youtubeId}&modestbranding=1&rel=0&playsinline=1`}
+                          allow="autoplay; fullscreen"
+                          allowFullScreen
+                          title={motionVideos[fi].title}
+                        />
+                      </div>
+                    )}
+                  </>
                 ) : f.image && loadedSlots.has(`${c.id}-${fi}`)
                   ? (
                     <picture>

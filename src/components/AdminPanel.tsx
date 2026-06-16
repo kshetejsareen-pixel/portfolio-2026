@@ -696,40 +696,95 @@ export function AdminPanel() {
               )
             })()}
 
-            {landingGroups.map((g) => (
-              <div key={g.id} className="adm-cat-group">
-                <div className="adm-cat-group-head">
-                  <span className="adm-cat-group-name">{g.label}</span>
-                  <span className="adm-cat-group-count">{g.count} frame{g.count !== 1 ? 's' : ''}</span>
-                  <span className="adm-cat-group-status">
-                    {g.filled === g.count ? '✓ all assigned' : `${g.filled}/${g.count} assigned`}
-                  </span>
+            {landingGroups.map((g) => {
+              // Motion slots are auto-linked to motion page videos — show YT thumbnails, no upload
+              if (g.id === 'motion') {
+                const motionSeq = [
+                  ...(motionBannerVideoId ? [{ youtubeId: motionBannerVideoId, title: 'Motion banner', isBanner: true }] : []),
+                  ...motionVideos.map((v) => ({ youtubeId: v.youtubeId, title: v.title, isBanner: false })),
+                ]
+                return (
+                  <div key={g.id} className="adm-cat-group">
+                    <div className="adm-cat-group-head">
+                      <span className="adm-cat-group-name">{g.label}</span>
+                      <span className="adm-cat-group-count">{g.count} frame{g.count !== 1 ? 's' : ''}</span>
+                      <span className="adm-cat-group-status">Auto-linked · manage in Motion admin</span>
+                    </div>
+                    <div className="adm-slots-grid">
+                      {g.slots.map((slot, i) => {
+                        const vid = motionSeq[i]
+                        return (
+                          <div key={slot.id} className={`adm-slot${vid ? ' assigned' : ''} adm-slot--video`}>
+                            {vid ? (
+                              <div className="adm-slot-img-wrap">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={`https://img.youtube.com/vi/${vid.youtubeId}/hqdefault.jpg`}
+                                  alt={vid.title}
+                                  className="adm-slot-img"
+                                  onError={(e) => {
+                                    const img = e.currentTarget
+                                    if (!img.src.includes('/0.jpg')) img.src = `https://img.youtube.com/vi/${vid.youtubeId}/0.jpg`
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div className="adm-slot-empty">
+                                <span className="adm-slot-empty-icon">—</span>
+                              </div>
+                            )}
+                            <div className="adm-slot-meta">
+                              <div className="adm-slot-label">{slot.label}</div>
+                              {vid ? (
+                                <div className="adm-slot-copy-preview">
+                                  {vid.isBanner ? 'Banner · ' : ''}{vid.title}
+                                </div>
+                              ) : (
+                                <div className="adm-slot-hint">No video — add more in Motion admin</div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              }
+              return (
+                <div key={g.id} className="adm-cat-group">
+                  <div className="adm-cat-group-head">
+                    <span className="adm-cat-group-name">{g.label}</span>
+                    <span className="adm-cat-group-count">{g.count} frame{g.count !== 1 ? 's' : ''}</span>
+                    <span className="adm-cat-group-status">
+                      {g.filled === g.count ? '✓ all assigned' : `${g.filled}/${g.count} assigned`}
+                    </span>
+                  </div>
+                  <div className="adm-slots-grid">
+                    {g.slots.map((slot, i) => (
+                      <SlotCard
+                        key={slot.id}
+                        slot={slot}
+                        assignment={assignments[slot.id]}
+                        selected={selectedSlot?.id === slot.id}
+                        assigningThis={assigningSlotId === slot.id}
+                        onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
+                        onClear={() => unassignSlot(slot)}
+                        onEditCopy={() => openCopyEditor(slot)}
+                        onSetFocus={() => {
+                          const asgn = assignments[slot.id]
+                          if (!asgn) return
+                          setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: buildDisplayUrl(asgn), focalX: asgn.focalX, focalY: asgn.focalY })
+                          setSelectedSlot(null)
+                        }}
+                        onTransform={(action) => handleTransform(slot, action)}
+                        onMoveUp={i > 0 ? () => swapSlots(slot.id, g.slots[i - 1].id) : undefined}
+                        onMoveDown={i < g.slots.length - 1 ? () => swapSlots(slot.id, g.slots[i + 1].id) : undefined}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="adm-slots-grid">
-                  {g.slots.map((slot, i) => (
-                    <SlotCard
-                      key={slot.id}
-                      slot={slot}
-                      assignment={assignments[slot.id]}
-                      selected={selectedSlot?.id === slot.id}
-                      assigningThis={assigningSlotId === slot.id}
-                      onSelect={() => setSelectedSlot(selectedSlot?.id === slot.id ? null : slot)}
-                      onClear={() => unassignSlot(slot)}
-                      onEditCopy={() => openCopyEditor(slot)}
-                      onSetFocus={() => {
-                        const asgn = assignments[slot.id]
-                        if (!asgn) return
-                        setRightPanel({ mode: 'focal-point', slotId: slot.id, imageUrl: buildDisplayUrl(asgn), focalX: asgn.focalX, focalY: asgn.focalY })
-                        setSelectedSlot(null)
-                      }}
-                      onTransform={(action) => handleTransform(slot, action)}
-                      onMoveUp={i > 0 ? () => swapSlots(slot.id, g.slots[i - 1].id) : undefined}
-                      onMoveDown={i < g.slots.length - 1 ? () => swapSlots(slot.id, g.slots[i + 1].id) : undefined}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (() => {
           const heroSlots    = pageSlots.filter((s) => s.id.endsWith('-hero'))
