@@ -39,7 +39,7 @@ const CATEGORY_ROUTES: Record<string, string> = {
 
 const IDLE_DELAY     = 3000
 const FIRST_INTERVAL = 3000
-const CYCLE_INTERVAL = 3000
+const CYCLE_INTERVAL = 4000
 
 // Build the active categories list from config + assignments, sorted by stored order.
 function buildCategories(
@@ -333,7 +333,7 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
       setScrubDuration(delay)
       cycleRef.current = setTimeout(tick, delay)
     }
-    const firstDelay = getFrameInterval(globalIdxRef.current)
+    const firstDelay = FIRST_INTERVAL
     setScrubDuration(firstDelay)
     idleRef.current = setTimeout(() => {
       idleRef.current = null
