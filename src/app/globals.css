@@ -1202,10 +1202,13 @@ button, input, textarea, select { font: inherit; }
   line-height: 1.55;
   letter-spacing: 0.01em;
   color: var(--paper);
-  margin: 0 0 30px;
+  /* Match the space the title creates below itself: padding-bottom:0.12em (of the
+     title's clamp font) + margin-bottom:4px — keeps oneliner centred at all widths */
+  margin: 0 0 calc(0.12 * clamp(79px, 15.4vw, 242px) + 4px);
   text-align: left;
 }
 @media (max-width: 767px) {
+  /* At mobile the title is always at its minimum (79px), so 0.12×79+4 ≈ 14px */
   .cat-hero-oneliner { font-size: 13px; margin: 0 0 14px; text-align: left; }
 }
 .cat-hero-lower {
