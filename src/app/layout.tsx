@@ -3,6 +3,7 @@ import { Bodoni_Moda, JetBrains_Mono, Inter } from 'next/font/google'
 import { PageTransition } from '@/components/PageTransition'
 import { RevealObserver } from '@/components/RevealObserver'
 import { FontLoader } from '@/components/FontLoader'
+import { VisualEditorRoot } from '@/components/VisualEditorRoot'
 import './globals.css'
 
 const bodoni = Bodoni_Moda({
@@ -52,6 +53,7 @@ export default function RootLayout({
       <body className="antialiased">
         <FontLoader />
         <RevealObserver />
+        <VisualEditorRoot />
         <PageTransition>{children}</PageTransition>
       </body>
     </html>

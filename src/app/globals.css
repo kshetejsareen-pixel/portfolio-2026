@@ -5299,3 +5299,213 @@ a.info-touch-val:hover { color: var(--paper); }
   border-top: 1px solid #1a1a1a;
   margin-bottom: 4px;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Visual Style Editor (VSE) — admin-only overlay
+═══════════════════════════════════════════════════════════════ */
+
+/* Toggle button — bottom-left corner */
+.vse-toggle {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  z-index: 9000;
+  padding: 8px 14px;
+  background: rgba(12,12,14,0.9);
+  border: 1px solid #333;
+  color: #e8e8e0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: border-color 150ms, background 150ms;
+}
+.vse-toggle:hover { border-color: #555; }
+.vse-toggle.active { border-color: #7a9dff; color: #7a9dff; background: rgba(12,12,14,0.95); }
+
+/* Inspector panel — right side drawer */
+.vse-panel {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  z-index: 9000;
+  width: 280px;
+  background: #0d0d0f;
+  border-left: 1px solid #222;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #c8c8c0;
+  overflow: hidden;
+}
+
+.vse-selector {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vse-selector-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #555; }
+.vse-selector-val { font-size: 10px; color: #7a9dff; word-break: break-all; background: none; }
+
+/* Tabs */
+.vse-tabs {
+  display: flex;
+  border-bottom: 1px solid #1a1a1a;
+}
+.vse-tab {
+  flex: 1;
+  padding: 8px 0;
+  background: transparent;
+  border: none;
+  color: #666;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 120ms;
+}
+.vse-tab.active { color: #e8e8e0; border-bottom: 1px solid #7a9dff; margin-bottom: -1px; }
+.vse-tab:hover:not(.active) { color: #aaa; }
+
+/* Fields scroll area */
+.vse-fields {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Row: label + control */
+.vse-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vse-row-label {
+  width: 52px;
+  flex-shrink: 0;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #555;
+}
+.vse-row-ctrl { flex: 1; }
+
+/* Generic inputs */
+.vse-input {
+  width: 100%;
+  background: #111;
+  border: 1px solid #222;
+  color: #e8e8e0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 6px;
+  outline: none;
+  transition: border-color 120ms;
+}
+.vse-input:focus { border-color: #444; }
+
+.vse-select {
+  width: 100%;
+  background: #111;
+  border: 1px solid #222;
+  color: #e8e8e0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 6px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Number + unit row */
+.vse-num-wrap { display: flex; gap: 4px; }
+.vse-num { width: 70px !important; flex-shrink: 0; }
+.vse-unit { flex: 1; background: #111; border: 1px solid #222; color: #888; font-family: var(--font-mono); font-size: 10px; padding: 4px 2px; }
+
+/* Color swatch + hex */
+.vse-color-wrap { display: flex; gap: 6px; align-items: center; }
+.vse-color-swatch { width: 28px; height: 28px; padding: 0; border: 1px solid #333; cursor: pointer; background: none; flex-shrink: 0; }
+.vse-color-wrap .vse-input { flex: 1; }
+
+/* Text align buttons */
+.vse-align-row { display: flex; gap: 4px; }
+.vse-align-btn {
+  flex: 1; padding: 4px 0;
+  background: #111; border: 1px solid #222;
+  color: #666; font-family: var(--font-mono); font-size: 11px;
+  cursor: pointer; transition: color 120ms, border-color 120ms;
+}
+.vse-align-btn.active { color: #7a9dff; border-color: #7a9dff; }
+.vse-align-btn:hover:not(.active) { color: #aaa; border-color: #333; }
+
+/* Box model 4-up */
+.vse-box-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #555; padding: 4px 0 2px; }
+.vse-box4 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.vse-box4-item { display: flex; flex-direction: column; gap: 2px; }
+.vse-box4-lbl { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #444; }
+.vse-box4-item .vse-input { padding: 3px 5px; }
+
+/* Drag controls */
+.vse-drag-hint {
+  font-size: 10px; line-height: 1.5; color: #555;
+  padding: 6px 0;
+}
+.vse-drag-hint code { color: #7a9dff; background: none; font-size: 10px; }
+.vse-drag-btn {
+  width: 100%; padding: 8px;
+  background: #151518; border: 1px solid #2a2a2a;
+  color: #e8e8e0; font-family: var(--font-mono); font-size: 11px;
+  cursor: grab; transition: border-color 150ms, background 150ms;
+  margin-bottom: 8px;
+}
+.vse-drag-btn:hover { border-color: #444; background: #1a1a1e; }
+.vse-drag-btn:active { cursor: grabbing; }
+
+/* Actions bar */
+.vse-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #1a1a1a;
+}
+.vse-btn-reset {
+  flex: 1; padding: 8px;
+  background: transparent; border: 1px solid #2a2a2a;
+  color: #888; font-family: var(--font-mono); font-size: 11px;
+  cursor: pointer; transition: color 150ms, border-color 150ms;
+}
+.vse-btn-reset:hover { color: #c44; border-color: #c44; }
+.vse-btn-save {
+  flex: 2; padding: 8px;
+  background: #1a2a4a; border: 1px solid #3a5a9a;
+  color: #7a9dff; font-family: var(--font-mono); font-size: 11px;
+  cursor: pointer; transition: background 150ms;
+}
+.vse-btn-save:hover:not(:disabled) { background: #223060; }
+.vse-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Floating save button when no element selected */
+.vse-save-float {
+  position: fixed;
+  bottom: 24px; left: 100px;
+  z-index: 9000;
+  padding: 8px 16px;
+  background: #1a2a4a; border: 1px solid #3a5a9a;
+  color: #7a9dff; font-family: var(--font-mono); font-size: 11px;
+  cursor: pointer;
+}
+
+/* Shift page content to not be hidden under the panel */
+body.vse-active { padding-right: 280px; }
+
+@media (max-width: 767px) {
+  .vse-panel { width: 100%; top: auto; height: 55vh; border-left: none; border-top: 1px solid #222; }
+  body.vse-active { padding-right: 0; padding-bottom: 55vh; }
+  .vse-toggle { bottom: 16px; left: 16px; }
+}
