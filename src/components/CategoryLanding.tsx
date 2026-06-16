@@ -9,6 +9,22 @@ import { useNavigate } from '@/components/PageTransition'
 import type { LandingData, LandingAssignment } from '@/lib/getLandingData'
 import type { MotionVideo } from '@/lib/motionVideos'
 
+interface TextStyle {
+  font?: 'serif' | 'mono' | 'sans'
+  size?: number
+  italic?: boolean
+  bold?: boolean
+}
+
+function textStyle(s?: TextStyle): React.CSSProperties {
+  return {
+    fontFamily: s?.font === 'serif' ? 'var(--font-serif)' : s?.font === 'mono' ? 'var(--font-mono)' : s?.font === 'sans' ? 'var(--font-sans)' : undefined,
+    fontSize:   s?.size != null ? `${s.size}px` : undefined,
+    fontStyle:  s?.italic ? 'italic' : undefined,
+    fontWeight: s?.bold ? '700' : undefined,
+  }
+}
+
 function pad2(n: number) {
   return String(n).padStart(2, '0')
 }
@@ -168,8 +184,12 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
       ? buildCategories(initialData.config, initialData.assignments, initialData.categoryOrder)
       : categories
   )
-  const [tickerStatus,   setTickerStatus]   = useState('Open for bookings — May through Sept 2026')
-  const [tickerLeadTime, setTickerLeadTime] = useState('Lead time · 3–6 weeks')
+  const [tickerStatus,      setTickerStatus]      = useState('Open for bookings — May through Sept 2026')
+  const [tickerLeadTime,    setTickerLeadTime]    = useState('Lead time · 3–6 weeks')
+  const [tickerStatusStyle, setTickerStatusStyle] = useState<TextStyle | undefined>(undefined)
+  const [tickerLeadStyle,   setTickerLeadStyle]   = useState<TextStyle | undefined>(undefined)
+  const [tagline,           setTagline]           = useState('')
+  const [taglineStyle,      setTaglineStyle]      = useState<TextStyle | undefined>(undefined)
   const [motionVideos,   setMotionVideos]   = useState<MotionVideo[]>([])
   const motionVideosRef = useRef<MotionVideo[]>([])
   const cycleRef      = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -207,9 +227,15 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
     fetch('/api/copy')
       .then((r) => r.json())
       .then((d) => {
-        const c = d.copy?.contact
-        if (c?.tickerStatus)   setTickerStatus(c.tickerStatus)
-        if (c?.tickerLeadTime) setTickerLeadTime(c.tickerLeadTime)
+        const land    = d.copy?.landing ?? {}
+        const contact = d.copy?.contact ?? {}
+        // landing-specific values take precedence over contact fallbacks
+        if (land.tickerStatus   || contact.tickerStatus)   setTickerStatus(land.tickerStatus   ?? contact.tickerStatus)
+        if (land.tickerLeadTime || contact.tickerLeadTime) setTickerLeadTime(land.tickerLeadTime ?? contact.tickerLeadTime)
+        if (land.tickerStatusStyle)  setTickerStatusStyle(land.tickerStatusStyle)
+        if (land.tickerLeadTimeStyle) setTickerLeadStyle(land.tickerLeadTimeStyle)
+        if (land.tagline)      setTagline(land.tagline)
+        if (land.taglineStyle) setTaglineStyle(land.taglineStyle)
       })
       .catch(() => {})
   }, [])
@@ -470,17 +496,18 @@ export function CategoryLanding({ initialData }: { initialData?: LandingData }) 
 
       {/* Availability ticker */}
       <div className="ks-avail-ticker" aria-label="Studio availability">
-        <span className="ks-avail-ticker-left">
+        <span className="ks-avail-ticker-left" style={textStyle(tickerStatusStyle)}>
           <span className="ks-avail-dot" aria-hidden="true" />
           {tickerStatus}
         </span>
-        <span className="ks-avail-ticker-right">{tickerLeadTime}</span>
+        <span className="ks-avail-ticker-right" style={textStyle(tickerLeadStyle)}>{tickerLeadTime}</span>
       </div>
 
       {/* Top bar */}
       <div className="ks-top-bar">
         <div className="ks-wordmark">
           <span className="ks-wordmark-ks">KS</span>
+          {tagline && <span className="ks-wordmark-tagline" style={textStyle(taglineStyle)}>{tagline}</span>}
         </div>
         <nav className="ks-top-nav">
           <button className="ks-menu-btn" onClick={() => setMenuOpen(true)}>

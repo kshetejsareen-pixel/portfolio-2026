@@ -95,7 +95,10 @@ export function VisualEditor({ pageId }: { pageId: string }) {
       document.head.appendChild(s)
       styleTagRef.current = s
     }
-    styleTagRef.current.textContent = ov
+    const safe = Array.isArray(ov) ? ov.filter(
+      (o) => o && typeof o.selector === 'string' && o.properties && typeof o.properties === 'object'
+    ) : []
+    styleTagRef.current.textContent = safe
       .map((o) => `${o.selector}{${Object.entries(o.properties).map(([k,v]) => `${k}:${v}!important`).join(';')}}`)
       .join('\n')
   }, [])

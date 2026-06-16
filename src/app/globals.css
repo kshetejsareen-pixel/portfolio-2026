@@ -477,6 +477,15 @@ button, input, textarea, select { font: inherit; }
   animation: ks-drift-mark 22s ease-in-out infinite;
   will-change: transform;
 }
+.ks-wordmark-tagline {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  line-height: 1;
+  white-space: nowrap;
+}
 
 .ks-top-nav {
   display: flex;
@@ -3970,6 +3979,23 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-url-assign-btn:hover:not(:disabled) { background: #2a2a2a; color: #e8e8e0; }
 .adm-url-assign-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.adm-copy-section {
+  background: #0d0d10;
+  border: 1px solid #1e1e22;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.adm-copy-section-title {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e1e22;
+}
 
 .adm-copy-section-label {
   font-size: 9px;

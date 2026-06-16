@@ -286,6 +286,7 @@ export function AdminPanel() {
       CAT_IDS.includes(activeCatId) ? (CATEGORY_DEFAULTS[activeCatId] ?? {}) as Record<string, unknown>
       : activeCatId === 'info'      ? INFO_COPY_DEFAULTS
       : activeCatId === 'contact'   ? CONTACT_COPY_DEFAULTS
+      : activeCatId === 'landing'   ? LANDING_COPY_DEFAULTS
       : {}
     setDraftCopy({ ...defaults, ...(copyCfg[activeCatId] ?? {}) })
     setCopyDirty(false)
@@ -315,6 +316,7 @@ export function AdminPanel() {
       CAT_IDS.includes(activeCatId) ? (CATEGORY_DEFAULTS[activeCatId] ?? {}) as Record<string, unknown>
       : activeCatId === 'info'      ? INFO_COPY_DEFAULTS
       : activeCatId === 'contact'   ? CONTACT_COPY_DEFAULTS
+      : activeCatId === 'landing'   ? LANDING_COPY_DEFAULTS
       : {}
     setDraftCopy({ ...defaults, ...(copyCfg[activeCatId] ?? {}) })
     setCopyDirty(false)
@@ -657,6 +659,43 @@ export function AdminPanel() {
                 Changes take effect immediately. Reducing count hides slots — assignments are preserved if you increase it again.
               </div>
             </div>
+            {/* Landing page text copy */}
+            {(() => {
+              const d  = (k: string) => (draftCopy[k] as string) ?? ''
+              const ds = (k: string) => (draftCopy[k] as TextStyle | undefined)
+              const sf = (k: string) => (v: string) => setDraftField(k, v)
+              const ss = (k: string) => (v: TextStyle) => setDraftField(k, v)
+              return (
+                <div className="adm-copy-section">
+                  <div className="adm-copy-section-title">Landing page text</div>
+                  <InlineCopyField
+                    label="Availability status"
+                    hint="Left side of the ticker bar at the bottom"
+                    value={d('tickerStatus')}
+                    onChange={sf('tickerStatus')}
+                    placeholder="Open for bookings — May through Sept 2026"
+                    withStyle styleValue={ds('tickerStatusStyle')} onStyleChange={ss('tickerStatusStyle')}
+                  />
+                  <InlineCopyField
+                    label="Lead time"
+                    hint="Right side of the ticker bar"
+                    value={d('tickerLeadTime')}
+                    onChange={sf('tickerLeadTime')}
+                    placeholder="Lead time · 3–6 weeks"
+                    withStyle styleValue={ds('tickerLeadTimeStyle')} onStyleChange={ss('tickerLeadTimeStyle')}
+                  />
+                  <InlineCopyField
+                    label="Brand tagline"
+                    hint="Optional — short line shown below the KS mark"
+                    value={d('tagline')}
+                    onChange={sf('tagline')}
+                    placeholder="Independent photographer · New York · Bombay"
+                    withStyle styleValue={ds('taglineStyle')} onStyleChange={ss('taglineStyle')}
+                  />
+                </div>
+              )
+            })()}
+
             {landingGroups.map((g) => (
               <div key={g.id} className="adm-cat-group">
                 <div className="adm-cat-group-head">
@@ -1749,6 +1788,12 @@ const INFO_COPY_DEFAULTS: Record<string, unknown> = {
   touchAppointmentNote: 'Studio visits welcome',
   touchSocial:          '@kshetejsareen',
   touchSocialNote:      'Instagram',
+}
+
+const LANDING_COPY_DEFAULTS: Record<string, unknown> = {
+  tickerStatus:     'Open for bookings — May through Sept 2026',
+  tickerLeadTime:   'Lead time · 3–6 weeks',
+  tagline:          '',
 }
 
 const CONTACT_COPY_DEFAULTS: Record<string, unknown> = {
