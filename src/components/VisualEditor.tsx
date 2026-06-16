@@ -218,10 +218,13 @@ export function VisualEditor({ pageId }: { pageId: string }) {
   }, [])
 
   // ── Set a single property live ─────────────────────────────────────────────
+  // 'important' priority wins over CSS animations AND over !important in stylesheets,
+  // so dragging animated elements (e.g. ks-drift-mark on the KS mark) works correctly.
   const setProp = useCallback((key: string, value: string) => {
     setProps((prev) => {
       if (selected) {
-        value ? selected.style.setProperty(key, value) : selected.style.removeProperty(key)
+        if (value) selected.style.setProperty(key, value, 'important')
+        else selected.style.removeProperty(key)
       }
       return { ...prev, [key]: value }
     })
@@ -256,7 +259,6 @@ export function VisualEditor({ pageId }: { pageId: string }) {
     commitOverride()
     setSaving(true)
     try {
-      // Use the latest overrides via ref after commitOverride updates state
       await fetch('/api/admin/visual-overrides', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -266,6 +268,19 @@ export function VisualEditor({ pageId }: { pageId: string }) {
       setTimeout(() => setSaved(false), 2000)
     } finally { setSaving(false) }
   }, [commitOverride, pageId])
+
+  // ── Clear all overrides for this page ─────────────────────────────────────
+  const clearPage = useCallback(async () => {
+    if (!confirm(`Clear ALL saved overrides for "${pageId}"? This cannot be undone.`)) return
+    setOverrides([])
+    applyStylesheet([])
+    setSelected(null)
+    await fetch('/api/admin/visual-overrides', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page: pageId, overrides: [] }),
+    }).catch(() => {})
+  }, [pageId, applyStylesheet])
 
   // ── Reset element ──────────────────────────────────────────────────────────
   const resetSelected = useCallback(() => {
@@ -284,7 +299,7 @@ export function VisualEditor({ pageId }: { pageId: string }) {
     pushHistory()
     didPushForFocus.current = true
 
-    const [baseX, baseY] = parseTranslate(selected.style.transform)
+    const [baseX, baseY] = parseTranslate(selected.style.getPropertyValue('transform'))
     dragRef.current = { startX: e.clientX, startY: e.clientY, baseX, baseY }
     setDragging(true)
 
@@ -292,7 +307,7 @@ export function VisualEditor({ pageId }: { pageId: string }) {
       if (!selected || !dragRef.current) return
       const dx = dragRef.current.baseX + ev.clientX - dragRef.current.startX
       const dy = dragRef.current.baseY + ev.clientY - dragRef.current.startY
-      selected.style.transform = `translate(${dx}px, ${dy}px)`
+      selected.style.setProperty('transform', `translate(${dx}px, ${dy}px)`, 'important')
       setElRect(selected.getBoundingClientRect())
     }
     const onUp = (ev: MouseEvent) => {
@@ -431,11 +446,22 @@ export function VisualEditor({ pageId }: { pageId: string }) {
         </div>
       )}
 
-      {/* Floating save when panel is closed but there are unsaved overrides */}
-      {editMode && !selected && overrides.length > 0 && (
-        <button data-vse className="vse-save-float" onClick={save} disabled={saving}>
-          {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save page'}
-        </button>
+      {/* Floating panel when no element selected — save or clear page overrides */}
+      {editMode && !selected && (
+        <div data-vse className="vse-float-bar">
+          {overrides.length > 0 && (
+            <>
+              <span className="vse-float-info">{overrides.length} override{overrides.length !== 1 ? 's' : ''}</span>
+              <button className="vse-btn-save" onClick={save} disabled={saving}>
+                {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save page'}
+              </button>
+              <button className="vse-btn-clear" onClick={clearPage}>Clear all</button>
+            </>
+          )}
+          {overrides.length === 0 && (
+            <span className="vse-float-info">Click any element to edit it</span>
+          )}
+        </div>
       )}
     </>
   )

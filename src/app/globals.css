@@ -5509,16 +5509,28 @@ a.info-touch-val:hover { color: var(--paper); }
 .vse-btn-save:hover:not(:disabled) { background: #223060; }
 .vse-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Floating save button when no element selected */
-.vse-save-float {
+/* Floating bar when no element selected */
+.vse-float-bar {
   position: fixed;
   bottom: 24px; left: 100px;
   z-index: 9000;
-  padding: 8px 16px;
-  background: #1a2a4a; border: 1px solid #3a5a9a;
-  color: #7a9dff; font-family: var(--font-mono); font-size: 11px;
-  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(12,12,14,0.92); border: 1px solid #222;
+  padding: 8px 12px;
 }
+.vse-float-info {
+  font-family: var(--font-mono); font-size: 10px;
+  color: #555; letter-spacing: 0.08em;
+  padding-right: 4px;
+}
+.vse-float-bar .vse-btn-save { flex: none; padding: 6px 14px; font-size: 11px; }
+.vse-btn-clear {
+  padding: 6px 12px;
+  background: transparent; border: 1px solid #2a2a2a;
+  color: #884444; font-family: var(--font-mono); font-size: 11px;
+  cursor: pointer; transition: color 150ms, border-color 150ms;
+}
+.vse-btn-clear:hover { color: #c44; border-color: #c44; }
 
 /* Shift page content to not be hidden under the panel */
 body.vse-active { padding-right: 280px; }
