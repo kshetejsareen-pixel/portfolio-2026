@@ -1,8 +1,6 @@
 'use client'
 
-import {
-  useCallback, useEffect, useRef, useState, type CSSProperties,
-} from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -11,461 +9,429 @@ interface Override {
   properties: Record<string, string>
 }
 
+interface HistoryEntry {
+  overrides: Override[]
+  props: Record<string, string>
+  elStyle: string   // snapshot of selected element's style attribute
+}
+
 interface DragState {
-  startX: number
-  startY: number
-  origLeft: number
-  origTop: number
-  origPosition: string
-  offsetParentRect: DOMRect
+  startX: number; startY: number
+  baseX: number; baseY: number   // existing translate before drag started
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const EDITOR_CLASSES = /\bvse-/
-
-function isEditorEl(el: Element): boolean {
-  return !!el.closest('[data-vse]')
-}
+function isEditorEl(el: Element): boolean { return !!el.closest('[data-vse]') }
 
 function getSelector(el: HTMLElement): string {
   const tag = el.tagName.toLowerCase()
-  const classes = Array.from(el.classList)
-    .filter((c) => !EDITOR_CLASSES.test(c))
-    .slice(0, 3)
-  const base = classes.length ? `${tag}.${classes.join('.')}` : tag
-
-  // Walk up to root to get a more specific path (max 3 ancestors)
-  const parts: string[] = [base]
+  const cls = Array.from(el.classList).filter((c) => !/\bvse-/.test(c)).slice(0, 3)
+  const base = cls.length ? `${tag}.${cls.join('.')}` : tag
+  const parts = [base]
   let cur = el.parentElement
-  let depth = 0
-  while (cur && cur !== document.body && depth < 3) {
-    const pTag = cur.tagName.toLowerCase()
-    const pCls = Array.from(cur.classList)
-      .filter((c) => !EDITOR_CLASSES.test(c))
-      .slice(0, 2)
-    parts.unshift(pCls.length ? `${pTag}.${pCls.join('.')}` : pTag)
-    cur = cur.parentElement
-    depth++
+  for (let d = 0; cur && cur !== document.body && d < 3; d++, cur = cur.parentElement) {
+    const pc = Array.from(cur.classList).filter((c) => !/\bvse-/.test(c)).slice(0, 2)
+    parts.unshift(pc.length ? `${cur.tagName.toLowerCase()}.${pc.join('.')}` : cur.tagName.toLowerCase())
   }
   return parts.join(' > ')
 }
 
-function px(v: string): string { return v ? v.replace(/[^0-9.-]/g, '') : '' }
-function unit(v: string): string {
-  const m = v.match(/[a-z%]+$/i)
-  return m ? m[0] : 'px'
+function px(v: string) { return v ? v.replace(/[^0-9.-]/g, '') : '' }
+function unit(v: string) { const m = v.match(/[a-z%]+$/i); return m ? m[0] : 'px' }
+function parseTranslate(tf: string): [number, number] {
+  const m = tf?.match(/translate\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*\)/)
+  return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0]
+}
+function rgbToHex(rgb: string) {
+  const m = rgb.match(/\d+/g)
+  if (!m || m.length < 3) return '#000000'
+  return '#' + m.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, '0')).join('')
 }
 
 // ─── VisualEditor ─────────────────────────────────────────────────────────────
 
 export function VisualEditor({ pageId }: { pageId: string }) {
-  const [isAdmin, setIsAdmin]         = useState(false)
-  const [editMode, setEditMode]       = useState(false)
-  const [overrides, setOverrides]     = useState<Override[]>([])
-  const [selected, setSelected]       = useState<HTMLElement | null>(null)
-  const [hoveredEl, setHoveredEl]     = useState<HTMLElement | null>(null)
-  const [props, setProps]             = useState<Record<string, string>>({})
-  const [tab, setTab]                 = useState<'type' | 'space' | 'pos'>('type')
-  const [saving, setSaving]           = useState(false)
-  const [saved, setSaved]             = useState(false)
-  const [dragging, setDragging]       = useState(false)
-  const dragRef                       = useRef<DragState | null>(null)
-  const styleTagRef                   = useRef<HTMLStyleElement | null>(null)
+  const [isAdmin, setIsAdmin]     = useState(false)
+  const [editMode, setEditMode]   = useState(false)
+  const [overrides, setOverrides] = useState<Override[]>([])
+  const [selected, setSelected]   = useState<HTMLElement | null>(null)
+  const [hovered, setHovered]     = useState<HTMLElement | null>(null)
+  const [props, setProps]         = useState<Record<string, string>>({})
+  const [tab, setTab]             = useState<'type' | 'space' | 'pos'>('type')
+  const [saving, setSaving]       = useState(false)
+  const [saved, setSaved]         = useState(false)
+  const [dragging, setDragging]   = useState(false)
+  const [elRect, setElRect]       = useState<DOMRect | null>(null)
+  const [canUndo, setCanUndo]     = useState(false)
 
-  // ── Admin check ──────────────────────────────────────────────────────────
+  const styleTagRef  = useRef<HTMLStyleElement | null>(null)
+  const dragRef      = useRef<DragState | null>(null)
+  const historyRef   = useRef<HistoryEntry[]>([])
+  const overridesRef = useRef(overrides)
+  const propsRef     = useRef(props)
+  overridesRef.current = overrides
+  propsRef.current     = props
+
+  // ── Admin check ────────────────────────────────────────────────────────────
   useEffect(() => {
     fetch('/api/admin/config').then((r) => { if (r.ok) setIsAdmin(true) }).catch(() => {})
   }, [])
 
-  // ── Load saved overrides & inject stylesheet ──────────────────────────────
+  // ── Load & inject overrides ────────────────────────────────────────────────
   useEffect(() => {
     if (!pageId) return
     fetch(`/api/admin/visual-overrides?page=${pageId}`)
       .then((r) => r.json())
-      .then(({ overrides: ov }) => {
-        setOverrides(ov ?? [])
-        applyStylesheet(ov ?? [])
-      })
+      .then(({ overrides: ov }) => { setOverrides(ov ?? []); applyStylesheet(ov ?? []) })
       .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId])
 
   const applyStylesheet = useCallback((ov: Override[]) => {
     if (!styleTagRef.current) {
-      const style = document.createElement('style')
-      style.id = 'ks-visual-overrides'
-      document.head.appendChild(style)
-      styleTagRef.current = style
+      const s = document.createElement('style')
+      s.id = 'ks-visual-overrides'
+      document.head.appendChild(s)
+      styleTagRef.current = s
     }
     styleTagRef.current.textContent = ov
-      .map((o) =>
-        `${o.selector} { ${Object.entries(o.properties)
-          .map(([k, v]) => `${k}: ${v} !important`)
-          .join('; ')} }`,
-      )
+      .map((o) => `${o.selector}{${Object.entries(o.properties).map(([k,v]) => `${k}:${v}!important`).join(';')}}`)
       .join('\n')
   }, [])
 
-  // ── Edit mode mouse handlers ──────────────────────────────────────────────
+  // ── History ────────────────────────────────────────────────────────────────
+  const pushHistory = useCallback(() => {
+    historyRef.current.push({
+      overrides: JSON.parse(JSON.stringify(overridesRef.current)),
+      props: { ...propsRef.current },
+      elStyle: selected?.getAttribute('style') ?? '',
+    })
+    if (historyRef.current.length > 50) historyRef.current.shift()
+    setCanUndo(true)
+  }, [selected])
+
+  const undo = useCallback(() => {
+    const entry = historyRef.current.pop()
+    if (!entry) { setCanUndo(false); return }
+    setCanUndo(historyRef.current.length > 0)
+    setOverrides(entry.overrides)
+    setProps(entry.props)
+    applyStylesheet(entry.overrides)
+    if (selected) {
+      if (entry.elStyle) selected.setAttribute('style', entry.elStyle)
+      else selected.removeAttribute('style')
+    }
+  }, [selected, applyStylesheet])
+
+  // ── Keyboard: Esc deselect, Cmd+Z undo ────────────────────────────────────
   useEffect(() => {
     if (!editMode) return
-
-    const onMove = (e: MouseEvent) => {
-      const t = e.target as HTMLElement
-      if (!isEditorEl(t)) setHoveredEl(t)
-    }
-    const onClick = (e: MouseEvent) => {
-      const t = e.target as HTMLElement
-      if (isEditorEl(t)) return
-      e.preventDefault()
-      e.stopPropagation()
-      selectElement(t)
-    }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setSelected(null); setHoveredEl(null) }
+      if (e.key === 'Escape') { setSelected(null); setHovered(null) }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); undo() }
     }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [editMode, undo])
 
+  // ── Hover & click in edit mode ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!editMode) return
+    const onMove = (e: MouseEvent) => { if (!isEditorEl(e.target as Element)) setHovered(e.target as HTMLElement) }
+    const onClick = (e: MouseEvent) => {
+      if (isEditorEl(e.target as Element)) return
+      e.preventDefault(); e.stopPropagation()
+      selectElement(e.target as HTMLElement)
+    }
     document.addEventListener('mousemove', onMove, true)
     document.addEventListener('click', onClick, true)
-    document.addEventListener('keydown', onKey)
     return () => {
       document.removeEventListener('mousemove', onMove, true)
       document.removeEventListener('click', onClick, true)
-      document.removeEventListener('keydown', onKey)
-      setHoveredEl(null)
+      setHovered(null)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMode, overrides])
 
-  // ── Hover + selection outlines ────────────────────────────────────────────
+  // ── Hover outline ─────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!editMode) return
-    const hover = hoveredEl
-    if (hover && hover !== selected) {
-      hover.style.outline = '1px dashed rgba(120,160,255,0.7)'
-      hover.style.outlineOffset = '2px'
-    }
-    return () => {
-      if (hover && hover !== selected) {
-        hover.style.outline = ''
-        hover.style.outlineOffset = ''
-      }
-    }
-  }, [hoveredEl, selected, editMode])
+    if (!editMode || !hovered || hovered === selected) return
+    hovered.style.outline = '1px dashed rgba(120,160,255,0.6)'
+    hovered.style.outlineOffset = '2px'
+    return () => { if (hovered !== selected) { hovered.style.outline = ''; hovered.style.outlineOffset = '' } }
+  }, [hovered, selected, editMode])
 
+  // ── Selection outline ─────────────────────────────────────────────────────
   useEffect(() => {
-    if (!editMode) {
-      selected?.style.setProperty('outline', '')
-      return
-    }
-    if (selected) {
-      selected.style.outline = '2px solid rgba(120,160,255,0.9)'
-      selected.style.outlineOffset = '2px'
-    }
-    return () => { selected?.style.setProperty('outline', '') }
+    if (!editMode || !selected) return
+    selected.style.outline = '2px solid rgba(120,160,255,0.9)'
+    selected.style.outlineOffset = '2px'
+    return () => { selected.style.outline = ''; selected.style.outlineOffset = '' }
   }, [selected, editMode])
 
-  // ── Select element ────────────────────────────────────────────────────────
+  // ── Track selected element rect (for drag handle) ─────────────────────────
+  useEffect(() => {
+    if (!selected) { setElRect(null); return }
+    const update = () => setElRect(selected.getBoundingClientRect())
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(selected)
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => { ro.disconnect(); window.removeEventListener('scroll', update); window.removeEventListener('resize', update) }
+  }, [selected])
+
+  // ── Select element ─────────────────────────────────────────────────────────
   const selectElement = useCallback((el: HTMLElement) => {
     setSelected(el)
     const selector = getSelector(el)
-    const existing = overrides.find((o) => o.selector === selector)
-    const computed = window.getComputedStyle(el)
-
-    const read = (prop: string) =>
-      existing?.properties[prop] ?? el.style.getPropertyValue(prop) ?? ''
-
+    const existing = overridesRef.current.find((o) => o.selector === selector)
+    const cs = window.getComputedStyle(el)
+    const r = (p: string) => existing?.properties[p] ?? el.style.getPropertyValue(p) ?? ''
     setProps({
       selector,
-      'font-size':      read('font-size')      || computed.fontSize,
-      'font-family':    read('font-family')     || computed.fontFamily.split(',')[0].replace(/['"]/g, '').trim(),
-      'font-weight':    read('font-weight')     || computed.fontWeight,
-      'color':          read('color')           || rgbToHex(computed.color),
-      'background-color': read('background-color') || (computed.backgroundColor === 'rgba(0, 0, 0, 0)' ? '' : rgbToHex(computed.backgroundColor)),
-      'letter-spacing': read('letter-spacing')  || computed.letterSpacing,
-      'line-height':    read('line-height')     || computed.lineHeight,
-      'text-align':     read('text-align')      || computed.textAlign,
-      'margin-top':     read('margin-top')      || computed.marginTop,
-      'margin-right':   read('margin-right')    || computed.marginRight,
-      'margin-bottom':  read('margin-bottom')   || computed.marginBottom,
-      'margin-left':    read('margin-left')     || computed.marginLeft,
-      'padding-top':    read('padding-top')     || computed.paddingTop,
-      'padding-right':  read('padding-right')   || computed.paddingRight,
-      'padding-bottom': read('padding-bottom')  || computed.paddingBottom,
-      'padding-left':   read('padding-left')    || computed.paddingLeft,
-      'width':          read('width')           || '',
-      'height':         read('height')          || '',
-      'top':            read('top')             || '',
-      'left':           read('left')            || '',
-      'position':       read('position')        || computed.position,
-      'opacity':        read('opacity')         || '',
+      'font-size':        r('font-size')        || cs.fontSize,
+      'font-family':      r('font-family')       || cs.fontFamily.split(',')[0].replace(/['"]/g,'').trim(),
+      'font-weight':      r('font-weight')       || cs.fontWeight,
+      'color':            r('color')             || rgbToHex(cs.color),
+      'background-color': r('background-color')  || (cs.backgroundColor === 'rgba(0, 0, 0, 0)' ? '' : rgbToHex(cs.backgroundColor)),
+      'letter-spacing':   r('letter-spacing')    || cs.letterSpacing,
+      'line-height':      r('line-height')       || cs.lineHeight,
+      'text-align':       r('text-align')        || cs.textAlign,
+      'margin-top':       r('margin-top')        || cs.marginTop,
+      'margin-right':     r('margin-right')      || cs.marginRight,
+      'margin-bottom':    r('margin-bottom')     || cs.marginBottom,
+      'margin-left':      r('margin-left')       || cs.marginLeft,
+      'padding-top':      r('padding-top')       || cs.paddingTop,
+      'padding-right':    r('padding-right')     || cs.paddingRight,
+      'padding-bottom':   r('padding-bottom')    || cs.paddingBottom,
+      'padding-left':     r('padding-left')      || cs.paddingLeft,
+      'width':            r('width')             || '',
+      'height':           r('height')            || '',
+      'top':              r('top')               || '',
+      'left':             r('left')              || '',
+      'position':         r('position')          || cs.position,
+      'opacity':          r('opacity')           || '',
+      'transform':        r('transform')         || el.style.transform || '',
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overrides])
+  }, [])
 
-  // ── Update a property live ────────────────────────────────────────────────
+  // ── Set a single property live ─────────────────────────────────────────────
   const setProp = useCallback((key: string, value: string) => {
     setProps((prev) => {
-      const next = { ...prev, [key]: value }
-      if (selected && value) {
-        selected.style.setProperty(key, value)
-      } else if (selected && !value) {
-        selected.style.removeProperty(key)
+      if (selected) {
+        value ? selected.style.setProperty(key, value) : selected.style.removeProperty(key)
       }
-      return next
+      return { ...prev, [key]: value }
     })
   }, [selected])
 
-  // ── Commit current props into the overrides list ──────────────────────────
+  // Push history on first focus of any panel input (once per "edit session")
+  const didPushForFocus = useRef(false)
+  const onInputFocus = useCallback(() => {
+    if (!didPushForFocus.current) { pushHistory(); didPushForFocus.current = true }
+  }, [pushHistory])
+  // Reset the flag when a new element is selected
+  useEffect(() => { didPushForFocus.current = false }, [selected])
+
+  // ── Commit props → overrides list ──────────────────────────────────────────
   const commitOverride = useCallback(() => {
-    const selector = props.selector
+    const selector = propsRef.current.selector
     if (!selector) return
     const properties: Record<string, string> = {}
-    for (const [k, v] of Object.entries(props)) {
-      if (k === 'selector' || !v) continue
-      properties[k] = v
+    for (const [k, v] of Object.entries(propsRef.current)) {
+      if (k !== 'selector' && v) properties[k] = v
     }
     setOverrides((prev) => {
       const filtered = prev.filter((o) => o.selector !== selector)
-      const next = Object.keys(properties).length
-        ? [...filtered, { selector, properties }]
-        : filtered
+      const next = Object.keys(properties).length ? [...filtered, { selector, properties }] : filtered
       applyStylesheet(next)
       return next
     })
-  }, [props, applyStylesheet])
+  }, [applyStylesheet])
 
-  // ── Save to Firestore ─────────────────────────────────────────────────────
+  // ── Save to Firestore ──────────────────────────────────────────────────────
   const save = useCallback(async () => {
     commitOverride()
     setSaving(true)
     try {
+      // Use the latest overrides via ref after commitOverride updates state
       await fetch('/api/admin/visual-overrides', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page: pageId, overrides }),
+        body: JSON.stringify({ page: pageId, overrides: overridesRef.current }),
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
-    } finally {
-      setSaving(false)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [commitOverride, pageId, overrides])
+    } finally { setSaving(false) }
+  }, [commitOverride, pageId])
 
-  // ── Remove override for current element ───────────────────────────────────
+  // ── Reset element ──────────────────────────────────────────────────────────
   const resetSelected = useCallback(() => {
-    const selector = props.selector
-    if (!selector || !selected) return
-    // Remove all inline styles set by editor
+    if (!selected) return
+    pushHistory()
     selected.removeAttribute('style')
-    setOverrides((prev) => {
-      const next = prev.filter((o) => o.selector !== selector)
-      applyStylesheet(next)
-      return next
-    })
+    const selector = propsRef.current.selector
+    setOverrides((prev) => { const next = prev.filter((o) => o.selector !== selector); applyStylesheet(next); return next })
     setSelected(null)
-  }, [props.selector, selected, applyStylesheet])
+  }, [selected, pushHistory, applyStylesheet])
 
-  // ── Drag to reposition ────────────────────────────────────────────────────
+  // ── Drag — uses transform:translate so nothing else in the layout shifts ────
   const startDrag = useCallback((e: React.MouseEvent) => {
     if (!selected) return
     e.preventDefault()
-    const rect = selected.getBoundingClientRect()
-    const parentEl = selected.offsetParent as HTMLElement | null
-    const parentRect = parentEl ? parentEl.getBoundingClientRect() : { top: 0, left: 0 } as DOMRect
-    const computed = window.getComputedStyle(selected)
+    pushHistory()
+    didPushForFocus.current = true
 
-    dragRef.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      origLeft: rect.left - parentRect.left,
-      origTop: rect.top - parentRect.top,
-      origPosition: computed.position,
-      offsetParentRect: parentRect as DOMRect,
-    }
-
-    // Switch to absolute so we can freely position
-    selected.style.position = 'absolute'
-    selected.style.left = `${rect.left - parentRect.left}px`
-    selected.style.top = `${rect.top - parentRect.top}px`
+    const [baseX, baseY] = parseTranslate(selected.style.transform)
+    dragRef.current = { startX: e.clientX, startY: e.clientY, baseX, baseY }
     setDragging(true)
 
-    const onMouseMove = (ev: MouseEvent) => {
+    const onMove = (ev: MouseEvent) => {
       if (!selected || !dragRef.current) return
-      const dx = ev.clientX - dragRef.current.startX
-      const dy = ev.clientY - dragRef.current.startY
-      const newLeft = dragRef.current.origLeft + dx
-      const newTop  = dragRef.current.origTop  + dy
-      selected.style.left = `${newLeft}px`
-      selected.style.top  = `${newTop}px`
+      const dx = dragRef.current.baseX + ev.clientX - dragRef.current.startX
+      const dy = dragRef.current.baseY + ev.clientY - dragRef.current.startY
+      selected.style.transform = `translate(${dx}px, ${dy}px)`
+      setElRect(selected.getBoundingClientRect())
     }
-    const onMouseUp = () => {
+    const onUp = (ev: MouseEvent) => {
       setDragging(false)
       dragRef.current = null
       if (selected) {
-        const newLeft = selected.style.left
-        const newTop  = selected.style.top
-        setProp('position', 'absolute')
-        setProp('left', newLeft)
-        setProp('top', newTop)
+        const dx = baseX + ev.clientX - e.clientX
+        const dy = baseY + ev.clientY - e.clientY
+        const tf = `translate(${dx}px, ${dy}px)`
+        setProps((prev) => ({ ...prev, transform: tf }))
       }
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
     }
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-  }, [selected, setProp])
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }, [selected, pushHistory])
 
-  // ── body class for panel width offset ────────────────────────────────────
+  // ── body offset when panel is open ────────────────────────────────────────
   useEffect(() => {
     if (editMode && selected) document.body.classList.add('vse-active')
     else document.body.classList.remove('vse-active')
     return () => document.body.classList.remove('vse-active')
   }, [editMode, selected])
 
-  // ── Turn off edit mode cleanly ────────────────────────────────────────────
   const toggleEdit = () => {
-    if (editMode) {
-      setEditMode(false)
-      setSelected(null)
-      setHoveredEl(null)
-    } else {
-      setEditMode(true)
-    }
+    if (editMode) { setEditMode(false); setSelected(null); setHovered(null) }
+    else setEditMode(true)
   }
 
   if (!isAdmin) return null
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Floating toggle button */}
-      <button
-        data-vse
-        className={`vse-toggle${editMode ? ' active' : ''}`}
-        onClick={toggleEdit}
-        title="Visual editor"
-      >
+      {/* Toggle */}
+      <button data-vse className={`vse-toggle${editMode ? ' active' : ''}`} onClick={toggleEdit}>
         {editMode ? '✕ Exit' : '✏ Edit'}
       </button>
+
+      {/* Drag grip — floats directly on the selected element */}
+      {editMode && selected && elRect && (
+        <div
+          data-vse
+          className={`vse-grip${dragging ? ' dragging' : ''}`}
+          style={{ top: elRect.top, left: elRect.left }}
+          onMouseDown={startDrag}
+          title="Drag to move"
+        >
+          ⊹
+        </div>
+      )}
 
       {/* Inspector panel */}
       {editMode && selected && (
         <div data-vse className="vse-panel">
-          {/* Selector */}
           <div className="vse-selector" title={props.selector}>
             <span className="vse-selector-label">Element</span>
             <code className="vse-selector-val">{props.selector?.split(' > ').pop()}</code>
           </div>
 
-          {/* Tabs */}
           <div className="vse-tabs">
-            {(['type', 'space', 'pos'] as const).map((t) => (
-              <button key={t} className={`vse-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
-                {t === 'type' ? 'Type' : t === 'space' ? 'Space' : 'Pos'}
+            {(['type','space','pos'] as const).map((t) => (
+              <button key={t} className={`vse-tab${tab===t?' active':''}`} onClick={() => setTab(t)}>
+                {t==='type'?'Type':t==='space'?'Space':'Pos'}
               </button>
             ))}
           </div>
 
           <div className="vse-fields">
-            {tab === 'type' && (
-              <>
-                <VseRow label="Size">
-                  <VseNumInput value={props['font-size']} onChange={(v) => setProp('font-size', v)} />
-                </VseRow>
-                <VseRow label="Family">
-                  <input className="vse-input" value={props['font-family'] ?? ''} onChange={(e) => setProp('font-family', e.target.value)} />
-                </VseRow>
-                <VseRow label="Weight">
-                  <select className="vse-select" value={props['font-weight'] ?? ''} onChange={(e) => setProp('font-weight', e.target.value)}>
-                    {['100','200','300','400','500','600','700','800','900'].map((w) => <option key={w}>{w}</option>)}
-                  </select>
-                </VseRow>
-                <VseRow label="Color">
-                  <VseColorInput value={props['color'] ?? ''} onChange={(v) => setProp('color', v)} />
-                </VseRow>
-                <VseRow label="Bg">
-                  <VseColorInput value={props['background-color'] ?? ''} onChange={(v) => setProp('background-color', v)} />
-                </VseRow>
-                <VseRow label="Align">
-                  <div className="vse-align-row">
-                    {['left','center','right'].map((a) => (
-                      <button key={a} className={`vse-align-btn${props['text-align'] === a ? ' active' : ''}`}
-                        onClick={() => setProp('text-align', a)}>{a[0].toUpperCase()}</button>
-                    ))}
-                  </div>
-                </VseRow>
-                <VseRow label="L-Spc">
-                  <VseNumInput value={props['letter-spacing']} onChange={(v) => setProp('letter-spacing', v)} />
-                </VseRow>
-                <VseRow label="L-Hgt">
-                  <VseNumInput value={props['line-height']} onChange={(v) => setProp('line-height', v)} />
-                </VseRow>
-                <VseRow label="Opacity">
-                  <VseNumInput value={props['opacity']} onChange={(v) => setProp('opacity', v)} defaultUnit="" />
-                </VseRow>
-              </>
-            )}
-
-            {tab === 'space' && (
-              <>
-                <div className="vse-box-label">Margin</div>
-                <div className="vse-box4">
-                  {(['margin-top','margin-right','margin-bottom','margin-left'] as const).map((k) => (
-                    <VseBox4Input key={k} label={k.replace('margin-', '')} value={props[k] ?? ''} onChange={(v) => setProp(k, v)} />
+            {tab === 'type' && <>
+              <VseRow label="Size"><VseNumInput value={props['font-size']} onChange={(v) => setProp('font-size',v)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="Family"><input className="vse-input" value={props['font-family']??''} onChange={(e)=>setProp('font-family',e.target.value)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="Weight">
+                <select className="vse-select" value={props['font-weight']??''} onChange={(e)=>setProp('font-weight',e.target.value)} onFocus={onInputFocus}>
+                  {['100','200','300','400','500','600','700','800','900'].map((w)=><option key={w}>{w}</option>)}
+                </select>
+              </VseRow>
+              <VseRow label="Color"><VseColorInput value={props['color']??''} onChange={(v)=>setProp('color',v)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="Bg"><VseColorInput value={props['background-color']??''} onChange={(v)=>setProp('background-color',v)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="Align">
+                <div className="vse-align-row">
+                  {['left','center','right'].map((a)=>(
+                    <button key={a} className={`vse-align-btn${props['text-align']===a?' active':''}`} onClick={()=>{pushHistory();setProp('text-align',a)}}>{a[0].toUpperCase()}</button>
                   ))}
                 </div>
-                <div className="vse-box-label">Padding</div>
-                <div className="vse-box4">
-                  {(['padding-top','padding-right','padding-bottom','padding-left'] as const).map((k) => (
-                    <VseBox4Input key={k} label={k.replace('padding-', '')} value={props[k] ?? ''} onChange={(v) => setProp(k, v)} />
-                  ))}
-                </div>
-                <VseRow label="Width">
-                  <VseNumInput value={props['width']} onChange={(v) => setProp('width', v)} />
-                </VseRow>
-                <VseRow label="Height">
-                  <VseNumInput value={props['height']} onChange={(v) => setProp('height', v)} />
-                </VseRow>
-              </>
-            )}
+              </VseRow>
+              <VseRow label="L-Spc"><VseNumInput value={props['letter-spacing']} onChange={(v)=>setProp('letter-spacing',v)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="L-Hgt"><VseNumInput value={props['line-height']} onChange={(v)=>setProp('line-height',v)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="Opacity"><VseNumInput value={props['opacity']} onChange={(v)=>setProp('opacity',v)} defaultUnit="" onFocus={onInputFocus} /></VseRow>
+            </>}
 
-            {tab === 'pos' && (
-              <>
-                <div className="vse-drag-hint">
-                  Drag to reposition the selected element.
-                  This sets <code>position: absolute</code>.
-                </div>
-                <button className="vse-drag-btn" onMouseDown={startDrag}>
-                  {dragging ? 'Dragging…' : '⊹ Drag element'}
-                </button>
-                <VseRow label="Position">
-                  <select className="vse-select" value={props['position'] ?? ''} onChange={(e) => setProp('position', e.target.value)}>
-                    {['','static','relative','absolute','fixed','sticky'].map((v) => <option key={v} value={v}>{v || '—'}</option>)}
-                  </select>
-                </VseRow>
-                <VseRow label="Top">
-                  <VseNumInput value={props['top']} onChange={(v) => setProp('top', v)} />
-                </VseRow>
-                <VseRow label="Left">
-                  <VseNumInput value={props['left']} onChange={(v) => setProp('left', v)} />
-                </VseRow>
-              </>
-            )}
+            {tab === 'space' && <>
+              <div className="vse-box-label">Margin</div>
+              <div className="vse-box4">
+                {(['margin-top','margin-right','margin-bottom','margin-left'] as const).map((k)=>(
+                  <VseBox4Input key={k} label={k.replace('margin-','')} value={props[k]??''} onChange={(v)=>setProp(k,v)} onFocus={onInputFocus} />
+                ))}
+              </div>
+              <div className="vse-box-label">Padding</div>
+              <div className="vse-box4">
+                {(['padding-top','padding-right','padding-bottom','padding-left'] as const).map((k)=>(
+                  <VseBox4Input key={k} label={k.replace('padding-','')} value={props[k]??''} onChange={(v)=>setProp(k,v)} onFocus={onInputFocus} />
+                ))}
+              </div>
+              <VseRow label="Width"><VseNumInput value={props['width']} onChange={(v)=>setProp('width',v)} onFocus={onInputFocus} /></VseRow>
+              <VseRow label="Height"><VseNumInput value={props['height']} onChange={(v)=>setProp('height',v)} onFocus={onInputFocus} /></VseRow>
+            </>}
+
+            {tab === 'pos' && <>
+              <div className="vse-drag-hint">Grab the <strong>⊹</strong> badge on the element to drag it. Nothing else will shift.</div>
+              <VseRow label="Move X">
+                <VseNumInput
+                  value={`${parseTranslate(props['transform']??'')[0]}px`}
+                  onChange={(v) => { const [,y]=parseTranslate(props['transform']??''); setProp('transform',`translate(${v},${y}px)`) }}
+                  onFocus={onInputFocus}
+                />
+              </VseRow>
+              <VseRow label="Move Y">
+                <VseNumInput
+                  value={`${parseTranslate(props['transform']??'')[1]}px`}
+                  onChange={(v) => { const [x]=parseTranslate(props['transform']??''); setProp('transform',`translate(${x}px,${v})`) }}
+                  onFocus={onInputFocus}
+                />
+              </VseRow>
+            </>}
           </div>
 
-          {/* Actions */}
           <div className="vse-actions">
+            <button className="vse-btn-undo" onClick={undo} disabled={!canUndo} title="Undo (⌘Z)">↩</button>
             <button className="vse-btn-reset" onClick={resetSelected}>Reset</button>
             <button className="vse-btn-save" onClick={save} disabled={saving}>
-              {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save page'}
+              {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save'}
             </button>
           </div>
         </div>
       )}
 
-      {/* Save shortcut when no element selected */}
+      {/* Floating save when panel is closed but there are unsaved overrides */}
       {editMode && !selected && overrides.length > 0 && (
         <button data-vse className="vse-save-float" onClick={save} disabled={saving}>
           {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save page'}
@@ -475,59 +441,43 @@ export function VisualEditor({ pageId }: { pageId: string }) {
   )
 }
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function VseRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="vse-row">
-      <span className="vse-row-label">{label}</span>
-      <div className="vse-row-ctrl">{children}</div>
-    </div>
-  )
+  return <div className="vse-row"><span className="vse-row-label">{label}</span><div className="vse-row-ctrl">{children}</div></div>
 }
 
-function VseNumInput({ value, onChange, defaultUnit = 'px' }: {
-  value: string; onChange: (v: string) => void; defaultUnit?: string
+function VseNumInput({ value, onChange, onFocus, defaultUnit = 'px' }: {
+  value: string; onChange: (v: string) => void; onFocus?: () => void; defaultUnit?: string
 }) {
-  const num = px(value || '')
-  const u   = value ? unit(value) : defaultUnit
+  const n = px(value||''); const u = value ? unit(value) : defaultUnit
   return (
     <div className="vse-num-wrap">
-      <input className="vse-input vse-num" type="number" value={num}
-        onChange={(e) => onChange(e.target.value + u)} />
-      <select className="vse-unit" value={u} onChange={(e) => onChange((num || '0') + e.target.value)}>
-        {['px','em','rem','%','vw','vh',''].map((un) => <option key={un} value={un}>{un || '—'}</option>)}
+      <input className="vse-input vse-num" type="number" value={n}
+        onChange={(e) => onChange(e.target.value + u)} onFocus={onFocus} />
+      <select className="vse-unit" value={u} onChange={(e) => onChange((n||'0') + e.target.value)} onFocus={onFocus}>
+        {['px','em','rem','%','vw','vh',''].map((un) => <option key={un} value={un}>{un||'—'}</option>)}
       </select>
     </div>
   )
 }
 
-function VseColorInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function VseColorInput({ value, onChange, onFocus }: { value: string; onChange: (v: string) => void; onFocus?: () => void }) {
   const hex = value?.startsWith('#') ? value : (value ? rgbToHex(value) : '#000000')
   return (
     <div className="vse-color-wrap">
-      <input type="color" className="vse-color-swatch" value={hex} onChange={(e) => onChange(e.target.value)} />
-      <input className="vse-input" value={value} onChange={(e) => onChange(e.target.value)} placeholder="#hex / rgba" />
+      <input type="color" className="vse-color-swatch" value={hex} onChange={(e) => onChange(e.target.value)} onFocus={onFocus} />
+      <input className="vse-input" value={value} onChange={(e) => onChange(e.target.value)} onFocus={onFocus} placeholder="#hex / rgba" />
     </div>
   )
 }
 
-function VseBox4Input({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  const num = px(value || '')
-  const u   = value ? unit(value) : 'px'
+function VseBox4Input({ label, value, onChange, onFocus }: { label: string; value: string; onChange: (v: string) => void; onFocus?: () => void }) {
+  const n = px(value||''); const u = value ? unit(value) : 'px'
   return (
     <div className="vse-box4-item">
       <span className="vse-box4-lbl">{label}</span>
-      <input className="vse-input vse-num" type="number" value={num}
-        onChange={(e) => onChange(e.target.value + u)} />
+      <input className="vse-input vse-num" type="number" value={n} onChange={(e) => onChange(e.target.value + u)} onFocus={onFocus} />
     </div>
   )
-}
-
-// ─── Util ──────────────────────────────────────────────────────────────────────
-
-function rgbToHex(rgb: string): string {
-  const m = rgb.match(/\d+/g)
-  if (!m || m.length < 3) return '#000000'
-  return '#' + m.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, '0')).join('')
 }

@@ -5453,19 +5453,29 @@ a.info-touch-val:hover { color: var(--paper); }
 
 /* Drag controls */
 .vse-drag-hint {
-  font-size: 10px; line-height: 1.5; color: #555;
-  padding: 6px 0;
+  font-size: 10px; line-height: 1.6; color: #555;
+  padding: 6px 0 10px;
 }
-.vse-drag-hint code { color: #7a9dff; background: none; font-size: 10px; }
-.vse-drag-btn {
-  width: 100%; padding: 8px;
-  background: #151518; border: 1px solid #2a2a2a;
-  color: #e8e8e0; font-family: var(--font-mono); font-size: 11px;
-  cursor: grab; transition: border-color 150ms, background 150ms;
-  margin-bottom: 8px;
+.vse-drag-hint strong { color: #7a9dff; }
+
+/* Drag grip — floats over the selected element on the page */
+.vse-grip {
+  position: fixed;
+  z-index: 9002;
+  width: 28px; height: 28px;
+  background: rgba(12,12,14,0.85);
+  border: 1px solid rgba(122,157,255,0.6);
+  border-radius: 6px;
+  color: #7a9dff;
+  font-size: 16px; line-height: 26px; text-align: center;
+  cursor: grab;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  transition: background 120ms, border-color 120ms;
 }
-.vse-drag-btn:hover { border-color: #444; background: #1a1a1e; }
-.vse-drag-btn:active { cursor: grabbing; }
+.vse-grip:hover { background: rgba(30,40,80,0.95); border-color: #7a9dff; }
+.vse-grip.dragging { cursor: grabbing; }
 
 /* Actions bar */
 .vse-actions {
@@ -5474,6 +5484,15 @@ a.info-touch-val:hover { color: var(--paper); }
   padding: 12px 16px;
   border-top: 1px solid #1a1a1a;
 }
+.vse-btn-undo {
+  width: 36px; padding: 8px 0;
+  background: transparent; border: 1px solid #2a2a2a;
+  color: #888; font-size: 14px; cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+  flex-shrink: 0;
+}
+.vse-btn-undo:hover:not(:disabled) { color: #7a9dff; border-color: #7a9dff; }
+.vse-btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
 .vse-btn-reset {
   flex: 1; padding: 8px;
   background: transparent; border: 1px solid #2a2a2a;
