@@ -1212,21 +1212,25 @@ button, input, textarea, select { font: inherit; }
   .cat-hero-oneliner { font-size: 13px; margin: 0 0 14px; text-align: left; }
 }
 .cat-hero-lower {
-  margin-top: 0; display: flex; align-items: flex-end;
+  /* position: relative so the absolutely-positioned scroll hint stays anchored here */
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 .cat-hero-year {
   font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--mute); word-spacing: -0.15em;
 }
 
-/* Scroll hint — line and label share the same bottom edge.
-   The animation drips from top down to the baseline of "SCROLL". */
+/* Scroll hint — pulled out of the flex flow so it doesn't make .cat-hero-lower
+   76px tall, which was pushing the year text down and breaking the oneliner centering.
+   Anchored to the right edge and bottom of .cat-hero-lower. */
 .cat-scroll-hint {
-  position: relative;
+  position: absolute;
+  right: 0;
+  bottom: 0;
   width: max-content;
   height: 76px;
-  flex-shrink: 0;
-  margin-left: auto;
 }
 .cat-scroll-hint-label {
   position: absolute;
