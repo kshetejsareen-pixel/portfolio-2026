@@ -34,13 +34,59 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.kshetejsareen.com'),
   title: 'Kshetej Sareen',
   description: 'Independent photographer. New York · Bombay.',
+  authors: [{ name: 'Kshetej Sareen', url: 'https://www.kshetejsareen.com' }],
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   openGraph: {
     title: 'Kshetej Sareen',
     description: 'Independent photographer. New York · Bombay.',
+    url: 'https://www.kshetejsareen.com',
     type: 'website',
+    siteName: 'Kshetej Sareen Studios',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Kshetej Sareen',
+    description: 'Independent photographer. New York · Bombay.',
+  },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': 'https://www.kshetejsareen.com/#person',
+      name: 'Kshetej Sareen',
+      url: 'https://www.kshetejsareen.com',
+      jobTitle: 'Photographer',
+      description: 'Independent photographer based in New York and Bombay, specialising in culinary, interiors, portraits, objects, and motion work.',
+      knowsAbout: [
+        'Photography',
+        'Food and Beverage Photography',
+        'Interior and Architectural Photography',
+        'Portrait Photography',
+        'Still Life Photography',
+        'Motion Direction',
+        'Editorial Photography',
+        'Commercial Photography',
+      ],
+      address: [
+        { '@type': 'PostalAddress', addressLocality: 'New York', addressCountry: 'US' },
+        { '@type': 'PostalAddress', addressLocality: 'Mumbai', addressCountry: 'IN' },
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.kshetejsareen.com/#website',
+      url: 'https://www.kshetejsareen.com',
+      name: 'Kshetej Sareen Studios',
+      description: 'Portfolio of independent photographer Kshetej Sareen.',
+      author: { '@id': 'https://www.kshetejsareen.com/#person' },
+    },
+  ],
 }
 
 export default function RootLayout({
@@ -51,6 +97,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${bodoni.variable} ${jetbrains.variable} ${inter.variable}`}>
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <FontLoader />
         <RevealObserver />
         <VisualEditorRoot />

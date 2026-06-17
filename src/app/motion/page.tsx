@@ -5,7 +5,22 @@ import { readMotionVideos } from '@/lib/motionVideos'
 import { getGalleryData } from '@/lib/getGalleryData'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'Motion — Kshetej Sareen' }
+export const metadata = {
+  title: 'Motion — Kshetej Sareen',
+  description: 'Motion work and video direction by Kshetej Sareen. Visual narratives for editorial and commercial clients.',
+  alternates: { canonical: 'https://www.kshetejsareen.com/motion' },
+  openGraph: {
+    title: 'Motion — Kshetej Sareen',
+    description: 'Motion work and video direction by Kshetej Sareen. Visual narratives for editorial and commercial clients.',
+    url: 'https://www.kshetejsareen.com/motion',
+    type: 'website' as const,
+  },
+  twitter: {
+    card: 'summary_large_image' as const,
+    title: 'Motion — Kshetej Sareen',
+    description: 'Motion work and video direction by Kshetej Sareen.',
+  },
+}
 
 export default async function MotionPage() {
   const [motionDoc, initialGallery] = await Promise.allSettled([
