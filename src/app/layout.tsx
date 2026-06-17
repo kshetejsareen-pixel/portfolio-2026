@@ -36,12 +36,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.kshetejsareen.com'),
   title: 'Kshetej Sareen',
-  description: 'Independent photographer. New York · Bombay.',
+  description: 'Independent photographer. New Delhi · Bangalore.',
   authors: [{ name: 'Kshetej Sareen', url: 'https://www.kshetejsareen.com' }],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   openGraph: {
     title: 'Kshetej Sareen',
-    description: 'Independent photographer. New York · Bombay.',
+    description: 'Independent photographer. New Delhi · Bangalore.',
     url: 'https://www.kshetejsareen.com',
     type: 'website',
     siteName: 'Kshetej Sareen Studios',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Kshetej Sareen',
-    description: 'Independent photographer. New York · Bombay.',
+    description: 'Independent photographer. New Delhi · Bangalore.',
   },
 }
 
@@ -62,7 +62,7 @@ const jsonLd = {
       name: 'Kshetej Sareen',
       url: 'https://www.kshetejsareen.com',
       jobTitle: 'Photographer',
-      description: 'Independent photographer based in New York and Bombay, specialising in culinary, interiors, portraits, objects, and motion work.',
+      description: 'Independent photographer based in New Delhi and Bangalore, specialising in culinary, interiors, portraits, objects, and motion work.',
       knowsAbout: [
         'Photography',
         'Food and Beverage Photography',
@@ -74,8 +74,8 @@ const jsonLd = {
         'Commercial Photography',
       ],
       address: [
-        { '@type': 'PostalAddress', addressLocality: 'New York', addressCountry: 'US' },
-        { '@type': 'PostalAddress', addressLocality: 'Mumbai', addressCountry: 'IN' },
+        { '@type': 'PostalAddress', addressLocality: 'New Delhi', addressCountry: 'IN' },
+        { '@type': 'PostalAddress', addressLocality: 'Bangalore', addressCountry: 'IN' },
       ],
     },
     {
