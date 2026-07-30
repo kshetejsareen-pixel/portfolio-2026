@@ -3,8 +3,8 @@ import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { objectsData } from '@/lib/categoryData'
 import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
-const TITLE = 'Still Life & Object Photography — Kshetej Sareen'
-const DESCRIPTION = 'Still life and product photography by Kshetej Sareen. Objects photographed with intent.'
+const TITLE = 'Product & Still Life Photography — Kshetej Sareen'
+const DESCRIPTION = 'Product and still life photographer for campaigns, packaging and e-commerce. Studios in New Delhi, Gurgaon and Bangalore. Commissions include Tom Ford.'
 const URL = 'https://www.kshetejsareen.com/objects'
 
 export async function generateMetadata(): Promise<Metadata> {

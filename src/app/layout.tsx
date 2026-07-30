@@ -79,6 +79,27 @@ const jsonLd = {
       ],
     },
     {
+      '@type': 'ProfessionalService',
+      '@id': 'https://www.kshetejsareen.com/#studio',
+      name: 'Kshetej Sareen Studios',
+      url: 'https://www.kshetejsareen.com',
+      email: 'info@kshetejsareen.com',
+      founder: { '@id': 'https://www.kshetejsareen.com/#person' },
+      description: 'Commercial photography studio for food and beverage, architectural and interior, portrait, and corporate photography.',
+      address: [
+        { '@type': 'PostalAddress', streetAddress: 'MG Road', addressLocality: 'New Delhi', addressCountry: 'IN' },
+        { '@type': 'PostalAddress', streetAddress: 'Phase 1', addressLocality: 'Gurgaon', addressRegion: 'Haryana', addressCountry: 'IN' },
+        { '@type': 'PostalAddress', streetAddress: 'Richmond Town', addressLocality: 'Bengaluru', addressRegion: 'Karnataka', addressCountry: 'IN' },
+      ],
+      areaServed: [
+        { '@type': 'City', name: 'New Delhi' },
+        { '@type': 'City', name: 'Gurgaon' },
+        { '@type': 'City', name: 'Bengaluru' },
+        { '@type': 'City', name: 'Hyderabad' },
+      ],
+      priceRange: 'On request',
+    },
+    {
       '@type': 'WebSite',
       '@id': 'https://www.kshetejsareen.com/#website',
       url: 'https://www.kshetejsareen.com',

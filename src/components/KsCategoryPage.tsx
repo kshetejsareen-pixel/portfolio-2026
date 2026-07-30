@@ -832,6 +832,30 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bann
 
       <footer className="cat-footer">
         <ExploreNav catId={catId} />
+        {(() => {
+          // One contextual services line per category; other categories stay clean.
+          const svc = {
+            culinary:  { label: 'Food photography',          base: 'food-photographer' },
+            spaces:    { label: 'Architectural photography',  base: 'architectural-photographer' },
+            portraits: { label: 'Corporate & headshots',      base: 'corporate-photographer' },
+            objects:   { label: 'Product photography',        base: 'product-photographer' },
+            motion:    { label: 'Video & film',               base: 'video-production' },
+          }[catId as string]
+          if (!svc) return null
+          return (
+            <div className="cat-footer-services">
+              <div className="cat-footer-services-row">
+                <span className="cat-footer-services-label">{svc.label}</span>
+                {[['delhi', 'Delhi'], ['gurgaon', 'Gurgaon'], ['bangalore', 'Bangalore'], ['hyderabad', 'Hyderabad']].map(([slug, name], i) => (
+                  <span key={slug}>
+                    {i > 0 && <span className="cat-footer-services-dot"> · </span>}
+                    <Link href={`/${svc.base}-${slug}`}>{name}</Link>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
         <div className="cat-footer-copy">
           <div>© Kshetej Sareen · 2026</div>
           <div>info@kshetejsareen.com</div>

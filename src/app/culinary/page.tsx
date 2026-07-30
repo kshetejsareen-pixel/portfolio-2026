@@ -3,8 +3,8 @@ import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { culinaryData } from '@/lib/categoryData'
 import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
-const TITLE = 'Culinary Photography — Kshetej Sareen'
-const DESCRIPTION = 'Editorial food and beverage photography by Kshetej Sareen. Studio and location work across New Delhi and Bangalore.'
+const TITLE = 'Food Photography — Delhi & Bangalore | Kshetej Sareen'
+const DESCRIPTION = 'Food and beverage photographer for restaurants, cafés and hospitality brands. Studios in New Delhi, Gurgaon and Bangalore; available in Hyderabad.'
 const URL = 'https://www.kshetejsareen.com/culinary'
 
 export async function generateMetadata(): Promise<Metadata> {

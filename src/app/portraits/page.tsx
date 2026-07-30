@@ -3,8 +3,8 @@ import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { portraitsData } from '@/lib/categoryData'
 import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
-const TITLE = 'Portrait Photography — Kshetej Sareen'
-const DESCRIPTION = 'Portrait photography by Kshetej Sareen. Studio and on-location portraits across New Delhi and Bangalore.'
+const TITLE = 'Portrait & Corporate Headshot Photography — Kshetej Sareen'
+const DESCRIPTION = 'Portrait, executive and corporate headshot photography in studio or on location across New Delhi, Gurgaon and Bangalore.'
 const URL = 'https://www.kshetejsareen.com/portraits'
 
 export async function generateMetadata(): Promise<Metadata> {

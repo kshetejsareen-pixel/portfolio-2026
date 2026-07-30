@@ -7,8 +7,8 @@ import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
 export const dynamic = 'force-dynamic'
 
-const TITLE = 'Motion & Video Direction — Kshetej Sareen'
-const DESCRIPTION = 'Motion work and video direction by Kshetej Sareen. Visual narratives for editorial and commercial clients.'
+const TITLE = 'Video & Film Production — Kshetej Sareen'
+const DESCRIPTION = 'Brand films, food and property films, and product motion, directed by photographer Kshetej Sareen across Delhi, Gurgaon, Bangalore and Hyderabad.'
 const URL = 'https://www.kshetejsareen.com/motion'
 
 export async function generateMetadata(): Promise<Metadata> {

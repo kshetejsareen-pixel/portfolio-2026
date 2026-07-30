@@ -3,8 +3,8 @@ import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { spacesData } from '@/lib/categoryData'
 import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
-const TITLE = 'Interior & Spaces Photography — Kshetej Sareen'
-const DESCRIPTION = 'Interior and architectural photography by Kshetej Sareen. Quiet spaces, considered light.'
+const TITLE = 'Architectural & Interior Photography — Kshetej Sareen'
+const DESCRIPTION = 'Architectural and interior photographer for residences, hotels and offices across Delhi, Gurgaon, Bangalore and Hyderabad. Published in Architectural Digest.'
 const URL = 'https://www.kshetejsareen.com/spaces'
 
 export async function generateMetadata(): Promise<Metadata> {
