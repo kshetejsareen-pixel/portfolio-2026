@@ -1,22 +1,31 @@
+import type { Metadata } from 'next'
 import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { objectsData } from '@/lib/categoryData'
-import { getGalleryData } from '@/lib/getGalleryData'
+import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
-export const metadata = {
-  title: 'Objects — Kshetej Sareen',
-  description: 'Still life and product photography by Kshetej Sareen. Objects photographed with intent.',
-  alternates: { canonical: 'https://www.kshetejsareen.com/objects' },
-  openGraph: {
-    title: 'Objects — Kshetej Sareen',
-    description: 'Still life and product photography by Kshetej Sareen. Objects photographed with intent.',
-    url: 'https://www.kshetejsareen.com/objects',
-    type: 'website' as const,
-  },
-  twitter: {
-    card: 'summary_large_image' as const,
-    title: 'Objects — Kshetej Sareen',
-    description: 'Still life and product photography by Kshetej Sareen.',
-  },
+const TITLE = 'Still Life & Object Photography — Kshetej Sareen'
+const DESCRIPTION = 'Still life and product photography by Kshetej Sareen. Objects photographed with intent.'
+const URL = 'https://www.kshetejsareen.com/objects'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getCategoryOgImage('objects')
+  return {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: URL },
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      url: URL,
+      type: 'website',
+      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: TITLE,
+      description: 'Still life and product photography by Kshetej Sareen.',
+    },
+  }
 }
 
 export default async function ObjectsPage() {

@@ -1,21 +1,30 @@
+import type { Metadata } from 'next'
 import { InfoPage } from '@/components/InfoPage'
 import { getInfoCopy, getInfoPortrait } from '@/lib/getInfoData'
 
-export const metadata = {
-  title: 'Info — Kshetej Sareen',
-  description: 'Kshetej Sareen is an independent photographer based in New Delhi and Bangalore. Available for editorial, commercial, and fine-art commissions.',
-  alternates: { canonical: 'https://www.kshetejsareen.com/info' },
-  openGraph: {
-    title: 'Info — Kshetej Sareen',
-    description: 'Kshetej Sareen is an independent photographer based in New Delhi and Bangalore. Available for editorial, commercial, and fine-art commissions.',
-    url: 'https://www.kshetejsareen.com/info',
-    type: 'website' as const,
-  },
-  twitter: {
-    card: 'summary_large_image' as const,
-    title: 'Info — Kshetej Sareen',
-    description: 'Independent photographer based in New Delhi and Bangalore.',
-  },
+const TITLE = 'Info — Kshetej Sareen'
+const DESCRIPTION = 'Kshetej Sareen is an independent photographer based in New Delhi and Bangalore. Available for editorial, commercial, and fine-art commissions.'
+const URL = 'https://www.kshetejsareen.com/info'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const portrait = await getInfoPortrait().catch(() => null)
+  return {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: URL },
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      url: URL,
+      type: 'website',
+      ...(portrait?.url ? { images: [{ url: portrait.url }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: TITLE,
+      description: 'Independent photographer based in New Delhi and Bangalore.',
+    },
+  }
 }
 
 export default async function Page() {

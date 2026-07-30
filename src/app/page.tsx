@@ -6,24 +6,29 @@ import { getInfoPortrait } from '@/lib/getInfoData'
 
 const SITE_URL = 'https://www.kshetejsareen.com'
 
+const HOME_TITLE = 'Kshetej Sareen — Photographer | New Delhi · Bangalore'
+const HOME_DESCRIPTION =
+  'Independent photographer in New Delhi and Bangalore. Culinary, interiors, portraits, still life and motion work for editorial and commercial commissions.'
+
 export async function generateMetadata(): Promise<Metadata> {
   const portrait = await getInfoPortrait().catch(() => null)
   const ogImage  = portrait?.url ?? undefined
 
   return {
-    title:       'Kshetej Sareen',
-    description: "A closer look at the stories we've brought to life.",
+    title:       HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    alternates:  { canonical: SITE_URL },
     openGraph: {
-      title:       'Kshetej Sareen Studios',
-      description: "A closer look at the stories we've brought to life.",
+      title:       HOME_TITLE,
+      description: HOME_DESCRIPTION,
       url:         SITE_URL,
       type:        'website',
       ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 800 }] } : {}),
     },
     twitter: {
       card:        'summary_large_image',
-      title:       'Kshetej Sareen Studios',
-      description: "A closer look at the stories we've brought to life.",
+      title:       HOME_TITLE,
+      description: HOME_DESCRIPTION,
     },
   }
 }

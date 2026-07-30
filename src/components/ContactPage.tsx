@@ -226,7 +226,7 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
               {heroPara1 ?? <>For commissions, prints, and press — <em>the form is the fastest route.</em>{' '}Tell me a little about the project and I&rsquo;ll write back within two working days.</>}
             </motion.p>
             <motion.p {...LIFT} animate={mounted ? LIFT.visible : LIFT.initial} transition={tx(0.52)} className="contact-hero-col">
-              {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.</>}
+              {heroPara2 ?? <>Returning collaborators and editors, you have the studio direct line below. Working between New Delhi and Bangalore, expect a thoughtful (slightly slow) reply.</>}
             </motion.p>
           </div>
         </section>

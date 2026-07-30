@@ -217,6 +217,15 @@ function getHeroTint(row: FlowRow): string {
   return '#1a1a1c'
 }
 
+// Cloudinary URLs are built with a w_2400 transform; swap the width to let
+// the browser pick the smallest sufficient variant.
+const SRCSET_WIDTHS = [800, 1200, 1600, 2400]
+
+function cloudinarySrcSet(url: string): string | undefined {
+  if (!url.includes('w_2400')) return undefined
+  return SRCSET_WIDTHS.map((w) => `${url.replace('w_2400', `w_${w}`)} ${w}w`).join(', ')
+}
+
 function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?: string }) {
   const aspect = aspectOverride ? `cat-ar-${aspectOverride}` : `cat-ar-${photo.aspect}`
   return (
@@ -224,7 +233,11 @@ function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?
       {photo.image
         ? <img
             src={photo.image}
+            srcSet={cloudinarySrcSet(photo.image)}
+            sizes="100vw"
             alt={photo.title}
+            loading="lazy"
+            decoding="async"
             className="cat-photo-img"
             style={photo.focalX != null && photo.focalY != null
               ? { objectPosition: `${photo.focalX}% ${photo.focalY}%` }
@@ -629,7 +642,10 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bann
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={heroAssignment.url}
-            alt=""
+            srcSet={cloudinarySrcSet(heroAssignment.url)}
+            sizes="100vw"
+            alt={`${copy.heroTitle || data.cat.name} — photography by Kshetej Sareen`}
+            fetchPriority="high"
             className="cat-hero-photo"
             style={heroAssignment.focalX != null && heroAssignment.focalY != null
               ? { objectPosition: `${heroAssignment.focalX}% ${heroAssignment.focalY}%` }
@@ -752,7 +768,11 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bann
                         {p.coverUrl
                           ? <img
                               src={p.coverUrl}
+                              srcSet={cloudinarySrcSet(p.coverUrl)}
+                              sizes="(max-width: 768px) 100vw, 50vw"
                               alt={p.title}
+                              loading="lazy"
+                              decoding="async"
                               className="cat-photo-img"
                               style={p.coverFocalX != null && p.coverFocalY != null
                                 ? { objectPosition: `${p.coverFocalX}% ${p.coverFocalY}%` }

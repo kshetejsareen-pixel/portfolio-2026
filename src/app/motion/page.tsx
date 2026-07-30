@@ -1,25 +1,35 @@
+import type { Metadata } from 'next'
 import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { MotionVideoGallery } from '@/components/MotionVideoGallery'
 import { motionData } from '@/lib/categoryData'
 import { readMotionVideos } from '@/lib/motionVideos'
-import { getGalleryData } from '@/lib/getGalleryData'
+import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
 export const dynamic = 'force-dynamic'
-export const metadata = {
-  title: 'Motion — Kshetej Sareen',
-  description: 'Motion work and video direction by Kshetej Sareen. Visual narratives for editorial and commercial clients.',
-  alternates: { canonical: 'https://www.kshetejsareen.com/motion' },
-  openGraph: {
-    title: 'Motion — Kshetej Sareen',
-    description: 'Motion work and video direction by Kshetej Sareen. Visual narratives for editorial and commercial clients.',
-    url: 'https://www.kshetejsareen.com/motion',
-    type: 'website' as const,
-  },
-  twitter: {
-    card: 'summary_large_image' as const,
-    title: 'Motion — Kshetej Sareen',
-    description: 'Motion work and video direction by Kshetej Sareen.',
-  },
+
+const TITLE = 'Motion & Video Direction — Kshetej Sareen'
+const DESCRIPTION = 'Motion work and video direction by Kshetej Sareen. Visual narratives for editorial and commercial clients.'
+const URL = 'https://www.kshetejsareen.com/motion'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getCategoryOgImage('motion')
+  return {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: URL },
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      url: URL,
+      type: 'website',
+      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: TITLE,
+      description: 'Motion work and video direction by Kshetej Sareen.',
+    },
+  }
 }
 
 export default async function MotionPage() {

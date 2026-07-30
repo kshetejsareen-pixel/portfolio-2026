@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { readCopyConfig } from '@/lib/copyConfig'
 import { getAllAssignmentsPublic } from '@/lib/assignmentsStore'
 import type { InfoCopy } from '@/lib/copyConfig'
@@ -21,7 +22,8 @@ export async function getInfoCopy(): Promise<InfoCopy> {
   return (config.info as InfoCopy) ?? {}
 }
 
-export async function getInfoPortrait(): Promise<PortraitData | null> {
+// cache() dedupes the Firestore read between generateMetadata and the page.
+export const getInfoPortrait = cache(async (): Promise<PortraitData | null> => {
   const store = await getAllAssignmentsPublic()
   const data = store['info-portrait']
   if (!data) return null
@@ -30,4 +32,4 @@ export async function getInfoPortrait(): Promise<PortraitData | null> {
     focalX: data.focalX,
     focalY: data.focalY,
   }
-}
+})

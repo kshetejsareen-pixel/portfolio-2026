@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { getAllAssignmentsPublic } from '@/lib/assignmentsStore'
 
 const CLOUD = process.env.CLOUDINARY_CLOUD_NAME ?? 'dsouvrzlr'
@@ -31,7 +32,9 @@ export interface GalleryData {
   hero: { url: string; focalX?: number; focalY?: number } | null
 }
 
-export async function getGalleryData(catId: string): Promise<GalleryData> {
+// cache() dedupes the Firestore read when both generateMetadata and the
+// page component request the same category within one request.
+export const getGalleryData = cache(async (catId: string): Promise<GalleryData> => {
   const store   = await getAllAssignmentsPublic()
   const pattern = new RegExp(`^${catId}-(\\d+)$`)
 
@@ -61,4 +64,17 @@ export async function getGalleryData(catId: string): Promise<GalleryData> {
   }
 
   return { assignments, hero }
+})
+
+export async function getCategoryOgImage(catId: string): Promise<string | undefined> {
+  try {
+    const { hero, assignments } = await getGalleryData(catId)
+    const first = Object.keys(assignments)
+      .sort((a, b) => Number(a) - Number(b))
+      .map((k) => assignments[k].url)[0]
+    const url = hero?.url ?? first
+    return url?.replace('w_2400', 'w_1200')
+  } catch {
+    return undefined
+  }
 }

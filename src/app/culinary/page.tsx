@@ -1,22 +1,31 @@
+import type { Metadata } from 'next'
 import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { culinaryData } from '@/lib/categoryData'
-import { getGalleryData } from '@/lib/getGalleryData'
+import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
 
-export const metadata = {
-  title: 'Culinary — Kshetej Sareen',
-  description: 'Editorial food and beverage photography by Kshetej Sareen. Studio and location work across India and New York.',
-  alternates: { canonical: 'https://www.kshetejsareen.com/culinary' },
-  openGraph: {
-    title: 'Culinary — Kshetej Sareen',
-    description: 'Editorial food and beverage photography by Kshetej Sareen. Studio and location work across India and New York.',
-    url: 'https://www.kshetejsareen.com/culinary',
-    type: 'website' as const,
-  },
-  twitter: {
-    card: 'summary_large_image' as const,
-    title: 'Culinary — Kshetej Sareen',
-    description: 'Editorial food and beverage photography by Kshetej Sareen.',
-  },
+const TITLE = 'Culinary Photography — Kshetej Sareen'
+const DESCRIPTION = 'Editorial food and beverage photography by Kshetej Sareen. Studio and location work across New Delhi and Bangalore.'
+const URL = 'https://www.kshetejsareen.com/culinary'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getCategoryOgImage('culinary')
+  return {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: URL },
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      url: URL,
+      type: 'website',
+      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: TITLE,
+      description: 'Editorial food and beverage photography by Kshetej Sareen.',
+    },
+  }
 }
 
 export default async function CulinaryPage() {
