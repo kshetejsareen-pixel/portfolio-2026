@@ -1841,7 +1841,7 @@ const INFO_COPY_DEFAULTS: Record<string, unknown> = {
   touchEmailNote:       'For commissions & prints',
   touchAppointment:     'New York · Bombay',
   touchAppointmentNote: 'Studio visits welcome',
-  touchSocial:          '@kshetejsareen',
+  touchSocial:          '@ksatwork',
   touchSocialNote:      'Instagram',
 }
 
@@ -1863,7 +1863,7 @@ const CONTACT_COPY_DEFAULTS: Record<string, unknown> = {
   privacyText:     'No mailing list. Your details stay between us.',
   directTitle:     'Direct channels.',
   directDesc:      'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.',
-  directChannels:  'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 99995 67676 | Fastest response | https://wa.me/919999567676\nElsewhere | @kshetejsareen | Instagram | https://instagram.com/kshetejsareen\nNew York | Brooklyn, NY | By appointment · Mon–Fri |\nBombay | Bandra W, Mumbai | By appointment |\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com',
+  directChannels:  'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 99995 67676 | Fastest response | https://wa.me/919999567676\nElsewhere | @ksatwork | Instagram | https://instagram.com/ksatwork\nNew York | Brooklyn, NY | By appointment · Mon–Fri |\nBombay | Bandra W, Mumbai | By appointment |\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com',
   notesEyebrow:    '02 · Working notes',
   notesLeft:       'Lead time — Commissions typically book 3–6 weeks out. Print orders ship within 10 working days.\nTravel — Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.\nImage use & press — Press kit and high-res files available on request from info@kshetejsareen.com.',
   notesRight:      'Day rates — Available on request once project scope is clear. Half-day, full-day, and multi-day rates.\nUsage & licensing — All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.\nPrints — Editions of 12, printed in studio on Hahnemühle Photo Rag. Signed, numbered, and stamped on verso.',

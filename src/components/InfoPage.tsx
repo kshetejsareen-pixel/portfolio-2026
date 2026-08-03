@@ -104,7 +104,7 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
   const touchEmailNote       = copy.touchEmailNote       ?? 'For commissions & prints'
   const touchAppointment     = copy.touchAppointment     ?? 'New Delhi · Bangalore'
   const touchAppointmentNote = copy.touchAppointmentNote ?? 'Studio visits welcome'
-  const touchSocial          = copy.touchSocial          ?? '@kshetejsareen'
+  const touchSocial          = copy.touchSocial          ?? '@ksatwork'
   const touchSocialNote      = copy.touchSocialNote      ?? 'Instagram'
 
   const practiceItems = copy.practiceItems
