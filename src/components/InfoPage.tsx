@@ -24,22 +24,35 @@ const DEFAULT_NOW = [
 ]
 
 const DEFAULT_CLIENTS = [
-  { name: 'Apartamento', year: '2021—' },
-  { name: 'Cereal Magazine', year: '2022—' },
-  { name: 'Kinfolk', year: '2023—' },
-  { name: 'The New York Times', year: '2024—' },
-  { name: 'The Gentlewoman', year: '2024' },
-  { name: 'Aēsop', year: '2023, 2025' },
-  { name: 'Le Labo', year: '2024' },
-  { name: 'Hermès', year: '2025' },
+  { name: 'Tom Ford', year: '' },
+  { name: 'Brunello Cucinelli', year: '' },
+  { name: 'Berluti', year: '' },
+  { name: 'Brioni', year: '' },
+  { name: 'Ladurée', year: '' },
+  { name: 'The Leela Palaces, Hotels & Resorts', year: '' },
+  { name: 'Taj Hotels Palaces Resorts Safaris', year: '' },
+  { name: 'JW Marriott Hotels & Resorts', year: '' },
+  { name: 'Le Méridien', year: '' },
+  { name: 'Jumeirah Hotels & Resorts', year: '' },
+  { name: 'Crowne Plaza Hotels & Resorts', year: '' },
+  { name: 'InterContinental Hotels & Resorts', year: '' },
+  { name: 'Six Senses Hotels Resorts Spas', year: '' },
+  { name: 'Meliá Hotels & Resorts', year: '' },
+  { name: 'Fiyavalhu Resort Maldives', year: '' },
+  { name: 'Edge Creekside Hotel', year: '' },
+  { name: "Jamie Oliver's", year: '' },
+  { name: 'MDH Spices', year: '' },
+  { name: '93 Degrees Coffee Roasters', year: '' },
+  { name: 'RAVOH', year: '' },
+  { name: 'DLF', year: '' },
+  { name: 'Cushman & Wakefield', year: '' },
+  { name: 'Viacom18', year: '' },
+  { name: 'Sunny Leone', year: '' },
+  { name: 'Good Homes Magazine', year: '' },
 ]
 
 const DEFAULT_PRESS = [
-  { name: 'Pier 24 — group show', year: '2025' },
-  { name: 'Aperture, vol. 246', year: '2024' },
-  { name: 'Foam Talent — finalist', year: '2024' },
-  { name: 'British Journal of Photography', year: '2023' },
-  { name: "It's Nice That · profile", year: '2023' },
+  { name: 'Architectural Digest', year: '' },
 ]
 
 function parseNameYear(text: string): { name: string; year: string }[] {

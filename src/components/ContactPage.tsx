@@ -14,7 +14,7 @@ const BUDGETS = ['₹2,00,000 – ₹5,00,000', '₹5,00,000 – ₹10,00,000', 
 const DIRECT = [
   { label: 'Studio',    value: 'info@kshetejsareen.com', href: 'mailto:info@kshetejsareen.com', note: 'For commissions & prints' },
   { label: 'WhatsApp',  value: '+91 99995 67676',         href: 'https://wa.me/919999567676',   note: 'Fastest response' },
-  { label: 'New Delhi', value: 'Silver Oak Farms',         href: null,                            note: 'By appointment' },
+  { label: 'New Delhi', value: 'Silver Oak Farms, MG Road', href: null,                           note: 'By appointment' },
   { label: 'Bangalore', value: 'Richmond Town',            href: null,                            note: 'By appointment' },
   { label: 'Elsewhere', value: '@ksatwork',               href: 'https://instagram.com/ksatwork', note: 'Instagram' },
   { label: 'Press',     value: 'info@kshetejsareen.com', href: 'mailto:info@kshetejsareen.com', note: 'Media inquiries, image use' },
