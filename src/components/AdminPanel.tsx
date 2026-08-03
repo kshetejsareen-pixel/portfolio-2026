@@ -1823,7 +1823,7 @@ const CATEGORY_DEFAULTS: Record<string, CategoryCopy> = {
 const INFO_COPY_DEFAULTS: Record<string, unknown> = {
   heroEyebrow:          'Info · A working biography',
   heroIntro:            'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.',
-  bioPara1:             'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. Trained as an architect, his frames lean toward the still, the patient, the carefully lit.',
+  bioPara1:             'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. A chartered accountant by training, he left the ledgers to follow the light — and kept the discipline: frames that lean toward the still, the patient, the carefully lit.',
   bioPara2:             'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.',
   heroCap:              'Self · Studio · 2026',
   bioHeading:           'Biography',

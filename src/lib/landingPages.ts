@@ -230,11 +230,11 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Delhi | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer in New Delhi. Trained as an architect; photographs residences, hotels and offices. Published in Architectural Digest.',
+      'Architectural and interior photographer in New Delhi photographing residences, hotels and offices. Published in Architectural Digest.',
     h1: 'Architectural photographer in New Delhi',
-    sub: 'Studio on MG Road, New Delhi · Trained as an architect',
+    sub: 'Studio on MG Road, New Delhi · Published in Architectural Digest',
     intro: [
-      'Before photographing buildings, Kshetej Sareen trained as an architect — which changes how a space gets photographed. Lines stay true, volumes read the way the designer intended, and light is waited for rather than faked.',
+      'Kshetej Sareen photographs buildings the way their designers intended them to be read: lines true, volumes honest, light waited for rather than faked. Architecture rewards that patience, and it shows in the frames.',
       'From the MG Road studio, the practice photographs residences, hotels, restaurants and workplaces across Delhi for architects, interior designers and developers. Editorial work has appeared in Architectural Digest; commissions include hospitality properties for Taj, The Leela and JW Marriott.',
     ],
     include: ARCH_INCLUDE,
@@ -264,11 +264,11 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Gurgaon | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer in Gurgaon (Gurugram). Residences, offices and hospitality spaces, photographed by an architect-trained eye.',
+      'Architectural and interior photographer in Gurgaon (Gurugram). Residences, offices and hospitality spaces, photographed with an exacting editorial eye.',
     h1: 'Architectural photographer in Gurgaon',
     sub: 'Based in Phase 1, Gurgaon · Serving Gurugram and Delhi NCR',
     intro: [
-      'Gurugram builds ambitiously — glass office campuses, golf-course residences, hotels that anchor whole districts. Kshetej Sareen photographs that architecture from a base in Phase 1, bringing an architect’s training to how each building’s intent is read and framed.',
+      'Gurugram builds ambitiously — glass office campuses, golf-course residences, hotels that anchor whole districts. Kshetej Sareen photographs that architecture from a base in Phase 1, reading each building’s intent carefully before framing it.',
       'The work serves architects, interior designers, developers and workplace teams: exteriors at the right hour, interiors composed patiently, details that carry a project’s story in portfolios, pitches and publications.',
     ],
     include: ARCH_INCLUDE,
@@ -300,9 +300,9 @@ export const LANDING_PAGES: LandingPageDef[] = [
     metaDescription:
       'Architectural and interior photographer in Bangalore. Residences, hotels and workplaces photographed from Richmond Town. Published in Architectural Digest.',
     h1: 'Architectural photographer in Bangalore',
-    sub: 'Studio in Richmond Town, Bengaluru · Trained as an architect',
+    sub: 'Studio in Richmond Town, Bengaluru · Published in Architectural Digest',
     intro: [
-      'Bangalore’s architecture lives in its gardens and verandahs as much as its facades — a city of filtered light. Working from Richmond Town, Kshetej Sareen photographs residences, hotels, restaurants and offices across Bengaluru with the patience that interiors demand and the precision an architecture degree instilled.',
+      'Bangalore’s architecture lives in its gardens and verandahs as much as its facades — a city of filtered light. Working from Richmond Town, Kshetej Sareen photographs residences, hotels, restaurants and offices across Bengaluru with the patience that interiors demand and an exacting eye for line and light.',
       'Clients are typically architects and designers who need their built work recorded faithfully, and hospitality brands — the studio has photographed properties for Taj, The Leela and Six Senses — who need spaces that sell the stay.',
     ],
     include: ARCH_INCLUDE,
@@ -332,11 +332,11 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Hyderabad | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer available in Hyderabad. Hotels, residences and offices photographed on commission by an architect-trained photographer.',
+      'Architectural and interior photographer available in Hyderabad. Hotels, residences and offices photographed on commission with a travelling crew.',
     h1: 'Architectural photographer in Hyderabad',
     sub: 'Available in Hyderabad on commission · Studios in Delhi NCR and Bangalore',
     intro: [
-      'For Hyderabad’s hotels, residences and workplaces, Kshetej Sareen takes architectural commissions on a travel basis — an architect-trained photographer arriving with full kit and a pre-agreed shot list, so the days on site are spent making pictures.',
+      'For Hyderabad’s hotels, residences and workplaces, Kshetej Sareen takes architectural commissions on a travel basis — arriving with full kit and a pre-agreed shot list, so the days on site are spent making pictures.',
       'The practice’s hospitality and interiors work — Taj, The Leela, JW Marriott, and editorial in Architectural Digest — travels well: the same discipline about light, lines and honest spaces applies whether the property is in Banjara Hills or HITEC City.',
     ],
     include: ARCH_INCLUDE,
