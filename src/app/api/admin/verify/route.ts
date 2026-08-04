@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 import { verifyOtp } from '@/lib/otpStore'
+import { createSessionToken, SESSION_MAX_AGE_SECONDS } from '@/lib/adminSession'
 
 const OTP_KEY = 'admin-otp'
 
@@ -19,11 +20,12 @@ export async function POST(req: Request) {
 
   if (result === 'ok') {
     const res = NextResponse.json({ ok: true })
-    res.cookies.set('admin_token', process.env.ADMIN_SESSION_SECRET!, {
+    res.cookies.set('admin_token', await createSessionToken(), {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: SESSION_MAX_AGE_SECONDS,
     })
     return res
   }

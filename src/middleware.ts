@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { verifySessionToken } from '@/lib/adminSession'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Allow login + verify pages/APIs through without a session cookie
@@ -17,7 +18,7 @@ export function middleware(request: NextRequest) {
   // Protect all /admin and /api/admin routes
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     const token = request.cookies.get('admin_token')?.value
-    if (token !== process.env.ADMIN_SESSION_SECRET) {
+    if (!(await verifySessionToken(token))) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }

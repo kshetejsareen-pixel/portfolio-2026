@@ -1,5 +1,6 @@
 import '@/lib/firebase'
 import { getFirestore } from 'firebase-admin/firestore'
+import { randomInt } from 'node:crypto'
 
 const COLLECTION = 'portfolio'
 const DOC_ID     = 'admin-otp'
@@ -13,7 +14,9 @@ interface OtpEntry {
 }
 
 export async function generateOtp(_key: string): Promise<string> {
-  const code = Math.floor(100_000 + Math.random() * 900_000).toString()
+  // randomInt, not Math.random: this is a second auth factor, and Math.random
+  // is a predictable PRNG.
+  const code = randomInt(100_000, 1_000_000).toString()
   const entry: OtpEntry = { code, expiresAt: Date.now() + OTP_TTL_MS, attempts: 0 }
   await getFirestore().collection(COLLECTION).doc(DOC_ID).set(entry)
   return code

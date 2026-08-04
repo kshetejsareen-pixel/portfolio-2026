@@ -26,3 +26,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local working dirs (never commit)
+/Claude Code Working Data/
+/HTML Files/
+/graphify-out/
