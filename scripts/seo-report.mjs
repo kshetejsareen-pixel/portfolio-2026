@@ -90,8 +90,13 @@ async function main() {
   const range = { startDate: START, endDate: END }
   const prevRange = { startDate: PREV_START, endDate: PREV_END }
 
-  const [curQueries, prevQueries, curPages, prevPages, byDevice, byCountry] =
+  const [curTotal, prevTotal, curQueries, prevQueries, curPages, prevPages, byDevice, byCountry] =
     await Promise.all([
+      // Dimensionless: the only rows Google reports unfiltered. Summing the
+      // query dimension instead undercounts, because rare queries are dropped
+      // for privacy and their clicks vanish from the total.
+      q(range),
+      q(prevRange),
       q({ ...range, dimensions: ['query'], rowLimit: 500 }),
       q({ ...prevRange, dimensions: ['query'], rowLimit: 500 }),
       q({ ...range, dimensions: ['page'], rowLimit: 500 }),
@@ -100,8 +105,9 @@ async function main() {
       q({ ...range, dimensions: ['country'], rowLimit: 10 }),
     ])
 
-  const cur = totals(curQueries)
-  const prev = totals(prevQueries)
+  const cur = totals(curTotal)
+  const prev = totals(prevTotal)
+  const namedCur = totals(curQueries)
 
   const out = []
   const W = (s = '') => out.push(s)
@@ -129,6 +135,15 @@ async function main() {
   ))
   W('```')
   W()
+
+  const hidden = cur.impressions - namedCur.impressions
+  if (hidden > 0) {
+    const share = ((hidden / cur.impressions) * 100).toFixed(0)
+    W(`Google withholds the search term on rare queries, so the query table below`)
+    W(`accounts for ${n0(namedCur.impressions)} of ${n0(cur.impressions)} impressions (${share}% hidden).`)
+    W(`The headline above is the unfiltered total and is the number to trust.`)
+    W()
+  }
 
   if (!curQueries.length) {
     W('No search data in this window yet. For a site this new that is normal —')
@@ -166,11 +181,11 @@ async function main() {
     // Position 5-20 with real impressions: already relevant to Google, just
     // below the fold. Cheapest wins on the board.
     const striking = curQueries
-      .filter((r) => r.position >= 5 && r.position <= 20 && r.impressions >= 10)
+      .filter((r) => r.position >= 5 && r.position <= 30 && r.impressions >= 2)
       .sort((a, b) => b.impressions - a.impressions)
       .slice(0, 20)
 
-    W('## Striking distance (position 5-20)')
+    W('## Striking distance (position 5-30)')
     W()
     if (striking.length) {
       W('Queries Google already considers you relevant for. Moving these up is')
