@@ -65,7 +65,7 @@ const jsonLd = {
       url: 'https://www.kshetejsareen.com',
       jobTitle: 'Photographer',
       sameAs: ['https://www.instagram.com/ksatwork/'],
-      description: 'Independent photographer based in New Delhi and Bangalore, specialising in culinary, interiors, portraits, objects, and motion work.',
+      description: 'Independent photographer based in New Delhi, Gurgaon and Bangalore, specialising in culinary, interiors, portraits, objects, and motion work.',
       knowsAbout: [
         'Photography',
         'Food and Beverage Photography',

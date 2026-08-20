@@ -4,7 +4,7 @@ import { getContactCopy } from '@/lib/getContactData'
 import { getInfoPortrait } from '@/lib/getInfoData'
 
 const TITLE = 'Contact — Kshetej Sareen'
-const DESCRIPTION = 'Commission editorial, culinary, spaces, portraits or motion work. Studio in New Delhi and Bangalore.'
+const DESCRIPTION = 'Commission editorial, culinary, spaces, portraits or motion work. Studio in New Delhi, Gurgaon and Bangalore.'
 const URL = 'https://www.kshetejsareen.com/contact'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: TITLE,
-      description: 'Commission work with Kshetej Sareen. Studio in New Delhi and Bangalore.',
+      description: 'Commission work with Kshetej Sareen. Studio in New Delhi, Gurgaon and Bangalore.',
     },
   }
 }

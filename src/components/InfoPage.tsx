@@ -8,21 +8,6 @@ import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import type { InfoCopy } from '@/lib/copyConfig'
 import type { PortraitData } from '@/lib/getInfoData'
 
-const DEFAULT_PRACTICE = [
-  { label: 'Portraits', frames: 24 },
-  { label: 'Culinary', frames: 38 },
-  { label: 'Spaces', frames: 19 },
-  { label: 'Objects', frames: 12 },
-  { label: 'Motion', frames: 7 },
-]
-
-const DEFAULT_NOW = [
-  'Residency — Kindred Studio, Brooklyn — through Aug 2026',
-  'In progress — The Fruit Table, vol. ii (Kyoto)',
-  'Available — Bookings · May–Sept 2026',
-  'Print sales — Editions of 12 — by request',
-]
-
 const DEFAULT_CLIENTS = [
   { name: 'Tom Ford', year: '' },
   { name: 'Brunello Cucinelli', year: '' },
@@ -98,7 +83,7 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
   }, [])
 
   const heroEyebrow = copy.heroEyebrow ?? 'Info · A working biography'
-  const heroIntro = copy.heroIntro ?? 'Independent photographer working between New Delhi and Bangalore. Portraits, interiors, and the quiet objects in between.'
+  const heroIntro = copy.heroIntro ?? 'Independent photographer working between New Delhi, Gurgaon and Bangalore. Portraits, interiors, and the quiet objects in between.'
   const bioPara1  = copy.bioPara1  ?? 'There is a moment, just before the shutter fires, where everything either holds together or it doesn\'t. Light, space, texture, intention — all of it in the balance. Kshetej has spent the better part of a decade learning to trust that moment.'
   const bioPara2  = copy.bioPara2  ?? 'He didn\'t arrive here through a conventional path. He was studying to be a Chartered Accountant when he realised the numbers he cared about were the ones on a lens barrel. Self-taught from the ground up — through YouTube rabbit holes, late-night forums, and the generosity of seniors who took the time to show him what no classroom would — he built his eye the hard way. And the hard way, it turns out, was the right way.'
   const bioPara3  = copy.bioPara3  ?? 'Over seven years, his work has taken him across continents — Dubai, Oman, Angola, the Maldives, and across the length and breadth of India — shooting for some of the world\'s most discerning hospitality and luxury brands. Taj. The Leela. Six Senses. JW Marriott. Jumeirah. Tom Ford. His editorial work has appeared in Architectural Digest.'
@@ -107,9 +92,6 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
   const bioPara6  = copy.bioPara6  ?? 'He is still learning. That part hasn\'t changed.'
   const heroCap   = copy.heroCap   ?? 'Self · Studio · 2026'
   const bioHeading      = copy.bioHeading      ?? 'Biography'
-  const practiceHeading = copy.practiceHeading ?? 'Practice, categories of work'
-  const practiceNote    = copy.practiceNote    ?? 'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.'
-  const nowHeading      = copy.nowHeading      ?? 'Now, current'
   const clientsHeading  = copy.clientsHeading  ?? 'Selected clients, recent'
   const pressHeading    = copy.pressHeading    ?? 'Press & exhibitions, selected'
   const touchHeading    = copy.touchHeading    ?? 'Get in touch'
@@ -119,18 +101,6 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
   const touchAppointmentNote = copy.touchAppointmentNote ?? 'Studio visits welcome'
   const touchSocial          = copy.touchSocial          ?? '@ksatwork'
   const touchSocialNote      = copy.touchSocialNote      ?? 'Instagram'
-
-  const practiceItems = copy.practiceItems
-    ? copy.practiceItems.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
-        const idx = l.lastIndexOf(' — ')
-        if (idx === -1) return { label: l, frames: 0 }
-        return { label: l.slice(0, idx), frames: parseInt(l.slice(idx + 3), 10) || 0 }
-      })
-    : DEFAULT_PRACTICE
-
-  const nowItems = copy.nowItems
-    ? copy.nowItems.split('\n').map((l) => l.trim()).filter(Boolean)
-    : DEFAULT_NOW
 
   const clients = copy.clients
     ? parseNameYear(copy.clients)

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { categories } from '@/lib/categories'
 
 const CATEGORY_ROUTES: Record<string, string> = {
@@ -36,24 +37,24 @@ export function KsMenuOverlay({ open, onClose }: { open: boolean; onClose: () =>
       <div className="ks-menu-inner">
         <div className="ks-menu-eyebrow">Navigation</div>
         <nav className="ks-menu-cats">
-          <a href="/" className="ks-menu-cat-link" onClick={onClose}>
+          <Link href="/" className="ks-menu-cat-link" onClick={onClose}>
             <span className="ks-menu-cat-name">Home</span>
-          </a>
+          </Link>
           {orderedCats.map((c) => (
-            <a
+            <Link
               key={c.id}
               href={CATEGORY_ROUTES[c.id]}
               className="ks-menu-cat-link"
               onClick={onClose}
             >
               <span className="ks-menu-cat-name">{c.label}</span>
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="ks-menu-divider" />
         <div className="ks-menu-links">
-          <a className="ks-menu-link" href="/contact">Contact</a>
-          <a className="ks-menu-link" href="/info">Info</a>
+          <Link className="ks-menu-link" href="/contact">Contact</Link>
+          <Link className="ks-menu-link" href="/info">Info</Link>
         </div>
         <div className="ks-menu-footer">
           <span>info@kshetejsareen.com</span>

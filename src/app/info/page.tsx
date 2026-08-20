@@ -3,7 +3,7 @@ import { InfoPage } from '@/components/InfoPage'
 import { getInfoCopy, getInfoPortrait } from '@/lib/getInfoData'
 
 const TITLE = 'Info — Kshetej Sareen'
-const DESCRIPTION = 'Kshetej Sareen is an independent photographer based in New Delhi and Bangalore. Available for editorial, commercial, and fine-art commissions.'
+const DESCRIPTION = 'Kshetej Sareen is an independent photographer based in New Delhi, Gurgaon and Bangalore. Available for editorial, commercial, and fine-art commissions.'
 const URL = 'https://www.kshetejsareen.com/info'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: TITLE,
-      description: 'Independent photographer based in New Delhi and Bangalore.',
+      description: 'Independent photographer based in New Delhi, Gurgaon and Bangalore.',
     },
   }
 }

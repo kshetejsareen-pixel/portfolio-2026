@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { categories, type Category, type Frame } from '@/lib/categories'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
@@ -554,8 +555,8 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
           <button className="ks-menu-btn" onClick={() => setMenuOpen(true)}>
             Menu +
           </button>
-          <a href="/info">Info</a>
-          <a href="/contact">Contact</a>
+          <Link href="/info">Info</Link>
+          <Link href="/contact">Contact</Link>
         </nav>
       </div>
 

@@ -8,7 +8,7 @@ const SITE_URL = 'https://www.kshetejsareen.com'
 
 const HOME_TITLE = 'Kshetej Sareen — Photographer | New Delhi · Bangalore'
 const HOME_DESCRIPTION =
-  'Independent photographer in New Delhi and Bangalore. Culinary, interiors, portraits, still life and motion work for editorial and commercial commissions.'
+  'Independent photographer in New Delhi, Gurgaon and Bangalore. Culinary, interiors, portraits and motion work for editorial and commercial commissions.'
 
 export async function generateMetadata(): Promise<Metadata> {
   const portrait = await getInfoPortrait().catch(() => null)

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { getLandingSlots, GALLERY_SLOTS, PAGES, type Slot } from '@/lib/slots'
 import { categories } from '@/lib/categories'
@@ -567,6 +568,9 @@ export function AdminPanel() {
           ))}
         </nav>
         <div className="adm-sidebar-foot">
+          <Link href="/admin/leads" className="adm-lib-btn adm-lib-btn--link">
+            Leads
+          </Link>
           <button
             className={`adm-lib-btn${libraryOpen ? ' adm-lib-btn--active' : ''}`}
             onClick={() => setLibraryOpen((v) => !v)}
@@ -1827,11 +1831,6 @@ const INFO_COPY_DEFAULTS: Record<string, unknown> = {
   bioPara2:             'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.',
   heroCap:              'Self · Studio · 2026',
   bioHeading:           'Biography',
-  practiceHeading:      'Practice, categories of work',
-  practiceItems:        'Portraits — 24\nCulinary — 38\nSpaces — 19\nObjects — 12\nMotion — 7',
-  practiceNote:         'Selected frames live in the category index — Portraits, Culinary, Spaces, Objects, Motion.',
-  nowHeading:           'Now, current',
-  nowItems:             'Residency — Kindred Studio, Brooklyn — through Aug 2026\nIn progress — The Fruit Table, vol. ii (Kyoto)\nAvailable — Bookings · May–Sept 2026\nPrint sales — Editions of 12 — by request',
   clientsHeading:       'Selected clients, recent',
   clients:              "Tom Ford\nBrunello Cucinelli\nBerluti\nBrioni\nLadurée\nThe Leela Palaces, Hotels & Resorts\nTaj Hotels Palaces Resorts Safaris\nJW Marriott Hotels & Resorts\nLe Méridien\nJumeirah Hotels & Resorts\nCrowne Plaza Hotels & Resorts\nInterContinental Hotels & Resorts\nSix Senses Hotels Resorts Spas\nMeliá Hotels & Resorts\nFiyavalhu Resort Maldives\nEdge Creekside Hotel\nJamie Oliver's\nMDH Spices\n93 Degrees Coffee Roasters\nRAVOH\nDLF\nCushman & Wakefield\nViacom18\nSunny Leone\nGood Homes Magazine",
   pressHeading:         'Press & exhibitions, selected',

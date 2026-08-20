@@ -94,3 +94,43 @@ export async function markLeadDelivery(
     console.error('[markLeadDelivery] failed for', id, err)
   }
 }
+
+export interface StoredLead extends LeadInput {
+  id: string
+  delivery: LeadDeliveryStatus
+  createdAt: string          // ISO — Timestamp is not serialisable into a client component
+  deliveredAt?: string
+  emailId?: string
+  error?: string
+}
+
+// Newest first. Returns [] rather than throwing so the admin page still renders
+// (with an empty table) if Firestore is unreachable — the same best-effort
+// contract as the write path.
+export async function listLeads(limit = 200): Promise<StoredLead[]> {
+  try {
+    const snap = await getFirestore()
+      .collection(COLLECTION)
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .get()
+
+    return snap.docs.map((doc) => {
+      const d = doc.data()
+      const iso = (v: unknown) =>
+        v instanceof Timestamp ? v.toDate().toISOString() : undefined
+      return {
+        ...(d as LeadInput),
+        id:          doc.id,
+        delivery:    (d.delivery ?? 'pending') as LeadDeliveryStatus,
+        createdAt:   iso(d.createdAt) ?? '',
+        deliveredAt: iso(d.deliveredAt),
+        emailId:     d.emailId,
+        error:       d.error,
+      }
+    })
+  } catch (err) {
+    console.error('[listLeads] failed:', err)
+    return []
+  }
+}

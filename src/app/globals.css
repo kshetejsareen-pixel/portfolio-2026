@@ -3290,6 +3290,11 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 .adm-lib-btn:hover { color: #e8e8e0; border-color: #555; }
 .adm-lib-btn--active { color: #e8e8e0; border-color: #555; }
+.adm-lib-btn--link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
 
 .adm-library-close-btn {
   font-family: var(--font-mono);
