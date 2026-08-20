@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { LandingPageDef } from '@/lib/landingPages'
-import { relatedPages } from '@/lib/landingPages'
+import { relatedPages, whatsappHref } from '@/lib/landingPages'
 import type { GalleryData } from '@/lib/getGalleryData'
 
 // Cloudinary URLs are built with w_2400; swap widths for a responsive set.
@@ -97,6 +97,16 @@ export function ServiceLandingPage({
           <p>
             Write with your brief — venue, scope, timelines — and you will hear back with a
             considered, itemised estimate.
+          </p>
+          <p>
+            <a
+              className="svc-cta-wa"
+              href={whatsappHref(def)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Message the studio on WhatsApp
+            </a>
           </p>
           <p className="svc-cta-links">
             <a href="mailto:info@kshetejsareen.com">info@kshetejsareen.com</a>

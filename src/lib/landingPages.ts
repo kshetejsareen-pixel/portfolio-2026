@@ -80,6 +80,30 @@ const VIDEO_INCLUDE = [
   'Direction through post-production and delivery',
 ]
 
+export const STUDIO_WHATSAPP = '919999567676'
+
+// SERVICE_LABELS is written for headings and reads badly inside a sentence
+// ("video & film photography in Delhi"), so the chat opener gets its own
+// wording per service.
+const WHATSAPP_INTENT: Record<LandingPageDef['service'], string> = {
+  food:          'food & beverage photography',
+  architectural: 'architecture & interiors photography',
+  corporate:     'corporate photography & headshots',
+  product:       'product & still life photography',
+  video:         'video production',
+}
+
+// Built from the page the visitor is actually on, so the architectural pages
+// never open a chat about corporate work. WhatsApp shows the text in the
+// compose box and the sender can edit it before sending.
+//
+// This also preserves attribution: a WhatsApp lead bypasses the contact form
+// entirely, so without the opener it arrives as a context-free "hi".
+export function whatsappHref(def: LandingPageDef): string {
+  const text = `Hi — I'd like to enquire about ${WHATSAPP_INTENT[def.service]} in ${def.city}.`
+  return `https://wa.me/${STUDIO_WHATSAPP}?text=${encodeURIComponent(text)}`
+}
+
 export const LANDING_PAGES: LandingPageDef[] = [
   // ── Food ────────────────────────────────────────────────
   {

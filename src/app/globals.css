@@ -5715,6 +5715,25 @@ body.vse-active { padding-right: 280px; }
   max-width: 56ch;
   margin: 0 0 14px;
 }
+/* Primary action on the service pages. Deliberately typeset in the page's own
+   mono/rule language rather than a floating green badge: these pages are read
+   by hotel marketing teams and architects, and the stock WhatsApp bubble reads
+   as a local-services listing. */
+.svc-cta-wa {
+  display: inline-block;
+  margin: 4px 0 18px;
+  padding: 12px 20px;
+  border: 1px solid var(--rule-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.svc-cta-wa:hover {
+  color: var(--paper);
+  border-color: var(--paper);
+}
 .svc-cta-links {
   font-family: var(--font-mono);
   font-size: 13px;

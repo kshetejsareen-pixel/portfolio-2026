@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 import { recordLead, markLeadDelivery, type LeadAttribution } from '@/lib/leads'
+import { pushLeadAlert } from '@/lib/notify'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -122,6 +123,18 @@ export async function POST(req: NextRequest) {
       userAgent: clean(req.headers.get('user-agent'), ATTR_LIMITS.short) || undefined,
     })
 
+    // Fire the phone push before the email round-trip, so the alert is not
+    // waiting on Resend. Never throws.
+    await pushLeadAlert({
+      name,
+      email,
+      company:     company     || undefined,
+      projectType: projectType || undefined,
+      budget:      budget      || undefined,
+      message,
+      sourcePage:  attribution.sourcePage,
+    })
+
     // Put the earning page in the mail itself, so attribution is visible
     // without opening Firestore.
     const origin = [
@@ -139,7 +152,9 @@ export async function POST(req: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from:    'KS Studio <info@kshetejsareen.com>',
-      to:      'info@kshetejsareen.com',
+      // A second, personal address gets the enquiry onto a phone that
+      // actually pushes notifications. Optional - unset, nothing changes.
+      to:      ['info@kshetejsareen.com', process.env.LEAD_ALERT_EMAIL].filter(Boolean) as string[],
       replyTo: email,
       subject: `New enquiry${projectType ? ` · ${projectType}` : ''} — ${name}`,
       text: [
