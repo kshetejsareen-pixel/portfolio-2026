@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { LIFT, tx, EASE } from '@/lib/motionVariants'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import { readAttribution } from '@/lib/attribution'
+import { track } from '@vercel/analytics'
 import type { ContactCopy } from '@/lib/copyConfig'
 
 const PROJECT_TYPES = ['Culinary', 'Spaces', 'Portraits', 'Objects', 'Motion']
@@ -172,9 +174,20 @@ export function ContactPage({ initialCopy }: { initialCopy?: ContactCopy } = {})
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, company, projectType: projectTypes.join(', '), timeline, budget, message }),
+        // Carries the page that actually earned this lead, not /contact.
+        body: JSON.stringify({ name, email, company, projectType: projectTypes.join(', '), timeline, budget, message, attribution: readAttribution() }),
       })
       if (res.ok) {
+        // Conversion event, so enquiries are countable against traffic
+        // rather than inferred from the inbox.
+        try {
+          const attr = readAttribution()
+          track('lead_submitted', {
+            sourcePage: attr.sourcePage ?? 'unknown',
+            projectType: projectTypes.join(', ') || 'unspecified',
+            budget: budget || 'unspecified',
+          })
+        } catch {}
         setStatus('sent')
         setName(''); setEmail(''); setCompany('')
         setProjectTypes([]); setTimeline(''); setBudget(''); setMessage('')

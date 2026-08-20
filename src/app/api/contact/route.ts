@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
+import { recordLead, markLeadDelivery, type LeadAttribution } from '@/lib/leads'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -21,6 +22,13 @@ const LIMITS = {
   message: 5000,
 } as const
 
+// Attribution is attacker-controlled like everything else in the body, and it
+// goes straight into Firestore, so it gets the same caps and scrubbing.
+const ATTR_LIMITS = {
+  url: 500,
+  short: 200,
+} as const
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 // Single-line fields: drop every control character, newlines included. `name`
@@ -38,6 +46,22 @@ function cleanMultiline(v: unknown, max: number): string {
     .replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, ' ')
     .trim()
     .slice(0, max)
+}
+
+function cleanAttribution(v: unknown): LeadAttribution {
+  if (!v || typeof v !== 'object') return {}
+  const a = v as Record<string, unknown>
+  return {
+    sourcePage:    clean(a.sourcePage,    ATTR_LIMITS.short) || undefined,
+    submittedFrom: clean(a.submittedFrom, ATTR_LIMITS.short) || undefined,
+    referrer:      clean(a.referrer,      ATTR_LIMITS.url)   || undefined,
+    utmSource:     clean(a.utmSource,     ATTR_LIMITS.short) || undefined,
+    utmMedium:     clean(a.utmMedium,     ATTR_LIMITS.short) || undefined,
+    utmCampaign:   clean(a.utmCampaign,   ATTR_LIMITS.short) || undefined,
+    utmTerm:       clean(a.utmTerm,       ATTR_LIMITS.short) || undefined,
+    utmContent:    clean(a.utmContent,    ATTR_LIMITS.short) || undefined,
+    gclid:         clean(a.gclid,         ATTR_LIMITS.short) || undefined,
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -68,6 +92,7 @@ export async function POST(req: NextRequest) {
     const timeline    = clean(body.timeline, LIMITS.timeline)
     const budget      = clean(body.budget, LIMITS.budget)
     const message     = cleanMultiline(body.message, LIMITS.message)
+    const attribution = cleanAttribution(body.attribution)
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -76,6 +101,34 @@ export async function POST(req: NextRequest) {
     if (!EMAIL_RE.test(email)) {
       return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 })
     }
+
+    // Store before sending. Email is the lossy step - it can bounce, land in
+    // spam, or fail outright - so the durable record has to exist first. The
+    // write is best-effort and never throws; a null id just means this one
+    // enquiry goes unrecorded rather than unsent.
+    //
+    // Deliberately not storing the IP: it is personal data, it is already used
+    // for rate limiting, and country is enough to qualify a lead.
+    const leadId = await recordLead({
+      name,
+      email,
+      company:     company     || undefined,
+      projectType: projectType || undefined,
+      timeline:    timeline    || undefined,
+      budget:      budget      || undefined,
+      message,
+      attribution,
+      country:   req.headers.get('x-vercel-ip-country') ?? undefined,
+      userAgent: clean(req.headers.get('user-agent'), ATTR_LIMITS.short) || undefined,
+    })
+
+    // Put the earning page in the mail itself, so attribution is visible
+    // without opening Firestore.
+    const origin = [
+      attribution.sourcePage && `Landed on   : ${attribution.sourcePage}`,
+      attribution.referrer   && `Referrer    : ${attribution.referrer}`,
+      attribution.utmSource  && `Campaign    : ${[attribution.utmSource, attribution.utmMedium, attribution.utmCampaign].filter(Boolean).join(' / ')}`,
+    ].filter(Boolean).join('\n')
 
     const rows = [
       company     && `Company     : ${company}`,
@@ -92,6 +145,7 @@ export async function POST(req: NextRequest) {
       text: [
         `From: ${name} <${email}>`,
         rows,
+        origin,
         '',
         message,
       ].filter(Boolean).join('\n'),
@@ -100,11 +154,14 @@ export async function POST(req: NextRequest) {
     if (error) {
       // Log detail server-side; return something generic to the caller.
       console.error('Resend error:', JSON.stringify(error))
+      if (leadId) await markLeadDelivery(leadId, 'failed', { error: JSON.stringify(error).slice(0, 500) })
       return NextResponse.json(
         { error: 'Could not send your message. Please email info@kshetejsareen.com directly.' },
         { status: 500 },
       )
     }
+
+    if (leadId) await markLeadDelivery(leadId, 'sent', { emailId: data?.id })
 
     console.log('Email sent:', data?.id)
     return NextResponse.json({ ok: true })

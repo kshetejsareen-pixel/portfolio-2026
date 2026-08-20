@@ -4,6 +4,8 @@ import { PageTransition } from '@/components/PageTransition'
 import { RevealObserver } from '@/components/RevealObserver'
 import { FontLoader } from '@/components/FontLoader'
 import { VisualEditorRoot } from '@/components/VisualEditorRoot'
+import { AttributionTracker } from '@/components/AttributionTracker'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const bodoni = Bodoni_Moda({
@@ -126,7 +128,9 @@ export default function RootLayout({
         <FontLoader />
         <RevealObserver />
         <VisualEditorRoot />
+        <AttributionTracker />
         <PageTransition>{children}</PageTransition>
+        <Analytics />
       </body>
     </html>
   )
