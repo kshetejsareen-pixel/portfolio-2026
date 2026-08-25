@@ -830,6 +830,15 @@ export function AdminPanel() {
           const sf = (k: string) => (v: string)     => setDraftField(k, v)
           const ss = (k: string) => (v: TextStyle)  => setDraftField(k, v)
 
+          // ── History page ────────────────────────────────────────────────────
+          if (activeCatId === 'history') {
+            return (
+              <div className="adm-slots-scroll adm-slots-scroll--cat">
+                <VersionHistoryPanel onToast={showToast} />
+              </div>
+            )
+          }
+
           // ── Fonts page ──────────────────────────────────────────────────────
           if (activeCatId === 'fonts') {
             return (
@@ -871,7 +880,7 @@ export function AdminPanel() {
                   </div>
                 )}
                 <div className="adm-inline-copy-group">
-                  <InlineCopyField label="Photo caption" hint="Appears below portrait" value={d('heroCap')} onChange={sf('heroCap')} placeholder="Self · Studio · 2026" />
+                  <InlineCopyField label="Photo caption" hint="Appears below portrait" value={d('heroCap')} onChange={sf('heroCap')} placeholder="Self · Bangalore · 2026" />
                 </div>
 
                 <InlineCopyDivider title="Biography" />
@@ -2766,5 +2775,150 @@ function FontsPanel({
       {renderBlock('mono',  'Mono',  MONO_OPTIONS)}
       {renderBlock('sans',  'Sans',  SANS_OPTIONS)}
     </div>
+  )
+}
+
+// ─── VersionHistoryPanel ──────────────────────────────────────────────────────
+// Every write to the store now files the state it replaced into a `versions`
+// subcollection (see src/lib/firestoreStore.ts). This is the window onto that:
+// pick a document, see the last 20 saves, put one back. Restoring is itself a
+// write, so it is snapshotted too — there is no move here that cannot be undone.
+
+type VersionMeta = { id: string; savedAt: string; reason: string }
+
+// The store's doc ids are terse. Give the ones we own a human name and leave
+// anything unrecognised showing its raw id rather than inventing a label.
+const DOC_LABELS: Record<string, string> = {
+  'ks-assignments':   'Photo assignments',
+  'ks-copy':          'Page copy',
+  'ks-fonts':         'Fonts',
+  'ks-landing':       'Landing config',
+  'ks-landing-order': 'Landing order',
+  'ks-projects':      'Projects',
+  'ks-motion-videos': 'Motion videos',
+  'visual-overrides': 'Visual overrides',
+}
+
+function formatStamp(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  return d.toLocaleString(undefined, {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
+function VersionHistoryPanel({ onToast }: { onToast: (msg: string) => void }) {
+  const [docs, setDocs]         = useState<string[]>([])
+  const [activeDoc, setActive]  = useState<string | null>(null)
+  const [versions, setVersions] = useState<VersionMeta[]>([])
+  const [loading, setLoading]   = useState(false)
+  const [confirming, setConfirm] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/admin/versions')
+      .then((r) => r.json())
+      .then((j) => setDocs(j.docs ?? []))
+      .catch(() => onToast('Could not load documents'))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const loadVersions = async (docId: string) => {
+    setActive(docId)
+    setConfirm(null)
+    setLoading(true)
+    try {
+      const r = await fetch(`/api/admin/versions?doc=${encodeURIComponent(docId)}`)
+      const j = await r.json()
+      setVersions(j.versions ?? [])
+    } catch {
+      onToast('Could not load history')
+      setVersions([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const restore = async (version: string) => {
+    if (!activeDoc) return
+    setLoading(true)
+    try {
+      const r = await fetch('/api/admin/versions', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ doc: activeDoc, version }),
+      })
+      if (!r.ok) throw new Error('restore failed')
+      onToast('Restored — reload the page to see it')
+      await loadVersions(activeDoc)
+    } catch {
+      onToast('Restore failed')
+    } finally {
+      setLoading(false)
+      setConfirm(null)
+    }
+  }
+
+  return (
+    <>
+      <div className="adm-cat-section">
+        <div className="adm-cat-section-head">
+          <span className="adm-cat-section-title">Version history</span>
+          <span className="adm-cat-section-desc">
+            The last 20 saves of each document, kept automatically. Pick a document to see them.
+          </span>
+        </div>
+        <div className="adm-fonts-pills">
+          {docs.map((id) => (
+            <button
+              key={id}
+              className={`adm-fonts-pill${activeDoc === id ? ' active' : ''}`}
+              onClick={() => loadVersions(id)}
+            >
+              {DOC_LABELS[id] ?? id}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {activeDoc && (
+        <div className="adm-cat-section">
+          <div className="adm-cat-section-head">
+            <span className="adm-cat-section-title">{DOC_LABELS[activeDoc] ?? activeDoc}</span>
+            <span className="adm-cat-section-desc">
+              {loading ? 'Working…'
+                : versions.length === 0 ? 'No saved versions yet — the next edit creates one.'
+                : `${versions.length} version${versions.length === 1 ? '' : 's'}, newest first. Each entry is the state as it was before that save.`}
+            </span>
+          </div>
+          <div className="adm-fonts-cases">
+            {versions.map((v) => (
+              <div key={v.id} className="adm-fonts-case">
+                <div className="adm-fonts-case-meta">
+                  <span className="adm-fonts-case-page">{formatStamp(v.savedAt)}</span>
+                  <span className="adm-fonts-case-label">{v.reason}</span>
+                </div>
+                {confirming === v.id ? (
+                  <div className="adm-fonts-pills">
+                    <button className="adm-fonts-pill active" disabled={loading} onClick={() => restore(v.id)}>
+                      Yes, restore this
+                    </button>
+                    <button className="adm-fonts-pill" disabled={loading} onClick={() => setConfirm(null)}>
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="adm-fonts-pills">
+                    <button className="adm-fonts-pill" disabled={loading} onClick={() => setConfirm(v.id)}>
+                      Restore
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
