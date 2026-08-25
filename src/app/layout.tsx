@@ -38,12 +38,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.kshetejsareen.com'),
   title: 'Kshetej Sareen',
-  description: 'Independent photographer. New Delhi · Bangalore.',
+  description: 'Independent photographer. New Delhi · Gurgaon · Bangalore.',
   authors: [{ name: 'Kshetej Sareen', url: 'https://www.kshetejsareen.com' }],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   openGraph: {
     title: 'Kshetej Sareen',
-    description: 'Independent photographer. New Delhi · Bangalore.',
+    description: 'Independent photographer. New Delhi · Gurgaon · Bangalore.',
     url: 'https://www.kshetejsareen.com',
     type: 'website',
     siteName: 'Kshetej Sareen Studios',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Kshetej Sareen',
-    description: 'Independent photographer. New Delhi · Bangalore.',
+    description: 'Independent photographer. New Delhi · Gurgaon · Bangalore.',
   },
 }
 

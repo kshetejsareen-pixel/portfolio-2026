@@ -66,6 +66,21 @@ export const getGalleryData = cache(async (catId: string): Promise<GalleryData> 
   return { assignments, hero }
 })
 
+// Motion is a video category — its image slots are intentionally empty, so the
+// normal hero/first-frame lookup finds nothing and the page ships with no share
+// card. Fall back to the banner film's YouTube poster (then the first film's),
+// which tracks whatever is set in the admin panel with no extra asset to manage.
+async function motionPosterFallback(): Promise<string | undefined> {
+  try {
+    const { readMotionVideos } = await import('@/lib/motionVideos')
+    const { videos, bannerVideoId } = await readMotionVideos()
+    const id = bannerVideoId ?? videos[0]?.youtubeId
+    return id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export async function getCategoryOgImage(catId: string): Promise<string | undefined> {
   try {
     const { hero, assignments } = await getGalleryData(catId)
@@ -73,7 +88,9 @@ export async function getCategoryOgImage(catId: string): Promise<string | undefi
       .sort((a, b) => Number(a) - Number(b))
       .map((k) => assignments[k].url)[0]
     const url = hero?.url ?? first
-    return url?.replace('w_2400', 'w_1200')
+    if (url) return url.replace('w_2400', 'w_1200')
+    if (catId === 'motion') return await motionPosterFallback()
+    return undefined
   } catch {
     return undefined
   }
