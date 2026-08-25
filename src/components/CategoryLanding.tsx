@@ -385,10 +385,13 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
   }, [stopCycle, startIdleCountdown])
 
   // ── Category-strip click ─────────────────────────────────────────────────
+  // One click always opens the category page. Previously an inactive category
+  // swallowed the first click just to bring its slideshow forward, which read as
+  // a dead link. The route fallback below only fires for a category with no page.
   const handleCatClick = (i: number) => {
-    if (i === catIdx) {
-      const route = CATEGORY_ROUTES[displayCategories[i]?.id]
-      if (route) navigate(route)
+    const route = CATEGORY_ROUTES[displayCategories[i]?.id]
+    if (route) {
+      navigate(route)
       return
     }
     stopCycle()
@@ -575,22 +578,6 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
         ))}
       </div>
 
-
-      {/* Step hints — desktop only */}
-      {totalFrames > 1 && (
-        <>
-          <button
-            className="ks-step-hint ks-step-hint--prev"
-            onClick={() => { const g = globalIdxRef.current; const n = activeCatsRef.current.length || 1; setGlobalIdx(Math.max(0, g - n)) }}
-            aria-label="Previous frame"
-          >←</button>
-          <button
-            className="ks-step-hint ks-step-hint--next"
-            onClick={() => { const g = globalIdxRef.current; const n = activeCatsRef.current.length || 1; setGlobalIdx(g + n) }}
-            aria-label="Next frame"
-          >→</button>
-        </>
-      )}
 
       {/* Vertical category-indicator dots — left edge, mirrors cat rail */}
       <div className="ks-nav-dots-y" aria-hidden="true">

@@ -553,33 +553,6 @@ button, input, textarea, select { font: inherit; }
 }
 
 /* ─────────────────────────────────────────────
-   Step hints (desktop, show on stage hover)
-   ───────────────────────────────────────────── */
-.ks-step-hint {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 56px; height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(236, 232, 224, 0.35);
-  font-family: var(--font-mono);
-  font-size: 16px;
-  z-index: 6;
-  cursor: pointer;
-  user-select: none;
-  transition: color 200ms ease, transform 200ms ease, opacity 200ms ease;
-  background: none;
-  border: 0;
-  opacity: 0;
-}
-.ks-stage:hover .ks-step-hint { opacity: 1; }
-.ks-step-hint:hover { color: var(--paper); transform: translateY(-50%) scale(1.1); }
-.ks-step-hint--prev { left: 12px; }
-.ks-step-hint--next { right: 240px; }
-
-/* ─────────────────────────────────────────────
    Eyebrow label (shared)
    ───────────────────────────────────────────── */
 .ks-eyebrow {
@@ -891,7 +864,6 @@ button, input, textarea, select { font: inherit; }
   .ks-subline        { display: none; }
   .ks-slate--desktop { display: none; }
   .ks-footer-l, .ks-footer-r { display: none; }
-  .ks-step-hint { display: none; }
 
   /* Inline slate: show below name on mobile (no gear, compact) */
   .ks-slate--inline {
