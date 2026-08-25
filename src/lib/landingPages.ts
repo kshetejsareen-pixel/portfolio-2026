@@ -43,11 +43,11 @@ const FOOD_INCLUDE = [
 ]
 
 const ARCH_INCLUDE = [
-  'Architectural exteriors and interior spaces',
+  'Architectural exteriors and interior design photography',
   'Hotels, restaurants and hospitality properties',
   'Residences for architects and interior designers',
   'Offices, retail and commercial spaces',
-  'Editorial interior stories',
+  'Editorial interior design stories',
 ]
 
 const CORP_INCLUDE = [
@@ -114,7 +114,7 @@ export const STUDIO_WHATSAPP = '919999567676'
 // wording per service.
 const WHATSAPP_INTENT: Record<LandingPageDef['service'], string> = {
   food:          'food & beverage photography',
-  architectural: 'architecture & interiors photography',
+  architectural: 'architecture & interior design photography',
   corporate:     'corporate photography & headshots',
   product:       'product & still life photography',
   video:         'video production',
@@ -286,7 +286,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Delhi | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer in New Delhi photographing residences, hotels and offices. Published in Architectural Digest.',
+      'Architectural and interior design photographer in New Delhi photographing residences, hotels and offices. Published in Architectural Digest.',
     h1: 'Architectural photographer in New Delhi',
     sub: 'Studio on MG Road, New Delhi · Published in Architectural Digest',
     intro: [
@@ -320,7 +320,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Gurgaon | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer in Gurgaon (Gurugram). Residences, offices and hospitality spaces, photographed with an exacting editorial eye.',
+      'Architectural and interior design photographer in Gurgaon (Gurugram). Residences, offices and hospitality spaces, photographed with an exacting editorial eye.',
     h1: 'Architectural photographer in Gurgaon',
     sub: 'Based in Phase 1, Gurgaon · Serving Gurugram and Delhi NCR',
     intro: [
@@ -354,7 +354,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Bangalore | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer in Bangalore. Residences, hotels and workplaces photographed from Richmond Town. Published in Architectural Digest.',
+      'Architectural and interior design photographer in Bangalore. Residences, hotels and workplaces shot from Richmond Town. Published in Architectural Digest.',
     h1: 'Architectural photographer in Bangalore',
     sub: 'Studio in Richmond Town, Bengaluru · Published in Architectural Digest',
     intro: [
@@ -388,7 +388,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the spaces portfolio',
     title: 'Architectural Photographer in Hyderabad | Kshetej Sareen',
     metaDescription:
-      'Architectural and interior photographer available in Hyderabad. Hotels, residences and offices photographed on commission with a travelling crew.',
+      'Architectural and interior design photographer available in Hyderabad. Hotels, residences and offices photographed on commission with a travelling crew.',
     h1: 'Architectural photographer in Hyderabad',
     sub: 'Available in Hyderabad on commission · Studios in Delhi NCR and Bangalore',
     intro: [
