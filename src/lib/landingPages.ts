@@ -80,6 +80,33 @@ const VIDEO_INCLUDE = [
   'Direction through post-production and delivery',
 ]
 
+// Three cities carry their own include list rather than the shared service one.
+// These pages compete against their own siblings for indexing, so the blocks
+// that would otherwise be byte-identical are written per city.
+const BLR_FOOD_INCLUDE = [
+  'Speciality coffee and roastery work, from green bean to finished pour',
+  'Craft brewery and taproom imagery, shot in working light',
+  'Menu and dish photography for restaurants and cafés',
+  'Cloud-kitchen and delivery-platform sets, composed for small-screen legibility',
+  'Editorial food stories and cookbook work',
+]
+
+const HYD_CORP_INCLUDE = [
+  'Executive and leadership portraits, photographed at your Hyderabad office',
+  'Full-team headshot days for campus-scale offices',
+  'Founder portraits for press, funding announcements and speaker profiles',
+  'Workplace photography across HITEC City, Gachibowli and the Financial District',
+  'One consistent portrait standard across your Hyderabad, Delhi and Bangalore offices',
+]
+
+const GGN_PRODUCT_INCLUDE = [
+  'Launch imagery for D2C brands — the hero frame a product is judged on',
+  'E-commerce and catalogue sets, shot consistently at volume',
+  'Marketplace listing packshots, cut to platform specification',
+  'Packaging and campaign still life for consumer brands',
+  'Ship-to-studio product work from anywhere in NCR',
+]
+
 export const STUDIO_WHATSAPP = '919999567676'
 
 // SERVICE_LABELS is written for headings and reads badly inside a sentence
@@ -184,14 +211,15 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the culinary portfolio',
     title: 'Food Photographer in Bangalore | Kshetej Sareen',
     metaDescription:
-      'Food and beverage photographer in Bangalore. Restaurant, café and brand photography from a Richmond Town studio. Clients include Taj, The Leela and Six Senses.',
+      'Bangalore food and drink photographer working from a Richmond Town studio — speciality coffee, breweries, restaurant menus and hospitality campaigns, shot on medium format.',
     h1: 'Food photographer in Bangalore',
     sub: 'Studio in Richmond Town, Bengaluru · On location across the city',
     intro: [
       'From speciality coffee to five-star dining rooms, Bangalore’s food scene rewards imagery with a point of view. Kshetej Sareen photographs food and beverage from a studio in Richmond Town — central enough to reach Indiranagar, Koramangala or a Whitefield brewery without losing the morning light.',
       'The studio’s F&B work leans editorial: real texture, real steam, frames composed to hold attention on a menu, a billboard or a feed. Shot on Fujifilm GFX medium format, matched deliberately to what each job demands.',
+      'Bangalore’s light is its own argument for planning. Between June and September the good window is narrow and moves, so shoot days are built backwards from it — venue work while the light holds, styled and beverage sets carried into the Richmond Town studio where the day can be extended without the frames changing character.',
     ],
-    include: FOOD_INCLUDE,
+    include: BLR_FOOD_INCLUDE,
     clientsLine: HOSPITALITY_CLIENTS,
     faqs: [
       {
@@ -203,8 +231,12 @@ export const LANDING_PAGES: LandingPageDef[] = [
         a: 'Both. The client list includes large hospitality groups, but menu shoots for independent cafés and restaurants are a regular part of the calendar. The bar for craft stays the same.',
       },
       {
-        q: 'What will it cost?',
-        a: 'On request — pricing depends on dish count, styling, locations and how the images will be used. Send the brief and you will receive a scoped estimate.',
+        q: 'We are a coffee brand — is beverage shot differently from food?',
+        a: 'Yes, and usually on a separate set. Liquid, glass and crema need controlled light and a lot of resets to get one honest pour; plated food wants speed before it dies. Scheduling them apart costs less than trying to light both at once.',
+      },
+      {
+        q: 'What does a Bangalore shoot cost?',
+        a: 'On request, and shaped by dish count, whether beverage is in scope, how many locations, and where the images will run. A café menu refresh and a hospitality group’s seasonal campaign are not the same job and are not quoted from the same sheet.',
       },
     ],
   },
@@ -498,7 +530,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
       'For Hyderabad companies, Kshetej Sareen photographs leadership portraits, team headshots and workplaces on a travel basis — a full portable studio arrives at your office in HITEC City, Gachibowli or Banjara Hills, and the day is planned so no executive waits.',
       'It suits organisations that want one photographic standard across cities: the same light and treatment for the Hyderabad office as for Delhi and Bangalore, so the company reads as one company everywhere it appears.',
     ],
-    include: CORP_INCLUDE,
+    include: HYD_CORP_INCLUDE,
     faqs: [
       {
         q: 'Is a travelling photographer practical for headshots?',
@@ -509,8 +541,12 @@ export const LANDING_PAGES: LandingPageDef[] = [
         a: 'The session plan is built remotely with your team — a slot per person, buffers for the unavoidable meeting overrun — and the set is up before the first portrait.',
       },
       {
-        q: 'What does it cost?',
-        a: 'On request: headcount and days on site drive the estimate, with travel itemised transparently.',
+        q: 'Is there a minimum size that makes the trip worth it?',
+        a: 'Travel commissions are booked as a full day minimum — the day is the unit, not a headcount. A leadership team of six and an office of forty both fit inside a day’s planning; what changes is the pace. For a single urgent headshot, a local photographer remains the more sensible spend.',
+      },
+      {
+        q: 'What does a Hyderabad commission cost?',
+        a: 'On request. Headcount and days on site drive the estimate, and travel is itemised separately rather than folded into a day rate, so you can see what the distance actually costs.',
       },
     ],
   },
@@ -565,9 +601,11 @@ export const LANDING_PAGES: LandingPageDef[] = [
     intro: [
       'Gurugram’s D2C shelves are crowded, and the product photograph is usually the whole first impression. Working from Phase 1, Kshetej Sareen photographs products for consumer brands across NCR — hero imagery for launches, styled still life for campaigns, and e-commerce libraries built to stay consistent as the catalogue grows.',
       'The approach is editorial rather than catalogue-flat: real shadows, deliberate texture, objects photographed with the same intent as the studio’s work for Tom Ford and India’s leading hospitality brands.',
+      'Phase 1 puts the studio inside the belt where most of these brands actually sit — Udyog Vihar, Cyber City, the Golf Course Road offices — which matters more than it sounds. Product work runs on iteration: a founder who can look at the set at four o’clock and change the surface gets a better result than one approving JPEGs at a distance.',
     ],
-    include: PRODUCT_INCLUDE,
-    clientsLine: PRODUCT_CLIENTS,
+    include: GGN_PRODUCT_INCLUDE,
+    clientsLine:
+      'Tom Ford, Taj, The Leela and Six Senses have all commissioned still life from the studio; editorial work has appeared in Architectural Digest.',
     faqs: [
       {
         q: 'We are a D2C brand with 80 SKUs — how does that work?',
@@ -578,8 +616,12 @@ export const LANDING_PAGES: LandingPageDef[] = [
         a: 'Yes — styling, surfaces and props are scoped into the estimate, or the studio works with your art director if the brand look is already defined.',
       },
       {
-        q: 'What does it cost?',
-        a: 'On request. Catalogue volume is quoted per SKU; campaign and packaging imagery per project, with usage spelled out plainly.',
+        q: 'Do we bring products to Phase 1, or do you collect?',
+        a: 'Either. Most NCR brands courier the SKUs across and they are photographed as they arrive; for fragile, heavy or high-value goods the studio collects. Everything is logged in and returned against the same list — on an 80-SKU set, knowing what came back matters as much as the photographs.',
+      },
+      {
+        q: 'What does product photography cost in Gurgaon?',
+        a: 'Catalogue volume is quoted per SKU and the rate drops as the count rises; campaign and packaging imagery is quoted per project with usage written out plainly. Send the SKU count and what the images are for, and the estimate comes back itemised.',
       },
     ],
   },
@@ -661,14 +703,14 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catId: 'motion',
     catHref: '/motion',
     catLabel: 'View the motion portfolio',
-    title: 'Video Production in Delhi | Kshetej Sareen',
+    title: 'Video Production Company in Delhi | Kshetej Sareen',
     metaDescription:
-      'Video and film production in New Delhi — brand films, food and hospitality films, product motion. Directed by photographer Kshetej Sareen.',
-    h1: 'Video & film production in New Delhi',
-    sub: 'Brand, food & property films · Studio on MG Road, New Delhi',
+      'A small video production company in New Delhi — brand films, food and hospitality films, product motion. Directed by photographer Kshetej Sareen.',
+    h1: 'Video production company in New Delhi',
+    sub: 'A small production house on MG Road · Brand, food & property films',
     intro: [
       'The studio’s motion work grows out of its photography: the same eye for light and composition, moving at twenty-four frames a second. In Delhi, Kshetej Sareen directs and shoots brand films, food and beverage films, and property films for hotels and restaurants.',
-      'Projects are kept deliberately close — direction, cinematography and post handled by a tight crew rather than a bloated production line — which keeps films personal, schedules short and budgets honest.',
+      'It is a small production house by design — direction, cinematography and post handled by a tight crew rather than a bloated production line — which keeps films personal, schedules short and budgets honest.',
     ],
     include: VIDEO_INCLUDE,
     faqs: [
@@ -681,7 +723,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
         a: 'Yes, and it is often the most efficient brief: one crew, one styling budget, one day — a photography library and a film from the same production.',
       },
       {
-        q: 'How is video priced in Delhi?',
+        q: 'What does a video production company in Delhi cost?',
         a: 'On request — length, shoot days, crew and post scope shape the estimate. A one-day social film and a multi-location brand film are quoted very differently.',
       },
     ],
