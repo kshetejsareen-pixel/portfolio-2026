@@ -186,7 +186,7 @@ against demand that has already found the domain.
 
 ---
 
-## 6. Proposal — not applied, needs approval
+## 6. Proposal — approved 26 Aug, applied in 50580d9
 
 Ordered by return per unit of effort.
 
@@ -211,6 +211,61 @@ Ordered by return per unit of effort.
 
 Not recommended: an FMCG page, a hospitality head-term page, or geo-suffixed F&B pages.
 The demand is not there and building them would be manufacturing work.
+
+### What shipped
+
+**1. Legacy redirects — done.** `src/lib/legacyRedirects.ts` holds all 47 measured paths,
+each with its impression count in a trailing comment. Every one resolves to the same
+venue's live project page where one exists, and to the right category otherwise. Ten
+mappings were judgement calls and are documented inline — the two worth knowing about:
+*Crowne Plaza* (17 imp) has no discipline word in its slug and went to `/culinary` on the
+strength of the surrounding work, and *JW Marriott Aerocity* (6 imp) went to `/culinary`
+rather than to the live JW Marriott project, which is a different property (Prestige
+Golfshire, Bangalore). A catch-all for any remaining 32-hex Notion id sends it to the
+homepage; it is last in the list because Next.js applies the first matching rule.
+
+**2. Project pages — turned out to be a metadata fix, not new pages.** The routes already
+existed. `KsProjectPage` is a client component that fetches `/api/projects` in a
+`useEffect`, so the server shipped no title, description, canonical or share card —
+which is why the named-venue impressions never converted. All five category routes now
+resolve the project in `generateMetadata`. Descriptions are templated on purpose: the
+stored records carry only a title and a cover image, so a specific description would be
+invented. No design sign-off was needed after all, because nothing visual changed.
+
+**3. Sitemap — done.** Now async, reads Firestore per request with `revalidate = 3600`,
+and falls back to the static list if Firestore is unreachable. 17 project URLs added.
+
+**4. Interiors vocabulary — partly applied, deliberately.** The four architectural
+`metaDescription`s and two `ARCH_INCLUDE` body lines now say "interior design", as does
+the WhatsApp intent string. **Titles and h1s were reverted.** Two reasons, both measured:
+
+- `Architectural & Interior Design Photographer in Bangalore | Kshetej Sareen` is 74
+  characters against the repo's own `TITLE_MAX` of 60. Google would truncate it at
+  roughly "…in Bangalor…", cutting the studio name out of the result — a bad trade for a
+  brand that already ranks on its own name.
+- The longer h1 wrapped to three lines on desktop with "Delhi" orphaned on the last one,
+  and the matching `SERVICE_LABELS` change wrapped the mobile kicker (382px of text in a
+  335px container, splitting "NEW / DELHI"). Both are front-end design changes, which
+  need your approval, and neither was worth asking for.
+
+The exact phrase still leads every architectural description, which is the strongest
+placement available inside the limits.
+
+**5. "Near me" and "agency" — not applied.** "Near me" results are resolved by Google
+from proximity and a Google Business Profile, not from page copy; writing the phrase into
+a portfolio site is a low-value tactic, and claiming a Business Profile is an account
+action I can't take on your behalf. "Agency" is a positioning claim about a
+photographer-led studio — a brand decision, not an SEO edit. Both are yours to call.
+
+### Verified
+
+`tsc` clean, eslint clean, build green. Routes manifest: 52 redirects, all 308, 47
+Notion-specific, catch-all last. Live checks against a local production server —
+`/Haiku-Hyderabad-…` → `/culinary`, `/Fiyavalhu-…` → its project page, `/RAVOH-…` → its
+project page, `/Shashi-Bhushan-…` → `/portraits`, `/Biokriti-FMCG-…` → `/objects`, and a
+fabricated id → `/`. Project head confirmed: real title, description, canonical, og:image;
+unknown ids return `robots: noindex`. Mobile and desktop rendering after the reverts is
+pixel-identical to before.
 
 ---
 
