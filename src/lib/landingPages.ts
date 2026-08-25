@@ -211,7 +211,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
     catLabel: 'View the culinary portfolio',
     title: 'Food Photographer in Bangalore | Kshetej Sareen',
     metaDescription:
-      'Bangalore food and drink photographer working from a Richmond Town studio — speciality coffee, breweries, restaurant menus and hospitality campaigns, shot on medium format.',
+      'Bangalore food and drink photographer in Richmond Town — speciality coffee, breweries, restaurant menus and hospitality campaigns, on medium format.',
     h1: 'Food photographer in Bangalore',
     sub: 'Studio in Richmond Town, Bengaluru · On location across the city',
     intro: [

@@ -31,3 +31,6 @@ next-env.d.ts
 /Claude Code Working Data/
 /HTML Files/
 /graphify-out/
+
+# per-machine Claude Code permissions, not shared state
+.claude/settings.local.json

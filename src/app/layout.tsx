@@ -78,6 +78,7 @@ const jsonLd = {
       ],
       address: [
         { '@type': 'PostalAddress', addressLocality: 'New Delhi', addressCountry: 'IN' },
+        { '@type': 'PostalAddress', addressLocality: 'Gurgaon', addressRegion: 'Haryana', addressCountry: 'IN' },
         { '@type': 'PostalAddress', addressLocality: 'Bangalore', addressCountry: 'IN' },
       ],
     },

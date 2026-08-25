@@ -693,7 +693,7 @@ export function AdminPanel() {
                     hint="Optional — short line shown below the KS mark"
                     value={d('tagline')}
                     onChange={sf('tagline')}
-                    placeholder="Independent photographer · New York · Bombay"
+                    placeholder="Independent photographer · New Delhi · Gurgaon · Bangalore"
                     withStyle styleValue={ds('taglineStyle')} onStyleChange={ss('taglineStyle')}
                   />
                 </div>
@@ -1826,10 +1826,10 @@ const CATEGORY_DEFAULTS: Record<string, CategoryCopy> = {
 
 const INFO_COPY_DEFAULTS: Record<string, unknown> = {
   heroEyebrow:          'Info · A working biography',
-  heroIntro:            'Independent photographer working between New York and Bombay. Portraits, interiors, and the quiet objects in between.',
+  heroIntro:            'Independent photographer based between New Delhi, Gurgaon and Bangalore. Food, people, spaces and the quiet objects in between.',
   bioPara1:             'Kshetej Sareen is a photographer whose work moves between studio portraits and the small, particular objects of everyday life — vessels, linens, fruit on a table, hands at work. A chartered accountant by training, he left the ledgers to follow the light — and kept the discipline: frames that lean toward the still, the patient, the carefully lit.',
-  bioPara2:             'He keeps two studios — one in Brooklyn, one in Bombay — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.',
-  heroCap:              'Self · Studio · 2026',
+  bioPara2:             'He keeps three studios — New Delhi, Gurgaon, and Bangalore — and works on commission for editorial, hospitality, and book projects. Available worldwide and currently booking for 2026.',
+  heroCap:              'Self · Bangalore · 2026',
   bioHeading:           'Biography',
   clientsHeading:       'Selected clients, recent',
   clients:              "Tom Ford\nBrunello Cucinelli\nBerluti\nBrioni\nLadurée\nThe Leela Palaces, Hotels & Resorts\nTaj Hotels Palaces Resorts Safaris\nJW Marriott Hotels & Resorts\nLe Méridien\nJumeirah Hotels & Resorts\nCrowne Plaza Hotels & Resorts\nInterContinental Hotels & Resorts\nSix Senses Hotels Resorts Spas\nMeliá Hotels & Resorts\nFiyavalhu Resort Maldives\nEdge Creekside Hotel\nJamie Oliver's\nMDH Spices\n93 Degrees Coffee Roasters\nRAVOH\nDLF\nCushman & Wakefield\nViacom18\nSunny Leone\nGood Homes Magazine",
@@ -1838,8 +1838,8 @@ const INFO_COPY_DEFAULTS: Record<string, unknown> = {
   touchHeading:         'Get in touch',
   touchEmail:           'info@kshetejsareen.com',
   touchEmailNote:       'For commissions & prints',
-  touchAppointment:     'New York · Bombay',
-  touchAppointmentNote: 'Studio visits welcome',
+  touchAppointment:     'New Delhi · Gurgaon · Bangalore',
+  touchAppointmentNote: 'Studio visits by invitation',
   touchSocial:          '@ksatwork',
   touchSocialNote:      'Instagram',
 }
@@ -1855,14 +1855,14 @@ const CONTACT_COPY_DEFAULTS: Record<string, unknown> = {
   tickerLeadTime:  'Lead time · 3–6 weeks',
   heroTitle:       'Say hello',
   heroPara1:       "For commissions, prints, and press — the form is the fastest route. Tell me a little about the project and I'll write back within two working days.",
-  heroPara2:       "Returning collaborators and editors, you have the studio direct line below. Working between New York and Bombay, expect a thoughtful (slightly slow) reply.",
+  heroPara2:       "Returning collaborators and editors, you have the studio direct line below. Working between New Delhi, Gurgaon and Bangalore, expect a thoughtful (slightly slow) reply.",
   inquiryEyebrow:  '01 · Project inquiry',
   inquiryHeading:  'Start with the project, not the form.',
   inquiryNote:     "The chips are optional — fill the ones you know. Skip the rest. I'll figure it out from the message.",
   privacyText:     'No mailing list. Your details stay between us.',
   directTitle:     'Direct channels.',
   directDesc:      'For returning collaborators, press inquiries, and walk-up questions — the fastest way is straight to the line.',
-  directChannels:  'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 99995 67676 | Fastest response | https://wa.me/919999567676\nElsewhere | @ksatwork | Instagram | https://instagram.com/ksatwork\nNew York | Brooklyn, NY | By appointment · Mon–Fri |\nBombay | Bandra W, Mumbai | By appointment |\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com',
+  directChannels:  'Studio | info@kshetejsareen.com | For commissions & prints | mailto:info@kshetejsareen.com\nWhatsApp | +91 9999 56 7676 | Fastest response | https://wa.me/919999567676\nNew Delhi | Silver Oak Farms, MG Road | By appointment |\nGurgaon | Phase 1 | By appointment |\nBangalore | Richmond Town | By appointment |\nElsewhere | @ksatwork | Instagram | https://instagram.com/ksatwork/\nPress | info@kshetejsareen.com | Media inquiries, image use | mailto:info@kshetejsareen.com',
   notesEyebrow:    '02 · Working notes',
   notesLeft:       'Lead time — Commissions typically book 3–6 weeks out. Print orders ship within 10 working days.\nTravel — Comfortable working internationally. Travel costs billed at actuals; no day-rate uplift.\nImage use & press — Press kit and high-res files available on request from info@kshetejsareen.com.',
   notesRight:      'Day rates — Available on request once project scope is clear. Half-day, full-day, and multi-day rates.\nUsage & licensing — All commissions include a 12-month editorial usage by default. Extended usage and exclusivity quoted separately.\nPrints — Editions of 12, printed in studio on Hahnemühle Photo Rag. Signed, numbered, and stamped on verso.',
@@ -2589,7 +2589,7 @@ const FONT_USE_CASES: Record<FontRole, FontUseCase[]> = {
     { page: 'Category', label: 'Project card title',         css: '.cat-project-title',         example: 'Marriott Mumbai',                                         size: '26–40px'   },
     // Info page
     { page: 'Info',     label: 'Hero name',                  css: '.info-hero-name',            example: 'Kshetej Sareen',                                          size: '64–112px'  },
-    { page: 'Info',     label: 'Hero intro paragraph',       css: '.info-hero-intro',           example: 'Independent photographer working between New York and Bombay.',             size: '17–22px'  },
+    { page: 'Info',     label: 'Hero intro paragraph',       css: '.info-hero-intro',           example: 'Independent photographer based in New Delhi, Gurgaon and Bangalore.',       size: '17–22px'  },
     { page: 'Info',     label: 'Biography paragraphs',       css: '.info-bio-para',             example: 'The work begins before the camera is raised.',            size: '18–26px'   },
     { page: 'Info',     label: 'Portrait slot call-to-action', css: '.info-photo-slot-cta',     example: 'Add portrait photo',                                      size: '18–26px'   },
     // Contact page
@@ -2622,7 +2622,7 @@ const FONT_USE_CASES: Record<FontRole, FontUseCase[]> = {
     { page: 'Category', label: 'Photo captions',             css: '.cat-cap',                   example: 'Studio · 2024 · Canon EOS R5',                            size: '13px',  tracking: '0.12em' },
     { page: 'Category', label: 'Pull quote attribution',     css: '.cat-pull-quote-attr',       example: '— K.S.',                                                  size: '15px',  tracking: '0.22em' },
     { page: 'Category', label: 'Project frames count',       css: '.cat-project-frames',        example: '14 frames',                                               size: '13px',  tracking: '0.18em' },
-    { page: 'Category', label: 'Project metadata',           css: '.cat-project-meta',          example: 'New York · 2023',                                         size: '13px',  tracking: '0.18em' },
+    { page: 'Category', label: 'Project metadata',           css: '.cat-project-meta',          example: 'Gurgaon · 2025',                                          size: '13px',  tracking: '0.18em' },
     { page: 'Category', label: 'Footer eyebrow',             css: '.cat-footer-nav-eyebrow',    example: 'EXPLORE',                                                 size: '16px',  tracking: '0.22em' },
     { page: 'Category', label: 'Footer nav links',           css: '.cat-footer-nav-link',       example: 'CULINARY · SPACES · PORTRAITS',                           size: '16px',  tracking: '0.22em' },
     { page: 'Category', label: 'Footer copyright',           css: '.cat-footer-copy',           example: '© 2026 KSHETEJ SAREEN',                                   size: '12px',  tracking: '0.12em' },
@@ -2630,10 +2630,10 @@ const FONT_USE_CASES: Record<FontRole, FontUseCase[]> = {
     { page: 'Contact',  label: 'Form field labels',          css: '.contact-field-label',       example: 'FULL NAME',                                               size: '12px',  tracking: '0.22em' },
     { page: 'Contact',  label: 'Submit button',              css: '.contact-submit-v2',         example: 'SEND INQUIRY →',                                          size: '13px',  tracking: '0.22em' },
     // Project pages
-    { page: 'Project',  label: 'Project hero stats',         css: '.proj-hero-stats',           example: '12 frames · 2023 · New York',                             size: '12px',  tracking: '0.2em'  },
+    { page: 'Project',  label: 'Project hero stats',         css: '.proj-hero-stats',           example: '12 frames · 2025 · Gurgaon',                              size: '12px',  tracking: '0.2em'  },
   ],
   sans: [
-    { page: 'All',      label: 'Default body text',          css: 'body',                       example: 'Independent photographer working between New York and Bombay. Portraits, interiors, objects.', size: '16px (base)' },
+    { page: 'All',      label: 'Default body text',          css: 'body',                       example: 'Independent photographer based in New Delhi, Gurgaon and Bangalore. Food, people, spaces, objects.', size: '16px (base)' },
     { page: 'Category', label: 'Project description',        css: '.cat-project-desc',          example: 'A focused study of natural light in contemporary interiors.',                                   size: '18px'        },
     { page: 'Contact',  label: 'Form text inputs',           css: '.contact-input',             example: 'Full name · you@studio.com',                              size: '16px'        },
     { page: 'Contact',  label: 'Subline / supporting copy',  css: '.contact-subline',           example: 'Currently taking select commissions for 2026.',           size: '15px'        },

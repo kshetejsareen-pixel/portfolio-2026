@@ -6,7 +6,7 @@ import { getInfoPortrait } from '@/lib/getInfoData'
 
 const SITE_URL = 'https://www.kshetejsareen.com'
 
-const HOME_TITLE = 'Kshetej Sareen — Photographer | New Delhi · Bangalore'
+const HOME_TITLE = 'Kshetej Sareen — Photographer | Delhi · Gurgaon · Bangalore'
 const HOME_DESCRIPTION =
   'Independent photographer in New Delhi, Gurgaon and Bangalore. Culinary, interiors, portraits and motion work for editorial and commercial commissions.'
 

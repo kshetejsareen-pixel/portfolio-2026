@@ -607,7 +607,7 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
         </h1>
         <div className="ks-subline">
           <div className="ks-subline-col">
-            <strong>Independent photographer.</strong><br />Delhi · Bangalore.
+            <strong>Independent photographer.</strong><br />Delhi · Gurgaon · Bangalore.
           </div>
           <div className="ks-subline-col">
             Available for commission and prints.<br />Booking — info@kshetejsareen.com

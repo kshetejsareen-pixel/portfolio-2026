@@ -97,8 +97,8 @@ export function InfoPage({ initialCopy, initialPortrait }: { initialCopy?: InfoC
   const touchHeading    = copy.touchHeading    ?? 'Get in touch'
   const touchEmail           = copy.touchEmail           ?? 'info@kshetejsareen.com'
   const touchEmailNote       = copy.touchEmailNote       ?? 'For commissions & prints'
-  const touchAppointment     = copy.touchAppointment     ?? 'New Delhi · Bangalore'
-  const touchAppointmentNote = copy.touchAppointmentNote ?? 'Studio visits welcome'
+  const touchAppointment     = copy.touchAppointment     ?? 'New Delhi · Gurgaon · Bangalore'
+  const touchAppointmentNote = copy.touchAppointmentNote ?? 'Studio visits by invitation'
   const touchSocial          = copy.touchSocial          ?? '@ksatwork'
   const touchSocialNote      = copy.touchSocialNote      ?? 'Instagram'
 
