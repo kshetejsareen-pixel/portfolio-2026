@@ -530,7 +530,20 @@ button, input, textarea, select { font: inherit; }
   padding: 4px 0;
   font: inherit;
 }
-.ks-cat:hover { color: var(--paper-dim); }
+/* The old rule repeated the resting colour, so hovering the rail changed
+   nothing and the categories never read as clickable. Inactive items now lift
+   toward — but deliberately short of — the active state, so "you can click
+   this" and "this is the one showing" stay tellable apart. The nudge left uses
+   the transform transition already declared above. Gated on a real pointer so
+   the state can't stick after a tap on the mobile strip. */
+@media (hover: hover) and (pointer: fine) {
+  .ks-cat:not(.active):hover {
+    color: var(--paper);
+    opacity: 0.85;
+    transform: translateX(-4px);
+  }
+  .ks-cat.active:hover { transform: translateX(-4px); }
+}
 
 .ks-cat-n {
   display: none;
