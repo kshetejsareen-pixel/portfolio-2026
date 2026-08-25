@@ -2789,14 +2789,14 @@ type VersionMeta = { id: string; savedAt: string; reason: string }
 // The store's doc ids are terse. Give the ones we own a human name and leave
 // anything unrecognised showing its raw id rather than inventing a label.
 const DOC_LABELS: Record<string, string> = {
-  'ks-assignments':   'Photo assignments',
-  'ks-copy':          'Page copy',
-  'ks-fonts':         'Fonts',
-  'ks-landing':       'Landing config',
-  'ks-landing-order': 'Landing order',
-  'ks-projects':      'Projects',
-  'ks-motion-videos': 'Motion videos',
-  'visual-overrides': 'Visual overrides',
+  'ks-assignments':      'Photo assignments',
+  'ks-copy-config':      'Page copy',
+  'ks-font-config':      'Fonts',
+  'ks-landing-config':   'Landing config',
+  'ks-landing-order':    'Landing order',
+  'ks-projects-config':  'Projects',
+  'motion-videos':       'Motion videos',
+  'visual-overrides':    'Visual overrides',
 }
 
 function formatStamp(iso: string): string {
