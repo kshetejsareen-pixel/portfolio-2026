@@ -65,7 +65,7 @@ export const portraitsData: CategoryData = {
       large: { tint: '#1a1815', aspect: 'tall', title:'Mira, late afternoon', location:'Bombay', year:'2025' },
       smalls: [
         { tint: '#22201d', aspect: 'square', title:'Mira, no. 2', location:'Bombay', year:'2025' },
-        { tint: '#161513', aspect: 'square', title:'Mira, hands', location:'Bombay', year:'2025' },
+        { tint: '#161513', aspect: 'square', title:'Konpal for Konpalshop', location:'New Delhi', year:'2020' },
       ],
     },
 
@@ -73,7 +73,7 @@ export const portraitsData: CategoryData = {
       kind: 'three-up',
       photos: [
         { tint: '#1c1a17', aspect: 'tall', title:'Jonas, sitting',  location:'Catskills, NY', year:'2024' },
-        { tint: '#1e1c19', aspect: 'tall', title:'Jonas, porch',     location:'Catskills, NY', year:'2024' },
+        { tint: '#1e1c19', aspect: 'tall', title:'Jonas, porch',     location:'Gurgaon', year:'2025' },
         { tint: '#1a1917', aspect: 'tall', title:'Jonas, profile',   location:'Catskills, NY', year:'2024' },
       ],
     },
