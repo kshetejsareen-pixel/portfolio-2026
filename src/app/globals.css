@@ -1498,6 +1498,12 @@ button, input, textarea, select { font: inherit; }
 .cat-project-desc {
   margin-top: 14px; font-size: 18px; line-height: 1.55;
   color: var(--paper-dim); max-width: 460px;
+  /* The same desc field feeds this card caption and the project page's only
+     paragraph. Clamp here so a paragraph written for the page can't stretch
+     one card and break the grid's row alignment. No project has a desc long
+     enough to clamp today, so nothing on screen changes. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 /* ── View more projects ──────────────────────────────────────────────────── */

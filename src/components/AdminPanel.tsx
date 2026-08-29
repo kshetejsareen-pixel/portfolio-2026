@@ -1785,9 +1785,9 @@ function FolderBrowserPanel({
             </div>
             <div className="adm-copy-field">
               <label className="adm-copy-label">
-                Description <span className="adm-copy-hint">optional</span>
+                Description <span className="adm-copy-hint">shown on the project page — the page has no other copy</span>
               </label>
-              <input className="adm-copy-input" value={form.desc} onChange={(e) => setForm((f) => ({ ...f, desc: e.target.value }))} placeholder="One-line summary of the shoot" />
+              <textarea className="adm-copy-textarea" rows={6} value={form.desc} onChange={(e) => setForm((f) => ({ ...f, desc: e.target.value }))} placeholder="What the shoot was, who it was for, what the images were made for. This is the only body copy the project page has." />
             </div>
             <div className="adm-copy-field">
               <label className="adm-copy-label">
@@ -2090,8 +2090,9 @@ function ProjectEditPanel({
   const [selectedTags, setSelectedTags] = useState<string[]>(project.tags ?? [])
   const [saving, setSaving] = useState(false)
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [k]: e.target.value }))
+  const set = (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm((prev) => ({ ...prev, [k]: e.target.value }))
 
   const toggleTag = (id: string) =>
     setSelectedTags((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id])
@@ -2142,9 +2143,9 @@ function ProjectEditPanel({
         </div>
         <div className="adm-copy-field">
           <label className="adm-copy-label">
-            Description <span className="adm-copy-hint">optional</span>
+            Description <span className="adm-copy-hint">shown on the project page — the page has no other copy</span>
           </label>
-          <input className="adm-copy-input" value={form.desc} onChange={set('desc')} placeholder="One-line summary of the shoot" />
+          <textarea className="adm-copy-textarea" rows={6} value={form.desc} onChange={set('desc')} placeholder="What the shoot was, who it was for, what the images were made for. This is the only body copy the project page has." />
         </div>
         <div className="adm-copy-field">
           <label className="adm-copy-label">
