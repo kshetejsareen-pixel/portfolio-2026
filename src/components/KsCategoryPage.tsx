@@ -766,7 +766,13 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, init
                     crawlable; the overflow is hidden with CSS until "View more". */}
                 {source.map((p, i) => (
                   <a
-                    key={p.id}
+                    // The overflow cards are keyed on showAllProjects so that
+                    // revealing them remounts the nodes. RevealObserver picks
+                    // up new cards from a childList mutation, and an element
+                    // observed while display:none never gets its fade — this
+                    // keeps the same insert-then-reveal path the grid had when
+                    // "View more" appended the cards.
+                    key={i < PROJECTS_INITIAL ? p.id : `${p.id}-${showAllProjects}`}
                     href={`/${catId}/projects/${p.id}`}
                     className={`cat-project${!showAllProjects && i >= PROJECTS_INITIAL ? ' cat-project-hidden' : ''}`}
                   >
