@@ -11,6 +11,7 @@ const COLLECTION = 'portfolio'
 // reads `portfolio/<id>` pays for this.
 const VERSIONS = 'versions'
 const KEEP     = 20
+const BATCH    = 500   // Firestore's hard cap on writes in one batch
 
 // The id is the timestamp, so lexicographic order is chronological order and
 // listing needs no orderBy field and no composite index. The suffix breaks
@@ -19,13 +20,25 @@ function versionId(): string {
   return `${new Date().toISOString()}_${Math.random().toString(36).slice(2, 8)}`
 }
 
+// Ordered oldest-first, so the newest KEEP are the tail and everything before
+// them is stale. Ascending is not a style choice: __name__ gets an automatic
+// ascending index and no descending one, so ordering 'desc' here fails with
+// FAILED_PRECONDITION until someone hand-builds a composite index. Dropping
+// select() does not help — the direction is what needs the index, not the
+// projection. A save must never depend on an index created by hand.
 async function prune(versions: CollectionReference): Promise<void> {
-  const all = await versions.orderBy(FieldPath.documentId(), 'desc').select().get()
-  const stale = all.docs.slice(KEEP)
+  const all = await versions.orderBy(FieldPath.documentId(), 'asc').select().get()
+  const stale = all.docs.slice(0, Math.max(0, all.size - KEEP))
   if (!stale.length) return
-  const batch = getFirestore().batch()
-  stale.forEach((d) => batch.delete(d.ref))
-  await batch.commit()
+  // A batch caps at 500 writes. That is unreachable in steady state, but this
+  // pruned nothing for as long as the query was failing, so the first run
+  // against a long-lived subcollection can find a real backlog.
+  const db = getFirestore()
+  for (let i = 0; i < stale.length; i += BATCH) {
+    const batch = db.batch()
+    stale.slice(i, i + BATCH).forEach((d) => batch.delete(d.ref))
+    await batch.commit()
+  }
 }
 
 // Never allowed to fail a save. A snapshot is insurance; losing the insurance
