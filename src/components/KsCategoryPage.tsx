@@ -757,14 +757,19 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, init
 
         {(() => {
           const source = filteredProjects ?? adminProjects ?? []
-          const visible = showAllProjects ? source : source.slice(0, PROJECTS_INITIAL)
           const remaining = source.length - PROJECTS_INITIAL
 
           return (
             <>
               <div className="cat-projects-grid">
-                {visible.map((p) => (
-                  <a key={p.id} href={`/${catId}/projects/${p.id}`} className="cat-project">
+                {/* Every project is rendered so its link is in the server HTML and
+                    crawlable; the overflow is hidden with CSS until "View more". */}
+                {source.map((p, i) => (
+                  <a
+                    key={p.id}
+                    href={`/${catId}/projects/${p.id}`}
+                    className={`cat-project${!showAllProjects && i >= PROJECTS_INITIAL ? ' cat-project-hidden' : ''}`}
+                  >
                     <div className="cat-project-cover">
                       <div className="cat-photo" style={{ backgroundColor: '#1a1a1c', width: '100%', height: '100%' }}>
                         {p.coverUrl

@@ -1462,6 +1462,10 @@ button, input, textarea, select { font: inherit; }
   .cat-projects-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 .cat-project { display: block; cursor: pointer; color: inherit; text-decoration: none; }
+/* Overflow projects past the initial four. They stay in the HTML so crawlers
+   can follow the links; display:none keeps them out of the layout, out of the
+   tab order, and stops their lazy images from ever being fetched. */
+.cat-project-hidden { display: none; }
 .cat-project-cover {
   position: relative; overflow: hidden; aspect-ratio: 4 / 5;
 }
