@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { KsProjectPage } from '@/components/KsProjectPage'
 import { getProject, projectMetaTitle, projectDescription, projectOgImage } from '@/lib/projects'
+import { getProjectServerData } from '@/lib/projectServerData'
 
 const CAT = 'motion'
 const BASE = 'https://www.kshetejsareen.com'
@@ -42,5 +43,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MotionProjectPage({ params }: Props) {
   const { projectId } = await params
-  return <KsProjectPage catId={CAT} projectId={projectId} />
+  const server = await getProjectServerData(CAT, projectId)
+  return <KsProjectPage catId={CAT} projectId={projectId} {...server} />
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
+import type { ProjectServerData } from '@/lib/projectServerData'
 
 interface ProjectData {
   id: string
@@ -34,12 +35,14 @@ function galleryUrl(img: CloudinaryImage): string {
   return `https://res.cloudinary.com/${CLOUD}/image/upload/q_auto,f_auto,w_1400/${img.public_id}`
 }
 
-export function KsProjectPage({ catId, projectId }: { catId: string; projectId: string }) {
+type Props = { catId: string; projectId: string } & ProjectServerData
+
+export function KsProjectPage({ catId, projectId, initialProject, initialImages }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [project, setProject] = useState<ProjectData | null>(null)
-  const [images, setImages] = useState<CloudinaryImage[]>([])
-  const [loading, setLoading] = useState(true)
+  const [project, setProject] = useState<ProjectData | null>(initialProject ?? null)
+  const [images, setImages] = useState<CloudinaryImage[]>(initialImages ?? [])
+  const [loading, setLoading] = useState(!initialImages)
   const [notFound, setNotFound] = useState(false)
 
   const catLabel = catId.charAt(0).toUpperCase() + catId.slice(1)
@@ -55,20 +58,21 @@ export function KsProjectPage({ catId, projectId }: { catId: string; projectId: 
     fetch(`/api/projects?catId=${catId}`)
       .then((r) => r.json())
       .then((d) => {
-        if (Array.isArray(d.projects)) {
-          const p = (d.projects as ProjectData[]).find((x) => x.id === projectId)
-          if (p) setProject(p)
-          else setNotFound(true)
-        } else {
-          setNotFound(true)
-        }
+        const p = Array.isArray(d.projects)
+          ? (d.projects as ProjectData[]).find((x) => x.id === projectId)
+          : undefined
+        if (p) setProject(p)
+        // The server already resolved this project; a failed refresh is no
+        // reason to replace a rendered page with "Project not found".
+        else if (!initialProject) setNotFound(true)
       })
-      .catch(() => setNotFound(true))
-  }, [catId, projectId])
+      .catch(() => { if (!initialProject) setNotFound(true) })
+  }, [catId, projectId, initialProject])
 
   useEffect(() => {
     if (!project) return
-    setLoading(true)
+    // No setLoading(true) here: on the server-rendered page the frames are
+    // already on screen, and re-entering the loading state would blank them.
     fetch(`/api/project-images?folder=${encodeURIComponent(project.folder)}`)
       .then((r) => r.json())
       .then((d) => {
