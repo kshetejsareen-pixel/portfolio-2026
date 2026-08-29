@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { firestoreRead, firestoreWrite } from '@/lib/firestoreStore'
 
 export interface TextStyle {
@@ -79,4 +80,15 @@ export async function readCopyConfig(): Promise<CopyConfig> {
 
 export async function writeCopyConfig(config: CopyConfig): Promise<void> {
   await firestoreWrite(PUBLIC_ID, config)
+}
+
+// Server-side read for the page components. The copy that actually renders lives
+// here, but the pages only fetched it from /api/copy in an effect — and robots.txt
+// disallows /api/, so crawlers indexed the code fallbacks in categoryData.ts
+// instead of the live text. cache() dedupes the read within a request.
+const readCopyConfigCached = cache(readCopyConfig)
+
+export async function getCategoryCopy(catId: string): Promise<CategoryCopy> {
+  const config = await readCopyConfigCached()
+  return (config[catId] ?? {}) as CategoryCopy
 }

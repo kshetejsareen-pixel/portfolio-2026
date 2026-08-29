@@ -498,11 +498,13 @@ function BannerVideo({ videoId }: { videoId: string }) {
   )
 }
 
-export function KsCategoryPage({ data, catId, videoGallery, initialGallery, bannerVideoId, yearRange: yearRangeProp }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData; bannerVideoId?: string; yearRange?: string | null }) {
+export function KsCategoryPage({ data, catId, videoGallery, initialGallery, initialCopy, initialProjects, bannerVideoId, yearRange: yearRangeProp }: { data: CategoryData; catId: string; videoGallery?: React.ReactNode; initialGallery?: GalleryData; initialCopy?: CategoryCopy; initialProjects?: AdminProject[]; bannerVideoId?: string; yearRange?: string | null }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [copy, setCopy] = useState<CategoryCopy>({})
-  const [adminProjects, setAdminProjects] = useState<AdminProject[] | null>(null)
+  // Seeded from the server so the live copy and the project links are in the
+  // HTML; the effects below still refresh them for admin edits.
+  const [copy, setCopy] = useState<CategoryCopy>(() => initialCopy ?? {})
+  const [adminProjects, setAdminProjects] = useState<AdminProject[] | null>(() => initialProjects ?? null)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [showAllProjects, setShowAllProjects] = useState(false)
   const [galleryAssignments, setGalleryAssignments] = useState<Record<string, GalleryAssignment>>(() => initialGallery?.assignments ?? {})

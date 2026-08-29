@@ -399,14 +399,14 @@ export const objectsData: CategoryData = {
   intro: {
     label: 'On the work',
     body: [
-      'Things, alone on a table. ',
+      'Product and still life work for campaigns, packaging and e-commerce. ',
       { it: 'Catalogued, weighed, returned to themselves' },
-      ' — vessels, linens, tools. Studio still-life as a way of paying attention.',
+      ' — vessels, tools, the objects a brand sells.',
     ],
   },
   pullQuote: {
-    text: 'Photograph the kettle long enough and the kettle photographs you back.',
-    attr: 'Studio note · 2024',
+    text: 'Every detail tells a story. The camera simply reveals it.',
+    attr: 'Studio note · 2026',
   },
   flow: [
     { kind: 'full-bleed', photo: { tint: '#24211a', aspect: 'wide', title:'Brass kettle, no. 4', location:'Studio', year:'2025' } },

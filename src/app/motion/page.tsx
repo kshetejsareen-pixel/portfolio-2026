@@ -3,7 +3,8 @@ import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { MotionVideoGallery } from '@/components/MotionVideoGallery'
 import { motionData } from '@/lib/categoryData'
 import { readMotionVideos } from '@/lib/motionVideos'
-import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
+import { getCategoryOgImage } from '@/lib/getGalleryData'
+import { getCategoryServerData } from '@/lib/categoryServerData'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,12 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MotionPage() {
-  const [motionDoc, initialGallery] = await Promise.allSettled([
+  const [motionDoc, server] = await Promise.allSettled([
     readMotionVideos(),
-    getGalleryData('motion'),
-  ]).then(([v, g]) => [
+    getCategoryServerData('motion'),
+  ]).then(([v, s]) => [
     v.status === 'fulfilled' ? v.value : { videos: [] },
-    g.status === 'fulfilled' ? g.value : undefined,
+    s.status === 'fulfilled' ? s.value : {},
   ] as const)
 
   const { videos, bannerVideoId } = motionDoc as { videos: typeof motionDoc['videos']; bannerVideoId?: string }
@@ -56,7 +57,7 @@ export default async function MotionPage() {
     <KsCategoryPage
       data={motionData}
       catId="motion"
-      initialGallery={initialGallery}
+      {...server}
       bannerVideoId={bannerVideoId}
       yearRange={motionYearRange}
       videoGallery={videos.length > 0 ? <MotionVideoGallery videos={videos} /> : undefined}

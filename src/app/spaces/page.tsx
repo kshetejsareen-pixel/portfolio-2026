@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
 import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { spacesData } from '@/lib/categoryData'
-import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
+import { getCategoryOgImage } from '@/lib/getGalleryData'
+import { getCategoryServerData } from '@/lib/categoryServerData'
+
+// The page is prerendered, so the copy and project links baked into the HTML are
+// what crawlers see. Regenerate hourly rather than only on deploy, matching the
+// sitemap, so admin edits reach the index without a rebuild.
+export const revalidate = 3600
 
 const TITLE = 'Architectural & Interior Photography — Kshetej Sareen'
 const DESCRIPTION = 'Architectural and interior photographer for residences, hotels and offices across Delhi, Gurgaon, Bangalore and Hyderabad. Published in Architectural Digest.'
@@ -29,10 +35,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SpacesPage() {
-  try {
-    const initialGallery = await getGalleryData('spaces')
-    return <KsCategoryPage data={spacesData} catId="spaces" initialGallery={initialGallery} />
-  } catch {
-    return <KsCategoryPage data={spacesData} catId="spaces" />
-  }
+  const server = await getCategoryServerData('spaces')
+  return <KsCategoryPage data={spacesData} catId="spaces" {...server} />
 }

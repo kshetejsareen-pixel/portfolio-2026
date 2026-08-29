@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { KsProjectPage } from '@/components/KsProjectPage'
-import { getProject, projectTitle, projectDescription, projectOgImage } from '@/lib/projects'
+import { getProject, projectMetaTitle, projectDescription, projectOgImage } from '@/lib/projects'
 
 const CAT = 'objects'
 const BASE = 'https://www.kshetejsareen.com'
@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await getProject(CAT, projectId)
   if (!project) return { title: 'Project | Kshetej Sareen', robots: { index: false } }
 
-  const title       = `${projectTitle(project)} | Kshetej Sareen`
+  const title       = projectMetaTitle(project)
   const description = projectDescription(CAT, project)
   const url         = `${BASE}/${CAT}/projects/${projectId}`
   const ogImage     = projectOgImage(project)

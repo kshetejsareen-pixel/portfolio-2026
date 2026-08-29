@@ -21,8 +21,16 @@ export interface StoredProject {
   location: string
   desc?: string
   coverId?: string
+  coverFocalX?: number
+  coverFocalY?: number
   imageCount?: number
   tags?: string[]
+  hiddenImages?: string[]
+}
+
+// What the category grid consumes: the stored record plus a resolved cover URL.
+export interface EnrichedProject extends StoredProject {
+  coverUrl: string | null
 }
 
 // cache() dedupes the Firestore read across generateMetadata, the page body and
@@ -31,6 +39,23 @@ export const getProjectsByCategory = cache(
   async (): Promise<Record<string, StoredProject[]>> =>
     firestoreRead<Record<string, StoredProject[]>>(DOC_ID, {}),
 )
+
+export function projectCoverUrl(coverId: string | undefined): string | null {
+  if (!coverId) return null
+  return `https://res.cloudinary.com/${CLOUD}/image/upload/w_1200,q_auto,f_auto/${coverId}`
+}
+
+export function enrichProjects(projects: StoredProject[]): EnrichedProject[] {
+  return projects.map((p) => ({ ...p, coverUrl: projectCoverUrl(p.coverId) }))
+}
+
+// Server-side equivalent of GET /api/projects?catId=. The category page seeds its
+// grid from this so the project links exist in the HTML: robots.txt disallows
+// /api/, so a crawler that only sees the client fetch finds no links at all.
+export async function getCategoryProjects(catId: string): Promise<EnrichedProject[]> {
+  const all = await getProjectsByCategory()
+  return enrichProjects(all[catId] ?? [])
+}
 
 export async function getProject(catId: string, projectId: string): Promise<StoredProject | null> {
   const all = await getProjectsByCategory()
@@ -60,7 +85,20 @@ export function projectDescription(catId: string, p: StoredProject): string {
   return `${projectTitle(p)} — ${label.toLowerCase()} by Kshetej Sareen. Selected frames from the commission.`
 }
 
+// Folder-derived titles run long ("Taj Exotica Resort and Spa, The Palm | Dubai"),
+// and the brand suffix pushed two of them past the 60 chars Google shows. Drop the
+// suffix rather than the title; truncate only if the title alone still overruns.
+const TITLE_MAX = 60
+const SUFFIX = ' | Kshetej Sareen'
+
+export function projectMetaTitle(p: StoredProject): string {
+  const name = projectTitle(p)
+  if (name.length + SUFFIX.length <= TITLE_MAX) return name + SUFFIX
+  if (name.length <= TITLE_MAX) return name
+  return name.slice(0, name.lastIndexOf(' ', TITLE_MAX - 1)).trimEnd() + '…'
+}
+
 export function projectOgImage(p: StoredProject): string | undefined {
   if (!p.coverId) return undefined
-  return `https://res.cloudinary.com/${CLOUD}/image/upload/w_1200,q_auto,f_auto/${p.coverId}`
+  return projectCoverUrl(p.coverId) ?? undefined
 }

@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
 import { KsCategoryPage } from '@/components/KsCategoryPage'
 import { culinaryData } from '@/lib/categoryData'
-import { getGalleryData, getCategoryOgImage } from '@/lib/getGalleryData'
+import { getCategoryOgImage } from '@/lib/getGalleryData'
+import { getCategoryServerData } from '@/lib/categoryServerData'
+
+// The page is prerendered, so the copy and project links baked into the HTML are
+// what crawlers see. Regenerate hourly rather than only on deploy, matching the
+// sitemap, so admin edits reach the index without a rebuild.
+export const revalidate = 3600
 
 const TITLE = 'Food Photography — Delhi & Bangalore | Kshetej Sareen'
 const DESCRIPTION = 'Food and beverage photographer for restaurants, cafés and hospitality brands. Studios in New Delhi, Gurgaon and Bangalore; available in Hyderabad.'
@@ -29,10 +35,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CulinaryPage() {
-  try {
-    const initialGallery = await getGalleryData('culinary')
-    return <KsCategoryPage data={culinaryData} catId="culinary" initialGallery={initialGallery} />
-  } catch {
-    return <KsCategoryPage data={culinaryData} catId="culinary" />
-  }
+  const server = await getCategoryServerData('culinary')
+  return <KsCategoryPage data={culinaryData} catId="culinary" {...server} />
 }
