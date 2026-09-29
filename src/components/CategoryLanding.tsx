@@ -54,6 +54,15 @@ const CYCLE_INTERVAL = 10000
 // have left the videos as the fastest thing on the screen.
 const MOTION_INTERVAL = CYCLE_INTERVAL * 1.25
 
+// The rail is five nouns in a serif face, which reads as a caption rather than a
+// menu — and the highlight moving on its own says "watch me", not "click me". A
+// verb on the active row reclassifies the whole rail as a control, and unlike the
+// hover state it also reaches touch, where there is no hover to give.
+// It retires after the first three highlights: by then the point is made, and a
+// word fading in every ten seconds forever would pull the eye off the photograph
+// roughly twelve times in a two-minute visit.
+const VERB_HIGHLIGHTS = 3
+
 // Build the active categories list from config + assignments, sorted by stored order.
 function buildCategories(
   config: Record<string, number>,
@@ -583,6 +592,12 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
             className={`ks-cat${i === catIdx ? ' active' : ''}`}
             onClick={() => handleCatClick(i)}
           >
+            {i === catIdx && globalIdx < VERB_HIGHLIGHTS && (
+              // Keyed on globalIdx so React remounts it per highlight and the
+              // fade replays. aria-hidden keeps the button's accessible name a
+              // steady "Culinary" instead of flickering to "View Culinary".
+              <span key={globalIdx} className="ks-cat-verb" aria-hidden="true">View</span>
+            )}
             <span className="ks-cat-n">{pad2(i + 1)}</span>
             <span className="ks-cat-name">{c.label}</span>
             <span className="ks-cat-tick" />
