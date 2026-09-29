@@ -38,8 +38,14 @@ const CATEGORY_ROUTES: Record<string, string> = {
   motion:    '/motion',
 }
 
-const IDLE_DELAY     = 3000
-const FIRST_INTERVAL = 3000
+// How long the landing screen sits still before the slideshow takes over —
+// on first load (FIRST_INTERVAL) and again after every interaction
+// (IDLE_DELAY). Both are the idle threshold and are meant to stay equal: the
+// first frame a visitor lands on should hold for exactly as long as the frame
+// they arrive at by pressing an arrow key or swiping. CYCLE_INTERVAL is the
+// per-frame duration once it is running, which is a different question.
+const IDLE_DELAY     = 10000
+const FIRST_INTERVAL = 10000
 const CYCLE_INTERVAL = 4000
 
 // Build the active categories list from config + assignments, sorted by stored order.
