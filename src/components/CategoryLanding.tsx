@@ -43,10 +43,16 @@ const CATEGORY_ROUTES: Record<string, string> = {
 // (IDLE_DELAY). Both are the idle threshold and are meant to stay equal: the
 // first frame a visitor lands on should hold for exactly as long as the frame
 // they arrive at by pressing an arrow key or swiping. CYCLE_INTERVAL is the
-// per-frame duration once it is running, which is a different question.
+// per-frame duration once it is running, and now matches them: a frame gets the
+// same ten seconds whether the visitor is waiting for the slideshow to start or
+// watching it run.
 const IDLE_DELAY     = 10000
 const FIRST_INTERVAL = 10000
-const CYCLE_INTERVAL = 4000
+const CYCLE_INTERVAL = 10000
+// Motion frames are video, so they have always run longer than stills — held at
+// 1.25x the still duration rather than a bare 5s, which after the slowdown would
+// have left the videos as the fastest thing on the screen.
+const MOTION_INTERVAL = CYCLE_INTERVAL * 1.25
 
 // Build the active categories list from config + assignments, sorted by stored order.
 function buildCategories(
@@ -231,14 +237,14 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
   useEffect(() => { globalIdxRef.current = globalIdx }, [globalIdx])
   useEffect(() => { motionVideosRef.current = motionVideos }, [motionVideos])
 
-  // Returns the display duration for a given global index — 5s for motion video frames, 3s otherwise
+  // Returns the display duration for a given global index — longer for motion video frames
   const getFrameInterval = useCallback((g: number) => {
     const n = activeCatsRef.current.length || 1
     const ci = g % n
     const cat = activeCatsRef.current[ci]
     const fi = Math.floor(g / n) % (cat?.frames?.length || 1)
     const isMotionVideo = cat?.id === 'motion' && motionVideosRef.current.length > fi
-    return isMotionVideo ? 5000 : CYCLE_INTERVAL
+    return isMotionVideo ? MOTION_INTERVAL : CYCLE_INTERVAL
   }, [])
 
   // Fetch config + assignments — polls every 3s while tab is visible for live admin preview

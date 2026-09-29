@@ -179,7 +179,12 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   align-items: center;
   width: max-content;
-  animation: ks-marquee 100s linear infinite;
+  /* Paced off the slideshow rather than picked by eye: the landing frames went
+     from 4s to 10s, so the marquee stretches by the same 2.5x, 100s -> 250s.
+     The track holds the 25 brands twice and travels -50%, so 250s is one pass of
+     the full list — exactly one brand per 10s frame change. That is the point:
+     the bar should read as part of the same rhythm rather than racing it. */
+  animation: ks-marquee 250s linear infinite;
 }
 
 .brand-bar-track:hover {
