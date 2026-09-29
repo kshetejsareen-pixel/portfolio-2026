@@ -550,32 +550,47 @@ button, input, textarea, select { font: inherit; }
   .ks-cat.active:hover { transform: translateX(-4px); }
 }
 
-/* The "click me" cue on the active row. Mono/uppercase/wide-tracked to match the
-   slate and brand-bar labels, so it reads as part of the existing vocabulary
-   rather than a new voice, and kept small enough to stay clearly subordinate to
-   the category name. It sits to the LEFT of the name: the rail is right-aligned
-   against the screen edge, so a word appended after the name would break that
-   vertical edge every time it appeared. Growing leftward into empty space leaves
-   the names exactly where they were. */
+/* The "click me" cue on the active row. Set in the category names' own face and
+   size so "View Culinary" reads as one phrase rather than a label bolted onto a
+   title — only the colour is held back, which keeps the category name dominant
+   without breaking the type. It sits to the LEFT of the name: the rail is
+   right-aligned against the screen edge, so a word appended after the name would
+   break that vertical edge every time it appeared. Growing leftward into empty
+   space leaves the names exactly where they were. */
 .ks-cat-verb {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  letter-spacing: 0.01em;
   color: rgba(236, 232, 224, 0.45);
   white-space: nowrap;
-  animation: ks-cat-verb-in 900ms ease both;
+  animation: ks-cat-verb-cycle 5000ms ease both;
 }
 
-@keyframes ks-cat-verb-in {
-  from { opacity: 0; transform: translateX(6px); }
-  to   { opacity: 1; transform: translateX(0); }
+/* Five seconds on, then gone for the rest of the frame. The hold is the whole
+   shape of it: fade in, sit still long enough to be read rather than noticed,
+   clear out. Ending at opacity 0 with `both` means the word stays gone until the
+   next highlight remounts the span and restarts this — so no timer is needed and
+   the cue can never desync from the frame it belongs to. */
+@keyframes ks-cat-verb-cycle {
+  0%   { opacity: 0; transform: translateX(6px); }
+  12%  { opacity: 1; transform: translateX(0); }
+  88%  { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(0); }
 }
 
-/* The fade is the whole point of the cue, but it is decoration, not information —
-   the word is already there for anyone who has motion turned down. */
+/* Motion-sensitive visitors keep the same five-second cycle, minus the slide.
+   A plain opacity change is not the kind of movement this setting is asking us
+   to drop, and removing the animation entirely would strand the word on screen
+   permanently. */
 @media (prefers-reduced-motion: reduce) {
-  .ks-cat-verb { animation: none; }
+  .ks-cat-verb { animation-name: ks-cat-verb-cycle-still; }
+}
+
+@keyframes ks-cat-verb-cycle-still {
+  0%   { opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .ks-cat-n {
@@ -788,7 +803,7 @@ button, input, textarea, select { font: inherit; }
     align-items: center;
     padding: 2px 0;
   }
-  .ks-cat-verb { font-size: 9px; letter-spacing: 0.16em; }
+  .ks-cat-verb { font-size: 21px; }
   .ks-cat-name { font-size: 18px; transform: none; }
   .ks-cat.active .ks-cat-name { font-size: 21px; transform: none; }
   .ks-cat-tick { display: none; }

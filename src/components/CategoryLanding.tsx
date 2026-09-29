@@ -58,10 +58,12 @@ const MOTION_INTERVAL = CYCLE_INTERVAL * 1.25
 // menu — and the highlight moving on its own says "watch me", not "click me". A
 // verb on the active row reclassifies the whole rail as a control, and unlike the
 // hover state it also reaches touch, where there is no hover to give.
-// It retires after the first three highlights: by then the point is made, and a
-// word fading in every ten seconds forever would pull the eye off the photograph
-// roughly twelve times in a two-minute visit.
-const VERB_HIGHLIGHTS = 3
+//
+// It runs on every highlight of every visit rather than retiring, but shows for
+// only half of each frame: the cue is visible for five seconds, then clears so
+// the remaining five belong to the photograph alone. The five seconds live in
+// the CSS animation on .ks-cat-verb — there is no timer here, because keying the
+// span on globalIdx remounts it per highlight and replays the animation.
 
 // Build the active categories list from config + assignments, sorted by stored order.
 function buildCategories(
@@ -592,7 +594,7 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
             className={`ks-cat${i === catIdx ? ' active' : ''}`}
             onClick={() => handleCatClick(i)}
           >
-            {i === catIdx && globalIdx < VERB_HIGHLIGHTS && (
+            {i === catIdx && (
               // Keyed on globalIdx so React remounts it per highlight and the
               // fade replays. aria-hidden keeps the button's accessible name a
               // steady "Culinary" instead of flickering to "View Culinary".
