@@ -4,10 +4,14 @@
 //   node scripts/seo-report.mjs --days 7        change the window
 //   node scripts/seo-report.mjs --index         also run URL Inspection (slow, quota'd)
 //   node scripts/seo-report.mjs --stdout        print instead of writing a file
+//   node scripts/seo-report.mjs --out DIR       write somewhere else
 //
-// Writes seo-reports/<end-date>.md so successive runs build a history you can diff.
+// Writes <end-date>.md so successive runs build a history you can diff. The
+// history lives in "SEO Data - kshetejsareen" next to the site, not inside it,
+// so it survives re-cloning the repo. Resolved from this file, not the cwd.
 
 import { writeFileSync, readFileSync, mkdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import {
   loadEnv, resolveSite, searchAnalytics, inspectUrl, isoDaysAgo,
 } from './gsc.mjs'
@@ -18,6 +22,11 @@ const opt = (n, d) => {
   const i = args.indexOf(`--${n}`)
   return i !== -1 && args[i + 1] ? args[i + 1] : d
 }
+
+const OUT_DIR = opt(
+  'out',
+  fileURLToPath(new URL('../../SEO Data - kshetejsareen', import.meta.url)),
+)
 
 const DAYS = Number(opt('days', 28))
 // GSC finalises data on a 2-3 day lag; ending "today" reports a false decline.
@@ -304,8 +313,8 @@ async function main() {
     console.log(report)
     return
   }
-  mkdirSync('seo-reports', { recursive: true })
-  const file = `seo-reports/${END}.md`
+  mkdirSync(OUT_DIR, { recursive: true })
+  const file = `${OUT_DIR}/${END}.md`
   writeFileSync(file, report)
   console.log(`Wrote ${file}`)
   console.log(

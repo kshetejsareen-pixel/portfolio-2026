@@ -4,10 +4,15 @@
 //   node scripts/seo-audit.mjs
 //   node scripts/seo-audit.mjs --origin https://staging.example.com
 //   node scripts/seo-audit.mjs --stdout
+//   node scripts/seo-audit.mjs --out DIR
 //
 // Exits 1 if any error-level problem is found, so CI or a cron can gate on it.
+//
+// Writes audit-<date>.md alongside the GSC reports in "SEO Data - kshetejsareen"
+// next to the site, not inside it. Resolved from this file, not the cwd.
 
 import { writeFileSync, mkdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 const args = process.argv.slice(2)
 const flag = (n) => args.includes(`--${n}`)
@@ -15,6 +20,11 @@ const opt = (n, d) => {
   const i = args.indexOf(`--${n}`)
   return i !== -1 && args[i + 1] ? args[i + 1] : d
 }
+
+const OUT_DIR = opt(
+  'out',
+  fileURLToPath(new URL('../../SEO Data - kshetejsareen', import.meta.url)),
+)
 
 const ORIGIN = opt('origin', 'https://www.kshetejsareen.com').replace(/\/$/, '')
 // Vercel's edge fronting returns 403 to bare scripted requests.
@@ -185,8 +195,8 @@ async function main() {
   if (flag('stdout')) {
     console.log(report)
   } else {
-    mkdirSync('seo-reports', { recursive: true })
-    const file = `seo-reports/audit-${today}.md`
+    mkdirSync(OUT_DIR, { recursive: true })
+    const file = `${OUT_DIR}/audit-${today}.md`
     writeFileSync(file, report)
     console.log(`Wrote ${file}`)
     console.log(`${pages.length} URLs · ${errors.length} errors · ${warns.length} warnings`)

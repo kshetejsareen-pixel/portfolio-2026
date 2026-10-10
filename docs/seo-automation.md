@@ -7,7 +7,10 @@ Two scripts. One needs Google access, one does not.
 | `npm run seo:audit` | No | Technical health of the live site — titles, descriptions, schema, duplicates, broken URLs |
 | `npm run seo:report` | Yes, Search Console | Actual performance — clicks, impressions, positions, which queries you rank for |
 
-Reports are written to `seo-reports/`, dated, so successive runs can be diffed.
+Reports are written dated to `../SEO Data - kshetejsareen/`, so successive runs
+can be diffed. Both scripts resolve that path from the script file, not the
+working directory, so it does not matter where you run them from. `--out DIR`
+overrides it.
 
 ## One-time setup for `seo:report`
 
@@ -46,7 +49,7 @@ nothing here can change your property even if it wanted to.
 npm run seo:report
 ```
 
-Success prints a headline line and writes `seo-reports/<date>.md`. A 403 means
+Success prints a headline line and writes `<date>.md` to the report folder. A 403 means
 step 1 or 2 has not propagated — Google can take a few minutes.
 
 ## Usage
@@ -84,8 +87,10 @@ three days back. Comparing to "today" reports a decline that is not real.
 Average position is weighted by impressions. An unweighted mean lets a query
 with two impressions count as much as one with two thousand.
 
-`seo-reports/` is committed deliberately — the value is the trend, and a report
-that only exists on one laptop cannot be diffed.
+The report history lives outside the repo, in `02. KSS - Tools/SEO Data -
+kshetejsareen`, so it survives re-cloning or moving the site. It is therefore no
+longer version-controlled: the trend only exists on this machine, so it needs to
+be in whatever backs up that folder.
 
 ## Not covered
 
