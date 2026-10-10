@@ -2,6 +2,12 @@ import type { NextConfig } from 'next'
 import { LEGACY_REDIRECTS, LEGACY_NOTION_CATCH_ALL } from './src/lib/legacyRedirects'
 
 const nextConfig: NextConfig = {
+  // Dev only. Next 16 blocks cross-origin requests to /_next/* — including the
+  // HMR socket — unless the origin is listed here, so opening the dev server
+  // from a phone on the same Wi-Fi renders the page but 403s on every dev
+  // asset and never hot-reloads. Update the IP if the Mac's DHCP lease moves
+  // (`ipconfig getifaddr en0`). Has no effect on the production build.
+  allowedDevOrigins: ['192.168.31.242'],
   images: {
     remotePatterns: [],
   },
