@@ -752,9 +752,20 @@ button, input, textarea, select { font: inherit; }
 /* Gradient overlay is reliably dark — category rail stays white on all images */
 
 /* ─────────────────────────────────────────────
-   Mobile — ≤767px
+   Mobile — ≤767px wide, OR any viewport ≤500px tall (and ≤1100px wide)
+
+   The second condition is what catches a phone held in landscape. A phone on
+   its side is ~844×390: the width is ABOVE the 767px breakpoint, so without it
+   the device fell through to the desktop layout and tried to render it in
+   390px of height — the rail filled the whole screen, the marquee landed in
+   the middle of the photograph, and the wordmark, nav and slate stacked on top
+   of one another.
+
+   The ≤1100px width guard keeps this off a short-but-wide DESKTOP window,
+   which has room for the real layout. Phone landscape tops out around 956px
+   (iPhone 16 Pro Max), so 1100px clears every phone without reaching desktop.
    ───────────────────────────────────────────── */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   /*
    * No letterbox bars on mobile.
    * env(safe-area-inset-bottom) on iOS Safari with bottom address bar
@@ -940,6 +951,36 @@ button, input, textarea, select { font: inherit; }
 }
 
 /* ─────────────────────────────────────────────
+   Phone landscape — indicator alignment
+   ─────────────────────────────────────────────
+   Both swipe indicators are positioned for a tall, narrow screen and read
+   wrong once the phone is on its side.
+
+   .ks-nav-dots-x is a flex child of .ks-meta with justify-content:center.
+   In portrait .ks-meta is narrow, so "centred" sits close to the name. In
+   landscape .ks-meta is 806px of an 844px screen, so the dots land at x=430 —
+   the middle of the photograph, nowhere near the type they belong to.
+   Left-aligning them parks them directly above the name.
+
+   .ks-nav-dots-y mirrors the category rail's 16px right inset, but every piece
+   of content on the left — ticker, KS wordmark, name, slate — sits on a 22px
+   gutter. At phone width 6px is invisible; across 844px it reads as a third,
+   wrong margin. Moving it to 22px gives the left edge a single alignment.
+
+   Once both sit on 22px they collide: .ks-nav-dots-y centres itself over the
+   full 390px height, so its middle pip lands at y=193 — touching the first
+   frame pip at y=190. Boxing the column into 56px–184px centres it in the
+   clear band between the KS wordmark (ends y=61) and the meta block (starts
+   y=190), so the two indicators read as two separate things again.
+
+   Portrait is deliberately left alone: it is live and signed off. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 1100px) {
+  .ks-nav-dots-x { justify-content: flex-start; }
+  .ks-nav-dots-y { left: 22px; top: 56px; bottom: 206px; }
+}
+
+
+/* ─────────────────────────────────────────────
    Menu button (top bar)
    ───────────────────────────────────────────── */
 .ks-menu-btn {
@@ -1089,7 +1130,7 @@ button, input, textarea, select { font: inherit; }
 .ks-menu-admin-link:hover { color: var(--mute); }
 
 /* Mobile adjustments */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .ks-menu-close-btn {
     top: 0;
     right: 22px;
@@ -1112,7 +1153,7 @@ button, input, textarea, select { font: inherit; }
   --cat-gap: 12px;
   --cat-maxw: 1440px;
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   :root { --cat-pad: 22px; --cat-gap: 32px; }
 }
 
@@ -1149,7 +1190,7 @@ button, input, textarea, select { font: inherit; }
   color: var(--paper) !important;
   white-space: nowrap;
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-topbar { padding: max(18px, env(safe-area-inset-top, 0px)) 22px 14px; }
   .cat-tb-ks { font-size: 15px !important; }
 }
@@ -1224,7 +1265,7 @@ button, input, textarea, select { font: inherit; }
   bottom: max(40px, env(safe-area-inset-bottom, 0px) + 28px);
   z-index: 4;
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-hero-meta {
     bottom: max(28px, env(safe-area-inset-bottom, 28px));
   }
@@ -1248,7 +1289,7 @@ button, input, textarea, select { font: inherit; }
   margin: 0 0 clamp(14px, 1.4vw, 22px);
   text-align: left;
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-hero-oneliner { font-size: 13px; margin: 0 0 14px; text-align: left; }
 }
 .cat-hero-lower {
@@ -1293,7 +1334,7 @@ button, input, textarea, select { font: inherit; }
   70%  { transform: scaleY(1); transform-origin: bottom; opacity: 0.8; }
   100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-scroll-hint-arrow { right: 0; }
   .cat-scroll-hint-label { transform: translateX(-10px); }
 }
@@ -1311,14 +1352,14 @@ button, input, textarea, select { font: inherit; }
   color: var(--paper);
 }
 .cat-intro-body em { color: var(--paper-dim); }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-intro { grid-template-columns: 1fr; gap: 18px; padding: 56px var(--cat-pad) 32px; }
 }
 
 /* Editorial */
 .cat-editorial { padding: 40px 0 80px; }
 .cat-row { margin-bottom: 96px; }
-@media (max-width: 767px) { .cat-row { margin-bottom: var(--cat-gap); } }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) { .cat-row { margin-bottom: var(--cat-gap); } }
 .cat-contained { max-width: var(--cat-maxw); margin: 0 auto; padding: 0 var(--cat-pad); }
 
 /* Photo slot */
@@ -1362,7 +1403,7 @@ button, input, textarea, select { font: inherit; }
 .cat-cap > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .cat-cap-subj { color: var(--paper-dim); }
 .cat-cap-dot { letter-spacing: 0; padding: 0 0.2em; }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-cap { margin-top: 12px; font-size: 9.5px; letter-spacing: 0.10em; }
 }
 
@@ -1382,13 +1423,13 @@ button, input, textarea, select { font: inherit; }
   display: flex; flex-direction: column; gap: var(--cat-gap);
   justify-content: space-between;
 }
-@media (max-width: 767px) { .cat-row-asym-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) { .cat-row-asym-grid { grid-template-columns: 1fr; } }
 
 /* Desktop: asym items don't animate — parent .cat-row handles the reveal */
 .cat-row-asym .cat-asym-item[data-sr] { opacity: 1; transition: none; }
 
 /* Mobile: row container stays visible, each item fades in independently */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-row-asym { opacity: 1 !important; transition: none !important; }
   .cat-row-asym .cat-asym-item[data-sr] { opacity: 0; transition: opacity 1s linear; }
   .cat-row-asym .cat-asym-item[data-sr].sr-visible { opacity: 1; }
@@ -1416,15 +1457,15 @@ button, input, textarea, select { font: inherit; }
 
 /* Three-up */
 .cat-row-3up-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--cat-gap); align-items: end; }
-@media (max-width: 767px) { .cat-row-3up-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) { .cat-row-3up-grid { grid-template-columns: 1fr; } }
 
 /* Diptych */
 .cat-row-diptych-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); align-items: end; }
-@media (max-width: 767px) { .cat-row-diptych-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) { .cat-row-diptych-grid { grid-template-columns: 1fr; } }
 
 /* Duo */
 .cat-row-duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cat-gap); align-items: end; }
-@media (max-width: 767px) { .cat-row-duo-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) { .cat-row-duo-grid { grid-template-columns: 1fr; } }
 
 /* Desktop: multi-photo items don't animate — parent .cat-row handles the reveal */
 .cat-row-threeup .cat-multi-item[data-sr],
@@ -1432,7 +1473,7 @@ button, input, textarea, select { font: inherit; }
 .cat-row-duo .cat-multi-item[data-sr] { opacity: 1; transition: none; }
 
 /* Mobile: row container stays visible, each item fades in independently with stagger */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-row-threeup,
   .cat-row-diptych,
   .cat-row-duo { opacity: 1 !important; transition: none !important; }
@@ -1468,7 +1509,7 @@ button, input, textarea, select { font: inherit; }
   .cat-row-offset-grid { grid-template-columns: 1fr; }
   .cat-row-offset-neg { display: none; }
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-row-offset-quote { padding: 40px var(--cat-pad); }
 }
 
@@ -1476,7 +1517,7 @@ button, input, textarea, select { font: inherit; }
 .cat-pull-quote {
   padding: 80px var(--cat-pad); max-width: 920px; margin: 0 auto; text-align: center;
 }
-@media (max-width: 767px) { .cat-pull-quote { padding: 24px var(--cat-pad); } }
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) { .cat-pull-quote { padding: 24px var(--cat-pad); } }
 .cat-pull-quote-text {
   font-family: var(--font-serif); font-style: italic; font-weight: 400;
   font-size: clamp(28px, 3.6vw, 56px); line-height: 1.2; letter-spacing: -0.02em;
@@ -1507,7 +1548,7 @@ button, input, textarea, select { font: inherit; }
 .cat-projects-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 64px 40px;
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-projects-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 .cat-project { display: block; cursor: pointer; color: inherit; text-decoration: none; }
@@ -1683,7 +1724,7 @@ button, input, textarea, select { font: inherit; }
   text-align: center;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .cat-footer-nav { padding: 28px var(--cat-pad); }
   .cat-footer-nav::before,
   .cat-footer-nav::after {
@@ -2067,7 +2108,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 }
 
 /* ── Mobile ── */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .contact-ticker {
     position: relative;
     top: auto;
@@ -2317,7 +2358,7 @@ a.contact-direct-cell-value:hover { color: var(--paper); }
 .contact-studio-value a:hover { color: var(--paper); }
 
 /* Mobile */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .contact-main { padding-top: 90px; }
   .contact-hero { padding: 48px var(--cat-pad) 48px; }
   .contact-body { grid-template-columns: 1fr; }
@@ -2700,7 +2741,7 @@ a.info-touch-val:hover { color: var(--paper); }
 }
 
 /* ── Mobile ── */
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .info-main { padding-top: 80px; }
   .info-hero { grid-template-columns: 1fr; min-height: auto; }
   .info-hero-photo-col { border-right: 0; border-bottom: 1px solid var(--rule); padding: 32px var(--cat-pad) 24px; }
@@ -5107,7 +5148,7 @@ a.info-touch-val:hover { color: var(--paper); }
 .motion-reel-mute-btn:hover { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.65); }
 .motion-reel-mute-btn.unmuted { color: #fff; border-color: rgba(255,255,255,0.4); }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .motion-reel-bottom { padding: 0 20px 32px; }
   .motion-reel-index { top: 16px; right: 18px; }
 }
@@ -5607,7 +5648,7 @@ a.info-touch-val:hover { color: var(--paper); }
 /* Shift page content to not be hidden under the panel */
 body.vse-active { padding-right: 280px; }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-height: 500px) and (max-width: 1100px) {
   .vse-panel { width: 100%; top: auto; height: 55vh; border-left: none; border-top: 1px solid #222; }
   body.vse-active { padding-right: 0; padding-bottom: 55vh; }
   .vse-toggle { bottom: 16px; left: 16px; }
