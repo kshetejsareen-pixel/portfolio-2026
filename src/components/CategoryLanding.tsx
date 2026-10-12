@@ -217,10 +217,6 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
       ? buildCategories(initialData.config, initialData.assignments, initialData.categoryOrder)
       : categories
   )
-  const [tickerStatus,      setTickerStatus]      = useState(initialCopy?.tickerStatus      ?? 'Open for bookings — May through Sept 2026')
-  const [tickerLeadTime,    setTickerLeadTime]    = useState(initialCopy?.tickerLeadTime    ?? 'Lead time · 3–6 weeks')
-  const [tickerStatusStyle, setTickerStatusStyle] = useState<TextStyle | undefined>(initialCopy?.tickerStatusStyle)
-  const [tickerLeadStyle,   setTickerLeadStyle]   = useState<TextStyle | undefined>(initialCopy?.tickerLeadTimeStyle)
   const [tagline,           setTagline]           = useState(initialCopy?.tagline           ?? '')
   const [taglineStyle,      setTaglineStyle]      = useState<TextStyle | undefined>(initialCopy?.taglineStyle)
   const [motionVideos,   setMotionVideos]   = useState<MotionVideo[]>([])
@@ -275,10 +271,6 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
         const land    = d.copy?.landing ?? {}
         const contact = d.copy?.contact ?? {}
         // landing-specific values take precedence over contact fallbacks
-        if (land.tickerStatus   || contact.tickerStatus)   setTickerStatus(land.tickerStatus   ?? contact.tickerStatus)
-        if (land.tickerLeadTime || contact.tickerLeadTime) setTickerLeadTime(land.tickerLeadTime ?? contact.tickerLeadTime)
-        if (land.tickerStatusStyle)  setTickerStatusStyle(land.tickerStatusStyle)
-        if (land.tickerLeadTimeStyle) setTickerLeadStyle(land.tickerLeadTimeStyle)
         if (land.tagline)      setTagline(land.tagline)
         if (land.taglineStyle) setTaglineStyle(land.taglineStyle)
       })
@@ -561,15 +553,6 @@ export function CategoryLanding({ initialData, initialCopy }: { initialData?: La
       {/* Cinemascope letterbox bars */}
       <div className="ks-letterbox ks-letterbox--top" />
       <div className="ks-letterbox ks-letterbox--bottom" />
-
-      {/* Availability ticker */}
-      <div className="ks-avail-ticker" aria-label="Studio availability">
-        <span className="ks-avail-ticker-left" style={textStyle(tickerStatusStyle)}>
-          <span className="ks-avail-dot" aria-hidden="true" />
-          {tickerStatus}
-        </span>
-        <span className="ks-avail-ticker-right" style={textStyle(tickerLeadStyle)}>{tickerLeadTime}</span>
-      </div>
 
       {/* Top bar */}
       <div className="ks-top-bar">

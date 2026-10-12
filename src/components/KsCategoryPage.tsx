@@ -7,6 +7,8 @@ import type { GalleryData, GalleryAssignment } from '@/lib/getGalleryData'
 import { KsMenuOverlay } from '@/components/KsMenuOverlay'
 import { BrandMarquee } from '@/components/BrandMarquee'
 import { PROJECT_TAGS } from '@/lib/tags'
+import { cloudinarySrcSet } from '@/lib/imageSrcSet'
+import { CatViewerProvider, useCatViewer } from '@/components/CatPhotoViewer'
 
 const ALL_CATEGORIES = [
   { id: 'culinary',  name: 'Culinary' },
@@ -209,6 +211,26 @@ function countPhotos(row: FlowRow): number {
   }
 }
 
+// countPhotos counts slots, including ones with no image assigned yet, because
+// the caption numbering is slot-based. The viewer needs the opposite: the
+// photographs that actually rendered, in reading order, so a swipe never lands
+// on an empty frame. Same objects, so CatPhoto can find its own position by
+// identity rather than threading an index through nine row kinds.
+function flattenPhotos(rows: FlowRow[]): FlowPhoto[] {
+  const out: FlowPhoto[] = []
+  for (const row of rows) {
+    switch (row.kind) {
+      case 'pull-quote': break
+      case 'asym': out.push(row.large, ...row.smalls); break
+      case 'three-up':
+      case 'diptych':
+      case 'duo': out.push(...row.photos); break
+      default: out.push(row.photo)
+    }
+  }
+  return out.filter(p => p.image)
+}
+
 function getHeroTint(row: FlowRow): string {
   if (row.kind === 'full-bleed' || row.kind === 'full-bleed-pano' ||
       row.kind === 'centered-tall' || row.kind === 'offset') return row.photo.tint
@@ -217,19 +239,25 @@ function getHeroTint(row: FlowRow): string {
   return '#1a1a1c'
 }
 
-// Cloudinary URLs are built with a w_2400 transform; swap the width to let
-// the browser pick the smallest sufficient variant.
-const SRCSET_WIDTHS = [800, 1200, 1600, 2400]
-
-function cloudinarySrcSet(url: string): string | undefined {
-  if (!url.includes('w_2400')) return undefined
-  return SRCSET_WIDTHS.map((w) => `${url.replace('w_2400', `w_${w}`)} ${w}w`).join(', ')
-}
-
 function CatPhoto({ photo, aspectOverride }: { photo: FlowPhoto; aspectOverride?: string }) {
   const aspect = aspectOverride ? `cat-ar-${aspectOverride}` : `cat-ar-${photo.aspect}`
+  const viewer = useCatViewer()
+  // Only a frame with an image is worth opening; an unassigned slot renders a
+  // title placeholder and stays inert.
+  const openable = Boolean(viewer && photo.image)
+  const open = () => viewer?.open(photo)
   return (
-    <div className={`cat-photo ${aspect}`} style={{ backgroundColor: photo.tint }}>
+    <div
+      className={`cat-photo ${aspect}${openable ? ' cat-photo-openable' : ''}`}
+      style={{ backgroundColor: photo.tint }}
+      onClick={openable ? open : undefined}
+      role={openable ? 'button' : undefined}
+      tabIndex={openable ? 0 : undefined}
+      aria-label={openable ? `View ${photo.title} full screen` : undefined}
+      onKeyDown={openable ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open() }
+      } : undefined}
+    >
       {photo.image
         ? <img
             src={photo.image}
@@ -615,6 +643,8 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, init
   const applyYearSpan = (s: string) =>
     yearSpanWord ? s.replace('{yearSpan}', yearSpanWord) : s.replace('{yearSpan}', 'Five')
 
+  const viewerPhotos = flattenPhotos(visibleFlow)
+
   let photoIdx = 1
   const flowWithIdx = visibleFlow.map(row => {
     const start = photoIdx
@@ -685,39 +715,41 @@ export function KsCategoryPage({ data, catId, videoGallery, initialGallery, init
       </section>
 
       {videoGallery ?? (anyAssigned && (
-        <section className="cat-editorial">
-          {flowWithIdx.map(({ row, start }, i) => {
-            const key = `${row.kind}-${i}`
-            switch (row.kind) {
-              case 'full-bleed':
-                return <RowFullBleed key={key} row={row} idx={start} />
-              case 'full-bleed-pano':
-                return <RowFullBleedPano key={key} row={row} idx={start} />
-              case 'asym':
-                return <RowAsym key={key} row={row} idxBase={start} />
-              case 'centered-tall':
-                return <RowCenteredTall key={key} row={row} idx={start} />
-              case 'three-up':
-                return <RowThreeUp key={key} row={row} idxBase={start} />
-              case 'diptych':
-                return <RowDiptych key={key} row={row} idxBase={start} />
-              case 'duo':
-                return <RowDuo key={key} row={row} idxBase={start} />
-              case 'offset':
-                return <RowOffset key={key} row={row} idx={start} />
-              case 'pull-quote':
-                return (
-                  <RowPullQuote
-                    key={key}
-                    pullQuote={data.pullQuote}
-                    copyOverride={{ text: copy.pullQuoteText, attr: copy.pullQuoteAttr, textStyle: copy.pullQuoteStyle, attrStyle: copy.pullQuoteAttrStyle }}
-                  />
-                )
-              default:
-                return null
-            }
-          })}
-        </section>
+        <CatViewerProvider photos={viewerPhotos}>
+          <section className="cat-editorial">
+            {flowWithIdx.map(({ row, start }, i) => {
+              const key = `${row.kind}-${i}`
+              switch (row.kind) {
+                case 'full-bleed':
+                  return <RowFullBleed key={key} row={row} idx={start} />
+                case 'full-bleed-pano':
+                  return <RowFullBleedPano key={key} row={row} idx={start} />
+                case 'asym':
+                  return <RowAsym key={key} row={row} idxBase={start} />
+                case 'centered-tall':
+                  return <RowCenteredTall key={key} row={row} idx={start} />
+                case 'three-up':
+                  return <RowThreeUp key={key} row={row} idxBase={start} />
+                case 'diptych':
+                  return <RowDiptych key={key} row={row} idxBase={start} />
+                case 'duo':
+                  return <RowDuo key={key} row={row} idxBase={start} />
+                case 'offset':
+                  return <RowOffset key={key} row={row} idx={start} />
+                case 'pull-quote':
+                  return (
+                    <RowPullQuote
+                      key={key}
+                      pullQuote={data.pullQuote}
+                      copyOverride={{ text: copy.pullQuoteText, attr: copy.pullQuoteAttr, textStyle: copy.pullQuoteStyle, attrStyle: copy.pullQuoteAttrStyle }}
+                    />
+                  )
+                default:
+                  return null
+              }
+            })}
+          </section>
+        </CatViewerProvider>
       ))}
 
       <div className="cat-brand-strip"><BrandMarquee /></div>
