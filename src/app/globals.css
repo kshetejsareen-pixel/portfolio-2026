@@ -526,7 +526,11 @@ button, input, textarea, select { font: inherit; }
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  /* No flex gap: the verb and the name are the only visible children, and a
+     fixed gap here stayed 10px while the type shrank to 16px in landscape,
+     which pulled "View" away from the name exactly where space is tightest.
+     The spacing lives on .ks-cat-verb in em instead, so it tracks the size. */
+  gap: 0;
   color: var(--paper-dim);
   cursor: pointer;
   transition: color 240ms ease, transform 240ms ease, opacity 300ms ease;
@@ -561,7 +565,13 @@ button, input, textarea, select { font: inherit; }
   font-family: var(--font-serif);
   font-size: 30px;
   letter-spacing: 0.01em;
-  color: rgba(236, 232, 224, 0.45);
+  /* Same colour as the name it belongs to, so "View Culinary" carries one
+     weight rather than reading as a dim label in front of a bright title.
+     Inherited from .ks-cat.active, which is the only row the verb appears on. */
+  color: inherit;
+  /* A word space, not a gutter — this is one phrase. In em so it holds the
+     same proportion at 30px, at 21px on a phone and at 16px in landscape. */
+  margin-right: 0.22em;
   white-space: nowrap;
   animation: ks-cat-verb-cycle 5000ms ease both;
 }
@@ -810,7 +820,10 @@ button, input, textarea, select { font: inherit; }
   .ks-cat {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    /* Zero here too, for the same reason as the base rule: this 8px was landing
+       on top of the verb's own word-space margin and pushing "View" back off
+       the name it belongs to. */
+    gap: 0;
     min-height: auto;
     align-items: center;
     padding: 2px 0;
